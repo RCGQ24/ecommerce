@@ -1,0 +1,59 @@
+<!-- Barra de navegación -->
+<nav class="navbar">
+    <ul class="nav-list">
+      <li>Hombre</li>
+      <li>Colecciones</li>
+      <li><a (click)="goToCatalogo()">Inicio</a></li>
+    </ul>
+    <div class="logo">ecommerce-app</div>
+    <ul class="nav-list nav-list-right">
+      <li>VE | USD $</li>
+      <li><a routerLink="/login">Iniciar Sesión</a></li>
+      <li><a routerLink="/carrito">Carrito</a></li>
+    </ul>
+</nav>
+
+<!-- Sección para que el administrador añada productos -->
+<section class="add-product-section">
+  <div class="section-header">
+    <h2>Añadir Nuevo Producto</h2>
+  </div>
+
+  <form class="add-product-form" (submit)="validarProducto($event)">
+    <label for="name">Nombre del Producto:</label>
+    <input type="text" id="name" [(ngModel)]="producto.name" name="name" required>
+
+    <label for="type">Tipo:</label>
+    <select id="type" [(ngModel)]="producto.type" name="type" required>
+      <option value="">Selecciona un tipo</option>
+      <option value="deportivo">Deportivo</option>
+      <option value="casual">Casual</option>
+      <option value="formal">Formal</option>
+      <option value="uniforme">Uniforme</option>
+    </select>
+
+    <label for="price">Precio ($):</label>
+    <input type="number" id="price" [(ngModel)]="producto.price" name="price" required>
+
+    <label for="images">URL de Imagen:</label>
+    <input type="text" id="images" [(ngModel)]="producto.images" name="images" required>
+
+    <label for="size">Talla:</label>
+    <input type="number" id="size" [(ngModel)]="producto.size" name="size" required>
+
+    <label for="stock">Stock:</label>
+    <input type="number" id="stock" [(ngModel)]="producto.stock" name="stock" required min="0">
+
+    <button type="submit">Validar Producto</button>
+  </form>
+
+  <div *ngIf="mensajeError" class="error-message">
+    {{ mensajeError }}
+  </div>
+
+  <div *ngIf="productoValido" class="confirmation-section">
+    <p>El producto ha sido validado y añadido a la lista temporal.</p>
+    <button (click)="anadirOtroProducto()">Añadir Otro Producto</button>
+    <button (click)="registrarProductos()">Registrar Productos</button>
+  </div>
+</section>

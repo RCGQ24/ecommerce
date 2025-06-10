@@ -1,0 +1,47 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-left">
+      <div class="logo">Ecommerce App</div>
+      <div class="tab-group">
+        <button [class.active]="isLogin" (click)="switchTab(true)">Iniciar Sesión</button>
+        <button [class.active]="!isLogin" (click)="switchTab(false)">Registrarse</button>
+      </div>
+      <form *ngIf="isLogin" (ngSubmit)="onLogin()" [formGroup]="loginForm">
+        <h2 class="form-subtitle">Bienvenido a nuestra tienda!</h2>
+        <h1 class="form-title">Iniciar Sesión</h1>
+        <label>Email</label>
+        <input class="input-field" formControlName="email" type="email" placeholder="login@gmail.com" />
+        <label class="label-row">
+          <span>Contraseña</span>
+          <a class="forgot-password" href="#">¿Olvidaste tu contraseña?</a>
+        </label>
+        <input class="input-field" formControlName="password" type="password" placeholder="********" />
+        <button class="login-button" type="submit">INICIAR SESIÓN</button>
+      </form>
+      <form *ngIf="!isLogin" (ngSubmit)="onRegister()" [formGroup]="registerForm">
+        <h2 class="form-subtitle">¡Únete a nosotras!</h2>
+        <h1 class="form-title">Registrarse</h1>
+        <label>Email</label>
+        <input class="input-field" formControlName="email" type="email" placeholder="correo@ejemplo.com" />
+        <label>Contraseña</label>
+        <input class="input-field" formControlName="password" type="password" placeholder="********" />
+        <label>Confirmar Contraseña</label>
+        <input class="input-field" formControlName="confirmPassword" type="password" placeholder="********" />
+        <button class="register-button" type="submit">REGISTRARSE</button>
+      </form>
+      <div class="divider">o continúa con</div>
+      <div class="social-row">
+        <button class="social-btn google"><span class="icon"></span></button>
+        <button class="social-btn github"><span class="icon"></span></button>
+        <button class="social-btn facebook"><span class="icon"></span></button>
+      </div>
+      <div class="footer-text">
+        <span *ngIf="isLogin">¿No tienes cuenta? <a href="#" (click)="switchTab(false)">Regístrate gratis</a></span>
+        <span *ngIf="!isLogin">¿Ya tienes cuenta? <a href="#" (click)="switchTab(true)">Inicia sesión</a></span>
+      </div>
+    </div>
+    <div class="auth-right">
+      <img src="zara-model.png" alt="login illustration" />
+    </div>
+  </div>
+</div>

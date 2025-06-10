@@ -1,0 +1,42 @@
+<!-- Barra de navegación -->
+<nav class="navbar">
+  <ul class="nav-list">
+    <li>Hombre</li>
+    <li>Colecciones</li>
+    <li><a (click)="goToCatalogo()">Inicio</a></li>
+  </ul>
+  <div class="logo">ecommerce-app</div>
+  <ul class="nav-list nav-list-right">
+    <li>VE | USD $</li>
+    <li><a routerLink="/login">Iniciar Sesión</a></li>
+    <li>
+      <a class="cart-link" (click)="goToCarrito()">
+        Carrito
+        <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<section class="product-detail-section" *ngIf="product">
+  <div class="product-detail-container">
+    <div class="product-detail-image">
+      <img [src]="product.image" [alt]="product.name" />
+    </div>
+    <div class="product-detail-info">
+      <h2 class="product-detail-name">{{ product.name }}</h2>
+      <div class="product-detail-price">${{ product.price }}</div>
+      <div class="product-detail-colors">
+        <span *ngFor="let color of product.colors" [style.background]="color" class="color-dot"></span>
+      </div>
+      <button class="add-to-cart-btn" (click)="addToCart()" [disabled]="added">
+        {{ added ? '¡Añadido!' : 'Agregar al carrito' }}
+      </button>
+    </div>
+  </div>
+</section>
+
+<section *ngIf="!product" class="product-not-found">
+  <h2>Producto no encontrado</h2>
+  <a routerLink="/catalogo">Volver al catálogo</a>
+</section>

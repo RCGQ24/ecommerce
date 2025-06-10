@@ -1,0 +1,20 @@
+<nav class="navbar">
+  <ul class="nav-list">
+    <li><a routerLink="/hombre">Hombre</a></li>
+    <li><a routerLink="/colecciones">Colecciones</a></li>
+    <li><a routerLink="/catalogo">Inicio</a></li>
+  </ul>
+  <div class="logo">ecommerce-app</div>
+  <ul class="nav-list nav-list-right">
+    <li>VE | USD $</li>
+    <li><a routerLink="/login">Iniciar Sesión</a></li>
+    <li><a routerLink="/carrito">Carrito</a></li>
+  </ul>
+</nav>
+
+<div class="admin-menu">
+  <button (click)="irA('/gestion-productos')">Añadir Producto</button>
+  <button (click)="irA('/catalogo')">Consultar Producto</button>
+  <button class="btn-disabled" disabled>Modificar Producto</button>
+  <button class="btn-disabled" disabled>Eliminar Producto</button>
+</div>

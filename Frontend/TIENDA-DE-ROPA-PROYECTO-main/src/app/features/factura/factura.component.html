@@ -1,0 +1,20 @@
+<div class="factura-container" id="factura-pdf" *ngIf="factura">
+  <div class="mensaje-exito">
+    <h2>Factura generada, gracias por su compra</h2>
+    <div class="detalles-factura">
+      <p class="fecha">Fecha: {{factura.fecha}}</p>
+      <p class="total">Total: ${{factura.total}}</p>
+    </div>
+    <div class="botones">
+      <button class="descargar-btn" (click)="descargarPDF()">Descargar PDF</button>
+      <button class="aceptar-btn" (click)="aceptar()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<div class="error-container" *ngIf="error">
+  <div class="mensaje-error">
+    <h2>{{error}}</h2>
+    <p>Serás redirigido al catálogo en unos segundos...</p>
+  </div>
+</div>
