@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProductosService {
-  private apiUrl = 'http://localhost:8000/api/productos'; // Cambia el puerto si es necesario
+  private apiUrl = '/api/products'; // Usa la ruta relativa
 
   constructor(private http: HttpClient) {}
 
