@@ -47,6 +47,10 @@ export class FormIniciarsesionRegistroComponent implements OnInit {
     const usuario = { email, rol: 'admin' };
     localStorage.setItem('usuario', JSON.stringify(usuario));
     this.router.navigateByUrl('/admin-menu');
+  } else if (email === 'super@correo.com' && password === 'super123') {
+    const usuario = { email, rol: 'supervisor' };
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+    this.router.navigateByUrl('/supervisor');
   } else {
     // Buscar usuario en la base de datos
     this.http.get<any[]>('http://localhost:8000/api/usuarios').subscribe({

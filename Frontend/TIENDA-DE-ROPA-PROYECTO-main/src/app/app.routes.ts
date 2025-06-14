@@ -7,6 +7,7 @@ import { GestionProductosComponent } from './features/gestion-productos/gestion-
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { VistaDetalladaProductoComponent } from './features/catalogo/vista-detallada-producto/vista-detallada-producto.component';
 import { GestionPagoComponent } from './features/gestion-pago/gestion-pago.component';
+import { SupervisorComponent } from './features/supervisor/supervisor.component';
 
 export const routes: Routes = [
   { path: '', component: CatalogoComponent },
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'gestion-productos', component: GestionProductosComponent },
   { path: 'usuarios', component: UsuariosComponent },
   { path: 'factura/:id', loadComponent: () => import('./features/factura/factura.component').then(m => m.FacturaComponent) },
+  { path: 'supervisor', component: SupervisorComponent },
   // otras rutas...
 ];
 
