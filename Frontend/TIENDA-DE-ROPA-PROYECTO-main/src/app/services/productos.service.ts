@@ -14,4 +14,9 @@ export class ProductosService {
   registrarProducto(producto: any): Observable<any> {
     return this.http.post(this.apiUrl, producto);
   }
+
+  // Obtener todos los productos
+  obtenerProductos(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
 }

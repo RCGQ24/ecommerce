@@ -107,31 +107,61 @@ export class GestionProductosComponent {
     let errores = 0;
 
     this.productosTemporales.forEach(producto => {
-      // Mapea el tipo (string) al id_categoria (number)
-      
-
-      const productoBackend = {
-        nombre_producto: producto.name,
-        id_categoria: producto.type,
-        precio: producto.price,
-        url_imagen: producto.images,
-        talla: String(producto.size),
-        stock: producto.stock
-      };
-
-      this.productosService.registrarProducto(productoBackend).subscribe(
-        res => {
-          exitos++;
-          if (exitos + errores === this.productosTemporales.length) {
-            this.productosTemporales = [];
-            this.productoValido = false;
-            this.mensajeError = errores === 0
-              ? 'Todos los productos registrados correctamente'
-              : `${exitos} productos registrados, ${errores} con error`;
+      // 1. Consultar productos existentes para verificar nombre repetido
+      this.productosService.obtenerProductos().subscribe({
+        next: productosExistentes => {
+          const nombreRepetido = productosExistentes.some(
+            (p: any) => p.nombre_producto.toLowerCase() === producto.name.toLowerCase()
+          );
+          if (nombreRepetido) {
+            errores++;
+            alert(`El producto "${producto.name}" ya está registrado. No se va a registrar este producto.`);
+            if (exitos + errores === this.productosTemporales.length) {
+              this.productosTemporales = [];
+              this.productoValido = false;
+              this.mensajeError = errores === 0
+                ? 'Todos los productos registrados correctamente'
+                : `${exitos} productos registrados, ${errores} con error`;
+            }
+            return;
           }
+
+          // Si no está repetido, registrar el producto
+          const productoBackend = {
+            nombre_producto: producto.name,
+            id_categoria: producto.type,
+            precio: producto.price,
+            url_imagen: producto.images,
+            talla: String(producto.size),
+            stock: producto.stock
+          };
+
+          this.productosService.registrarProducto(productoBackend).subscribe(
+            res => {
+              exitos++;
+              if (exitos + errores === this.productosTemporales.length) {
+                this.productosTemporales = [];
+                this.productoValido = false;
+                this.mensajeError = errores === 0
+                  ? 'Todos los productos registrados correctamente'
+                  : `${exitos} productos registrados, ${errores} con error`;
+              }
+            },
+            err => {
+              errores++;
+              if (exitos + errores === this.productosTemporales.length) {
+                this.productosTemporales = [];
+                this.productoValido = false;
+                this.mensajeError = errores === 0
+                  ? 'Todos los productos registrados correctamente'
+                  : `${exitos} productos registrados, ${errores} con error`;
+              }
+            }
+          );
         },
-        err => {
+        error: err => {
           errores++;
+          alert('Error al consultar productos existentes');
           if (exitos + errores === this.productosTemporales.length) {
             this.productosTemporales = [];
             this.productoValido = false;
@@ -140,7 +170,7 @@ export class GestionProductosComponent {
               : `${exitos} productos registrados, ${errores} con error`;
           }
         }
-      );
+      });
     });
   }
 

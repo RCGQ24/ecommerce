@@ -56,6 +56,18 @@ CREATE TABLE IF NOT EXISTS `detalles de carritos` (
 
 -- Volcando datos para la tabla ecommerce.detalles de carritos: ~0 rows (aproximadamente)
 
+-- Volcando estructura para tabla ecommerce.facturas
+CREATE TABLE IF NOT EXISTS `facturas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_pago` int(11) DEFAULT NULL,
+  `numero_factura` varchar(50) DEFAULT NULL,
+  `fecha_factura` datetime DEFAULT NULL,
+  `monto_total` decimal(7,2) DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de las facturas';
+
+-- Volcando datos para la tabla ecommerce.facturas: ~0 rows (aproximadamente)
+
 -- Volcando estructura para tabla ecommerce.metodos de pago
 CREATE TABLE IF NOT EXISTS `metodos de pago` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -92,16 +104,16 @@ CREATE TABLE IF NOT EXISTS `productos` (
 
 -- Volcando datos para la tabla ecommerce.productos: ~10 rows (aproximadamente)
 INSERT INTO `productos` (`id`, `nombre_producto`, `id_categoria`, `precio`, `url_imagen`, `talla`, `stock`, `fecha_registro`) VALUES
-	(1, 'camisa de mario', 'casual', 20.00, 'https://m.media-amazon.com/images/I/7173IO6yZFL._AC_UY1000_.jpg', '10', 30, '0000-00-00 00:00:00'),
-	(2, 'sueter de Zelda', 'casual', 20.00, 'https://www.veinerd.com/uploads/products/large/zelda-1-mangalonga.jpg', '8', 20, '0000-00-00 00:00:00'),
+	(1, 'Camisa de Mario', 'casual', 20.00, 'https://m.media-amazon.com/images/I/7173IO6yZFL._AC_UY1000_.jpg', '10', 30, '0000-00-00 00:00:00'),
+	(2, 'Sueter de Zelda', 'casual', 20.00, 'https://www.veinerd.com/uploads/products/large/zelda-1-mangalonga.jpg', '8', 20, '0000-00-00 00:00:00'),
 	(3, 'Camisa de Metroid', 'casual', 40.00, 'https://m.media-amazon.com/images/I/914PnU42B+L._AC_UY1000_.jpg', '30', 24, '0000-00-00 00:00:00'),
 	(4, 'Pantalón formal', 'formal', 20.00, 'https://vittorioforti.com.mx/cdn/shop/products/VPN03078NE_1_310aacf1-8ef2-4ec9-8bcc-c12658630831.jpg?v=1744070921', '30', 15, '0000-00-00 00:00:00'),
 	(5, 'Camisa Beige', 'casual', 55.00, 'https://http2.mlstatic.com/D_NQ_NP_790402-MLV51582198703_092022-O.webp', '15', 10, '0000-00-00 00:00:00'),
-	(6, 'Zapato nike', 'deportivo', 120.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd2Kt-jN-YG4p2R1D-Wj4fCGqnvJqei-FZGw&s', '40', 10, '0000-00-00 00:00:00'),
+	(6, 'Zapatos Nike', 'deportivo', 120.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd2Kt-jN-YG4p2R1D-Wj4fCGqnvJqei-FZGw&s', '40', 10, '0000-00-00 00:00:00'),
 	(7, 'Camisa Nike roja', 'casual', 30.00, 'https://i.ebayimg.com/thumbs/images/g/CfUAAOSwvS5k3ld3/s-l1200.jpg', '30', 5, '0000-00-00 00:00:00'),
 	(8, 'Lentes de sol', 'casual', 35.00, 'https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg', '10', 20, '0000-00-00 00:00:00'),
-	(9, 'Camisa negra adidas', 'deportivo', 50.00, 'https://i.ebayimg.com/images/g/g4AAAOSw~jZcriiC/s-l640.jpg', '18', 10, '0000-00-00 00:00:00'),
-	(10, 'Camisa negra adidas', 'deportivo', 50.00, 'https://i.ebayimg.com/images/g/g4AAAOSw~jZcriiC/s-l640.jpg', '18', 20, '0000-00-00 00:00:00');
+	(9, 'Camisa negra Adidas', 'deportivo', 50.00, 'https://i.ebayimg.com/images/g/g4AAAOSw~jZcriiC/s-l640.jpg', '18', 10, '0000-00-00 00:00:00'),
+	(10, 'Zapatos de Kirby', 'deportivo', 70.00, 'https://i.etsystatic.com/9457243/r/il/0db382/5661058680/il_fullxfull.5661058680_cvjg.jpg', '14', 7, '0000-00-00 00:00:00');
 
 -- Volcando estructura para tabla ecommerce.roles
 CREATE TABLE IF NOT EXISTS `roles` (
