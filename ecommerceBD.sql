@@ -56,18 +56,6 @@ CREATE TABLE IF NOT EXISTS `detalles de carritos` (
 
 -- Volcando datos para la tabla ecommerce.detalles de carritos: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla ecommerce.facturas
-CREATE TABLE IF NOT EXISTS `facturas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_pago` int(11) DEFAULT NULL,
-  `numero_factura` varchar(50) DEFAULT NULL,
-  `fecha_factura` datetime DEFAULT NULL,
-  `monto_total` decimal(7,2) DEFAULT NULL,
-  UNIQUE KEY `Índice 1` (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de las facturas';
-
--- Volcando datos para la tabla ecommerce.facturas: ~0 rows (aproximadamente)
-
 -- Volcando estructura para tabla ecommerce.metodos de pago
 CREATE TABLE IF NOT EXISTS `metodos de pago` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -135,9 +123,9 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `id_rol` varchar(50) DEFAULT NULL,
   `fecha_registro` datetime DEFAULT NULL,
   UNIQUE KEY `Índice 1` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los usuarios';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los usuarios';
 
--- Volcando datos para la tabla ecommerce.usuarios: ~7 rows (aproximadamente)
+-- Volcando datos para la tabla ecommerce.usuarios: ~8 rows (aproximadamente)
 INSERT INTO `usuarios` (`id`, `nombre_usuario`, `email`, `contrasena`, `id_rol`, `fecha_registro`) VALUES
 	(1, 'Administrador', 'admin@correo.com', 'admin123', 'Administrador', NULL),
 	(2, 'Usuario', 'usuario@correo.com', 'usuario123', 'Usuario', NULL),
@@ -145,7 +133,8 @@ INSERT INTO `usuarios` (`id`, `nombre_usuario`, `email`, `contrasena`, `id_rol`,
 	(5, 'Usuario3', 'andres@gmail.com', 'andresito', 'Usuarios', NULL),
 	(6, 'Usuario4', 'valeria2105@gmail.com', 'V21a10v05c', 'Usuarios', NULL),
 	(7, 'Usuario5', 'gilbertogmoncadad@gmail.com', '12345', 'Usuarios', NULL),
-	(8, 'Usuario6', 'movalles@usb.ve', '222', 'Usuarios', NULL);
+	(8, 'Usuario6', 'movalles@usb.ve', '222', 'Usuarios', NULL),
+	(9, 'Supervisor', 'super@correo.com', 'super123', 'Supervisor', NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
