@@ -1,20 +1,23 @@
-<nav class="navbar">
-  <ul class="nav-list">
-    <li><a routerLink="/hombre">Hombre</a></li>
-    <li><a routerLink="/colecciones">Colecciones</a></li>
-    <li><a routerLink="/catalogo">Inicio</a></li>
-  </ul>
-  <div class="logo">ecommerce-app</div>
-  <ul class="nav-list nav-list-right">
-    <li>VE | USD $</li>
-    <li><a routerLink="/login">Iniciar Sesión</a></li>
-    <li><a routerLink="/carrito">Carrito</a></li>
-  </ul>
-</nav>
-
 <div class="admin-menu">
   <button (click)="irA('/gestion-productos')">Añadir Producto</button>
   <button (click)="irA('/catalogo')">Consultar Producto</button>
   <button class="btn-disabled" disabled>Modificar Producto</button>
   <button class="btn-disabled" disabled>Eliminar Producto</button>
+  <button (click)="irA('/payment-history')">Historial de Pagos</button>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showConfirmModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Confirmar Eliminación</h2>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro que deseas eliminar todos los carritos? Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cancelDeleteCarts()">Cancelar</button>
+      <button class="btn-danger" (click)="confirmDeleteCarts()">Eliminar</button>
+    </div>
+  </div>
 </div>

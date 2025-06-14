@@ -8,6 +8,9 @@ import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { VistaDetalladaProductoComponent } from './features/catalogo/vista-detallada-producto/vista-detallada-producto.component';
 import { GestionPagoComponent } from './features/gestion-pago/gestion-pago.component';
 import { SupervisorComponent } from './features/supervisor/supervisor.component';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: '', component: CatalogoComponent },
@@ -20,7 +23,23 @@ export const routes: Routes = [
   { path: 'gestion-productos', component: GestionProductosComponent },
   { path: 'usuarios', component: UsuariosComponent },
   { path: 'factura/:id', loadComponent: () => import('./features/factura/factura.component').then(m => m.FacturaComponent) },
-  { path: 'supervisor', component: SupervisorComponent },
+  {
+    path: 'supervisor',
+    loadComponent: () => import('./features/supervisor/supervisor.component').then(m => m.SupervisorComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['supervisor'] }
+  },
+  {
+    path: 'payment-history',
+    loadComponent: () => import('./features/gestion-pago/payment-history/payment-history.component').then(m => m.PaymentHistoryComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'user-payment-history',
+    loadComponent: () => import('./features/gestion-pago/user-payment-history/user-payment-history.component').then(m => m.UserPaymentHistoryComponent),
+    canActivate: [authGuard]
+  },
   // otras rutas...
 ];
 

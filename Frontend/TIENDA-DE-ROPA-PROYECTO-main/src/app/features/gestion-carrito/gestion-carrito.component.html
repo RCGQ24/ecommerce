@@ -1,145 +1,111 @@
-<!-- Barra de navegación -->
-<nav class="navbar">
-    <ul class="nav-list">
-      <li>Hombre</li>
-      <li>Colecciones</li>
-      <li><a routerLink="/">Inicio</a></li>
-    </ul>
-    <div class="logo">ecommerce-app</div>
-    <ul class="nav-list nav-list-right">
-      <li>VE | USD $</li>
-      <li><a routerLink="/login">Iniciar Sesión</a></li>
-      <li><a routerLink="/carrito">Carrito</a></li>
-    </ul>
-</nav>
-
 <!-- Contenido del Carrito -->
 <div class="cart-container">
-  <h1 class="cart-title">Tu Carrito</h1>
+  <h2 class="cart-title">Mi Carrito</h2>
   
-  <!-- Lista de Productos -->
-  <div class="cart-content">
+  <div class="cart-content" *ngIf="cartItems.length > 0">
     <div class="cart-items">
-      <ng-container *ngIf="cartItems.length > 0; else emptyCart">
-        <div class="cart-item" *ngFor="let item of cartItems">
-          <img [src]="item.image" [alt]="item.name" class="item-image">
-          <div class="item-details">
-            <h3 class="item-name">{{ item.name }}</h3>
-            <p class="item-price">${{ item.price }}</p>
-            <p class="item-quantity">Cantidad: {{ item.quantity }}</p>
-          </div>
-          <div class="item-total">
-            <p>${{ item.price * item.quantity }}</p>
-            <button class="remove-button" (click)="removeItem(item)">Eliminar</button>
+      <div class="cart-item" *ngFor="let item of cartItems">
+        <img [src]="item.image" [alt]="item.name" class="item-image">
+        <div class="item-details">
+          <h3 class="item-name">{{item.name}}</h3>
+          <p class="item-price">${{item.price}}</p>
+          <div class="quantity-controls">
+            <button (click)="decreaseQuantity(item)" class="quantity-btn">-</button>
+            <span class="quantity">{{item.quantity}}</span>
+            <button (click)="increaseQuantity(item)" class="quantity-btn">+</button>
           </div>
         </div>
-      </ng-container>
-      <ng-template #emptyCart>
-        <div class="empty-cart">
-          <img src="assets/empty-cart.png" alt="Carrito vacío">
-          <h2>Tu carrito está vacío</h2>
-          <p>¡Agrega algunos productos increíbles a tu carrito!</p>
-          <button routerLink="/catalogo">Ir al Catálogo</button>
-        </div>
-      </ng-template>
+        <button class="remove-item" (click)="removeItem(item)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
     </div>
-
-    <!-- Resumen del Carrito -->
+    
     <div class="cart-summary">
-      <h2>Resumen de la Orden</h2>
-      <div class="summary-row">
-        <span>Subtotal</span>
-        <span>${{ getSubtotal() }}</span>
+      <h3>Resumen del Pedido</h3>
+      <div class="summary-items">
+        <div class="summary-item" *ngFor="let item of cartItems">
+          <span>{{item.name}} (x{{item.quantity}})</span>
+          <span>${{item.price * item.quantity}}</span>
+        </div>
       </div>
-      <div class="summary-row">
-        <span>Envío</span>
-        <span>Gratis</span>
+      <div class="total">
+        <strong>Total:</strong>
+        <strong>${{getTotal()}}</strong>
       </div>
-      <div class="summary-row total">
-        <span>Total</span>
-        <span>${{ getTotal() }}</span>
-      </div>
-      <button class="checkout-button" [disabled]="cartItems.length === 0" (click)="proceedToCheckout()">
+      <button class="checkout-btn" (click)="proceedToCheckout()">
         Proceder al Pago
       </button>
-      <button class="continue-shopping" routerLink="/catalogo">
-        Continuar Comprando
-      </button>
     </div>
+  </div>
+
+  <div class="empty-cart" *ngIf="cartItems.length === 0">
+    <i class="fas fa-shopping-cart"></i>
+    <p>Tu carrito está vacío</p>
+    <button class="continue-shopping" routerLink="/catalogo">
+      Continuar Comprando
+    </button>
   </div>
 </div>
 
-<!-- Modal de Confirmación -->
-<div class="modal-overlay" *ngIf="showConfirmModal">
+<!-- Login Required Modal -->
+<div class="modal-overlay" *ngIf="showLoginModal">
   <div class="modal-content">
     <div class="modal-header">
-      <button class="close-button" (click)="cancelDelete()">&times;</button>
+      <h3>Iniciar Sesión Requerido</h3>
     </div>
     <div class="modal-body">
-      <ng-container *ngIf="!isProductInCart(); else confirmDeleteTemplate">
-        <p class="error-text">Este producto ya no está en el carrito</p>
-        <div class="product-preview" *ngIf="productToDelete">
-          <img [src]="productToDelete.image" [alt]="productToDelete.name">
-          <div class="product-info">
-            <h3>{{ productToDelete.name }}</h3>
-            <p>${{ productToDelete.price }}</p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="cancel-button" (click)="cancelDelete()">Cerrar</button>
-        </div>
-      </ng-container>
-      <ng-template #confirmDeleteTemplate>
-        <p class="confirmation-text">¿Estás seguro que deseas eliminar este producto del carrito?</p>
-        <div class="product-preview" *ngIf="productToDelete">
-          <img [src]="productToDelete.image" [alt]="productToDelete.name">
-          <div class="product-info">
-            <h3>{{ productToDelete.name }}</h3>
-            <p>${{ productToDelete.price }}</p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="cancel-button" (click)="cancelDelete()">Cancelar</button>
-          <button class="confirm-button" (click)="confirmDelete()">Eliminar</button>
-        </div>
-      </ng-template>
+      <p>Para proceder con el pago, necesitas iniciar sesión primero.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeLoginModal()">Cancelar</button>
+      <button class="btn-primary" (click)="goToLogin()">Iniciar Sesión</button>
     </div>
   </div>
 </div>
 
-<!-- Modal para continuar eliminando -->
-<div class="modal-overlay" *ngIf="showContinueDeleteModal">
-  <div class="modal-content">
-    <div class="modal-body">
-      <p class="confirmation-text">¿Desea eliminar otro producto?</p>
-      <div class="modal-footer">
-        <button class="confirm-button" (click)="continueDeletingProducts()">Sí</button>
-        <button class="cancel-button" (click)="finishDeleting()">No</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de carrito vacío -->
-<div class="modal-overlay" *ngIf="showEmptyCartModal">
-  <div class="modal-content modal-small">
-    <div class="modal-body">
-      <p class="empty-cart-text">Tu carrito está vacío</p>
-      <div class="modal-footer">
-        <button class="confirm-button" (click)="closeEmptyCartModal()">Aceptar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de éxito -->
+<!-- Success Modal -->
 <div class="modal-overlay" *ngIf="showSuccessModal">
-  <div class="modal-content modal-small">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Éxito</h3>
+    </div>
     <div class="modal-body">
-      <p class="success-text">Producto eliminado exitosamente</p>
-      <div class="modal-footer">
-        <button class="confirm-button" (click)="closeSuccessModal()">Aceptar</button>
-      </div>
+      <p>Producto eliminado exitosamente</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="finishDeleting()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Continue Deleting Modal -->
+<div class="modal-overlay" *ngIf="isConfirmModalVisible">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Continuar</h3>
+    </div>
+    <div class="modal-body">
+      <p>¿Desea eliminar otro producto?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="continueDeletingProducts()">Sí</button>
+      <button class="btn-primary" (click)="closeEmptyCartModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<!-- Empty Cart Modal -->
+<div class="modal-overlay" *ngIf="showEmptyCartModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Carrito Vacío</h3>
+    </div>
+    <div class="modal-body">
+      <p>Tu carrito está vacío</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="closeEmptyCartModal()">Aceptar</button>
     </div>
   </div>
 </div>
