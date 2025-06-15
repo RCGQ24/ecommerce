@@ -10,12 +10,12 @@
           <h3 class="item-name">{{item.name}}</h3>
           <p class="item-price">${{item.price}}</p>
           <div class="quantity-controls">
-            <button (click)="decreaseQuantity(item)" class="quantity-btn">-</button>
+            <button (click)="decreaseQuantity(item)" class="quantity-btn btn-shadow">-</button>
             <span class="quantity">{{item.quantity}}</span>
-            <button (click)="increaseQuantity(item)" class="quantity-btn">+</button>
+            <button (click)="increaseQuantity(item)" class="quantity-btn btn-shadow">+</button>
           </div>
         </div>
-        <button class="remove-item" (click)="removeItem(item)">
+        <button class="remove-item btn-shadow" (click)="showDeleteConfirmation(item)">
           <i class="fas fa-trash"></i>
         </button>
       </div>
@@ -37,7 +37,7 @@
         <span class="summary-total-label">Total:</span>
         <span class="summary-total-value">${{getTotal()}}</span>
       </div>
-      <button class="checkout-btn amazon-btn" (click)="proceedToCheckout()">
+      <button class="checkout-btn amazon-btn btn-shadow" (click)="proceedToCheckout()">
         <i class="fas fa-lock"></i> Proceder al Pago Seguro
       </button>
       <button class="continue-shopping-btn" routerLink="/catalogo">
@@ -71,6 +71,22 @@
   </div>
 </div>
 
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" *ngIf="showConfirmDeleteModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Eliminar producto</h3>
+    </div>
+    <div class="modal-body">
+      <p>¿Desea eliminar este producto?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-violeta btn-shadow" (click)="confirmDeleteProduct()">Sí</button>
+      <button class="btn-secondary" (click)="cancelDeleteProduct()">No</button>
+    </div>
+  </div>
+</div>
+
 <!-- Success Modal -->
 <div class="modal-overlay" *ngIf="showSuccessModal">
   <div class="modal-content">
@@ -78,10 +94,10 @@
       <h3>Éxito</h3>
     </div>
     <div class="modal-body">
-      <p>Producto eliminado exitosamente</p>
+      <p>Producto eliminado</p>
     </div>
     <div class="modal-footer">
-      <button class="btn-primary" (click)="finishDeleting()">Aceptar</button>
+      <button class="btn-light btn-shadow" (click)="finishDeleting()">Aceptar</button>
     </div>
   </div>
 </div>
@@ -96,8 +112,8 @@
       <p>¿Desea eliminar otro producto?</p>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary" (click)="continueDeletingProducts()">Sí</button>
-      <button class="btn-primary" (click)="closeEmptyCartModal()">No</button>
+      <button class="btn-primary btn-shadow" (click)="continueDeletingProducts()">Sí</button>
+      <button class="btn-secondary" (click)="closeContinueDeletingModal()">No</button>
     </div>
   </div>
 </div>

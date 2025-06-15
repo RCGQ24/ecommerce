@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class GestionCarritoComponent {
   cartItems: CartItem[] = [];
-  showConfirmModal = false;
+  showConfirmDeleteModal = false;
   showLoginModal = false;
   showSuccessModal = false;
   showEmptyCartModal = false;
@@ -30,10 +30,6 @@ export class GestionCarritoComponent {
     });
   }
 
-  getProductProperty(property: keyof CartItem): string | number {
-    return this.productToDelete ? this.productToDelete[property] : '';
-  }
-
   getTotal(): number {
     return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
@@ -46,31 +42,44 @@ export class GestionCarritoComponent {
     if (item.quantity > 1) {
       this.cartService.updateQuantity(item.id, item.quantity - 1);
     } else {
-      this.cartService.removeFromCart(item.id);
+      this.showDeleteConfirmation(item);
     }
-  }
-
-  removeItem(item: CartItem) {
-    this.cartService.removeFromCart(item.id);
   }
 
   showDeleteConfirmation(item: CartItem) {
     this.productToDelete = item;
-    this.showConfirmModal = true;
+    this.showConfirmDeleteModal = true;
   }
 
-  cancelDelete() {
-    this.showConfirmModal = false;
+  cancelDeleteProduct() {
+    this.showConfirmDeleteModal = false;
     this.productToDelete = null;
   }
 
-  confirmDelete() {
+  confirmDeleteProduct() {
     if (this.productToDelete) {
       this.cartService.removeFromCart(this.productToDelete.id);
-      this.showConfirmModal = false;
+      this.showConfirmDeleteModal = false;
       this.productToDelete = null;
       this.showSuccessModal = true;
     }
+  }
+
+  finishDeleting() {
+    this.showSuccessModal = false;
+    if (this.cartItems.length === 0) {
+      this.showEmptyCartModal = true;
+    } else {
+      this.isConfirmModalVisible = true;
+    }
+  }
+
+  continueDeletingProducts() {
+    this.isConfirmModalVisible = false;
+  }
+
+  closeContinueDeletingModal() {
+    this.isConfirmModalVisible = false;
   }
 
   proceedToCheckout() {
@@ -88,19 +97,6 @@ export class GestionCarritoComponent {
   goToLogin() {
     this.showLoginModal = false;
     this.router.navigate(['/login'], { queryParams: { returnUrl: '/carrito' } });
-  }
-
-  finishDeleting() {
-    this.showSuccessModal = false;
-    if (this.cartItems.length === 0) {
-      this.showEmptyCartModal = true;
-    } else {
-      this.isConfirmModalVisible = true;
-    }
-  }
-
-  continueDeletingProducts() {
-    this.isConfirmModalVisible = false;
   }
 
   closeEmptyCartModal() {
