@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { catchError, tap } from 'rxjs/operators';
 
 export interface CartItem {
   id: number;
@@ -17,7 +18,7 @@ export interface CartItem {
 export class CartService {
   private itemsSubject = new BehaviorSubject<CartItem[]>([]);
   items$ = this.itemsSubject.asObservable();
-  private apiUrl = 'http://localhost:8000/api'; // URL completa del backend
+  private apiUrl = 'http://localhost:8000/api/carritos';
 
   constructor(private http: HttpClient, private authService: AuthService) {
     // Suscribirse a los cambios de usuario para cargar el carrito correcto
@@ -30,36 +31,47 @@ export class CartService {
     });
   }
 
-  private saveCartToBackend(items: CartItem[]) {
+  private saveCartToBackend(items: CartItem[]): Observable<any> {
     const userId = this.authService.currentUser?.id;
-    if (!userId) return;
-    this.http.put(`${this.apiUrl}/carritos/${userId}`, { items }).subscribe();
+    if (!userId) {
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+    return this.http.put(`${this.apiUrl}/${userId}`, { items }).pipe(
+      catchError(error => {
+        console.error('Error al guardar el carrito:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
-  private loadCartFromBackend() {
+  private loadCartFromBackend(): void {
     const userId = this.authService.currentUser?.id;
     if (!userId) {
       this.itemsSubject.next([]);
       return;
     }
-    this.http.get<any>(`${this.apiUrl}/carritos/${userId}`).subscribe(
+    this.http.get<any>(`${this.apiUrl}/${userId}`).pipe(
+      catchError(error => {
+        console.error('Error al cargar el carrito:', error);
+        this.itemsSubject.next([]);
+        return throwError(() => error);
+      })
+    ).subscribe(
       res => {
         if (res && res.items && Array.isArray(res.items)) {
           this.itemsSubject.next(res.items);
         } else {
           this.itemsSubject.next([]);
         }
-      },
-      err => {
-        this.itemsSubject.next([]);
       }
     );
   }
 
-  addToCart(item: CartItem) {
+  addToCart(item: CartItem): void {
     const currentItems = this.itemsSubject.value;
     const existingItem = currentItems.find(i => i.id === item.id);
     let updatedItems;
+    
     if (existingItem) {
       updatedItems = currentItems.map(i =>
         i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
@@ -67,37 +79,43 @@ export class CartService {
     } else {
       updatedItems = [...currentItems, { ...item, quantity: 1 }];
     }
-    this.itemsSubject.next(updatedItems);
-    this.saveCartToBackend(updatedItems);
+    
+    this.saveCartToBackend(updatedItems).subscribe(
+      () => this.itemsSubject.next(updatedItems),
+      error => console.error('Error al agregar al carrito:', error)
+    );
   }
 
-  updateQuantity(itemId: number, quantity: number) {
+  updateQuantity(itemId: number, quantity: number): void {
     const currentItems = this.itemsSubject.value;
     const updatedItems = currentItems.map(item =>
       item.id === itemId ? { ...item, quantity } : item
     );
-    this.itemsSubject.next(updatedItems);
-    this.saveCartToBackend(updatedItems);
+    
+    this.saveCartToBackend(updatedItems).subscribe(
+      () => this.itemsSubject.next(updatedItems),
+      error => console.error('Error al actualizar cantidad:', error)
+    );
   }
 
-  removeFromCart(itemId: number) {
+  removeFromCart(itemId: number): void {
     const currentItems = this.itemsSubject.value;
     const updatedItems = currentItems.filter(item => item.id !== itemId);
-    this.itemsSubject.next(updatedItems);
-    this.saveCartToBackend(updatedItems);
+    
+    this.saveCartToBackend(updatedItems).subscribe(
+      () => this.itemsSubject.next(updatedItems),
+      error => console.error('Error al eliminar del carrito:', error)
+    );
   }
 
-  clearCart() {
-    this.itemsSubject.next([]); // Solo limpia el observable local
-    // No borra el carrito en la base de datos
-  }
-
-  emptyCartInBackend() {
+  clearCart(): void {
     const userId = this.authService.currentUser?.id;
     if (!userId) return;
-    this.http.put(`${this.apiUrl}/carritos/${userId}`, { items: [] }).subscribe(() => {
-      this.itemsSubject.next([]);
-    });
+    
+    this.http.put(`${this.apiUrl}/${userId}`, { items: [] }).subscribe(
+      () => this.itemsSubject.next([]),
+      error => console.error('Error al limpiar el carrito:', error)
+    );
   }
 
   getItems(): CartItem[] {

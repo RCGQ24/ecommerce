@@ -2,8 +2,8 @@
   <div class="mensaje-exito">
     <h2>Factura generada, gracias por su compra</h2>
     <div class="detalles-factura">
-      <p class="fecha">Fecha: {{factura.fecha}}</p>
-      <p class="total">Total: ${{factura.total}}</p>
+      <p class="numero">Número de Factura: {{factura.numero_factura}}</p>
+      <p class="total">Total: ${{factura.monto_total}}</p>
     </div>
     <div class="botones">
       <button class="descargar-btn" (click)="descargarPDF()">Descargar PDF</button>
