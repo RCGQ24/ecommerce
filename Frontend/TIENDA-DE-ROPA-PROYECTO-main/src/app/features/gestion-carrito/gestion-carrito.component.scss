@@ -412,7 +412,18 @@ $border-light: #eee;
 
 // Sombra para todos los botones del carrito
 .btn-shadow {
-  box-shadow: 0 2px 8px rgba(43,47,63,0.10);
+  box-shadow: 0 4px 18px rgba(43,47,63,0.32) !important;
+}
+
+// Sombra más suave para el botón de la papelera
+.remove-item.btn-shadow {
+  box-shadow: 0 2px 6px rgba(43,47,63,0.15) !important;
+}
+
+// Quitar sombra a los botones de seguir comprando aunque tengan btn-shadow
+.continue-shopping-btn,
+.continue-shopping {
+  box-shadow: none !important;
 }
 
 // Estilos del Modal
