@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../gestion-carrito/cart.service';
+import { FacturaService } from '../../services/factura.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-gestion-pago',
@@ -48,7 +50,9 @@ export class GestionPagoComponent {
 
   constructor(
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private facturaService: FacturaService,
+    private authService: AuthService
   ) {
     this.cartService.items$.subscribe(items => {
       this.cartItems = items;
@@ -212,27 +216,29 @@ export class GestionPagoComponent {
     this.paymentStatus.isProcessing = false;
     this.pagoMovilInfo.isApproved = true;
 
-    // Generar y guardar factura
-    const factura = {
-      id: Date.now(),
-      fecha: new Date().toLocaleDateString(),
-      cliente: {
-        nombre: 'Cliente Demo',
-        email: 'ecommerce-app@gmail.com',
-        direccion: 'Calle Ficticia 123, Ciudad, País'
-      },
-      productos: this.cartItems,
-      subtotal: this.getTotal(),
-      impuestos: +(this.getTotal() * 0.16).toFixed(2),
-      total: +(this.getTotal() * 1.16).toFixed(2)
-    };
-    localStorage.setItem('facturaDemo', JSON.stringify(factura));
+    // Obtener email del usuario autenticado
+    const user = this.authService.currentUser;
+    const email = user && user.email ? user.email : '';
 
-    this.cartService.emptyCartInBackend();
-
-    setTimeout(() => {
-      this.router.navigate(['/factura', 'demo']);
-    }, 1000);
+    // Generar y guardar factura en backend
+    this.facturaService.generarFacturaDesdePago(
+      1, // id_pago (puedes cambiarlo por el real si lo tienes)
+      this.getTotal(),
+      this.cartItems.map(item => ({
+        id: item.id,
+        nombre: item.name,
+        precio: item.price,
+        cantidad: item.quantity
+      })),
+      email
+    ).subscribe(factura => {
+      this.cartService.clearCart();
+      setTimeout(() => {
+        this.router.navigate(['/factura', factura.id]);
+      }, 1000);
+    }, error => {
+      this.paymentStatus.error = 'Error al generar la factura.';
+    });
   }
 
   validatePaymentInfo(): boolean {

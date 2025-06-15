@@ -1,14 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface Factura {
-  id: number;
+  id?: number;
   id_pago: number;
   numero_factura: string;
+  fecha_factura: string;
   monto_total: number;
-  fecha?: string;
+  email: string;
+  items?: {
+    id: number;
+    nombre: string;
+    precio: number;
+    cantidad: number;
+  }[];
 }
 
 @Injectable({
@@ -20,18 +28,51 @@ export class FacturaService {
   constructor(private http: HttpClient) { }
 
   getFactura(id: number): Observable<Factura> {
-    return this.http.get<Factura>(`${this.apiUrl}/${id}`);
+    return this.http.get<Factura>(`${this.apiUrl}/${id}`).pipe(
+      catchError(error => {
+        console.error('Error al obtener la factura:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   createFactura(factura: Partial<Factura>): Observable<Factura> {
-    return this.http.post<Factura>(this.apiUrl, factura);
+    return this.http.post<Factura>(this.apiUrl, factura).pipe(
+      catchError(error => {
+        console.error('Error al crear la factura:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   updateFactura(id: number, factura: Partial<Factura>): Observable<Factura> {
-    return this.http.put<Factura>(`${this.apiUrl}/${id}`, factura);
+    return this.http.put<Factura>(`${this.apiUrl}/${id}`, factura).pipe(
+      catchError(error => {
+        console.error('Error al actualizar la factura:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   deleteFactura(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+      catchError(error => {
+        console.error('Error al eliminar la factura:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  generarFacturaDesdePago(idPago: number, montoTotal: number, items: any[], email: string): Observable<Factura> {
+    const factura = {
+      id_pago: idPago,
+      numero_factura: `FAC-${Date.now()}`,
+      monto_total: montoTotal,
+      fecha_factura: new Date().toISOString(),
+      items: items,
+      email: email
+    };
+
+    return this.createFactura(factura);
   }
 }
