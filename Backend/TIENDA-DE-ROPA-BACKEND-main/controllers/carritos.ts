@@ -88,10 +88,12 @@ class CarritosController {
             await detalleExistente.update({ cantidad: item.quantity });
           } else {
             // Crear nuevo detalle
+            const producto = await Producto.findByPk(item.id);
             await DetalleCarrito.create({
               id_carrito: carritoId,
               id_producto: item.id,
-              cantidad: item.quantity
+              cantidad: item.quantity,
+              precio: producto ? producto.precio : 0 // precio unitario actual
             });
           }
         }

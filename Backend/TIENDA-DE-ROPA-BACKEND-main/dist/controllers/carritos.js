@@ -116,10 +116,12 @@ class CarritosController {
                         }
                         else {
                             // Crear nuevo detalle
+                            const producto = yield producto_1.default.findByPk(item.id);
                             yield detalle_carrito_1.default.create({
                                 id_carrito: carritoId,
                                 id_producto: item.id,
-                                cantidad: item.quantity
+                                cantidad: item.quantity,
+                                precio: producto ? producto.precio : 0 // precio unitario actual
                             });
                         }
                     }
