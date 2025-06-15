@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 export interface CartItem {
   id: number;
@@ -15,33 +17,58 @@ export interface CartItem {
 export class CartService {
   private itemsSubject = new BehaviorSubject<CartItem[]>([]);
   items$ = this.itemsSubject.asObservable();
+  private apiUrl = 'http://localhost:8000/api'; // URL completa del backend
 
-  constructor() {
-    // Load cart items from localStorage on service initialization
-    const savedItems = localStorage.getItem('cartItems');
-    if (savedItems) {
-      this.itemsSubject.next(JSON.parse(savedItems));
-    }
+  constructor(private http: HttpClient, private authService: AuthService) {
+    // Suscribirse a los cambios de usuario para cargar el carrito correcto
+    this.authService.currentUser$.subscribe(user => {
+      if (user && user.id) {
+        this.loadCartFromBackend();
+      } else {
+        this.itemsSubject.next([]); // Limpia el carrito si no hay usuario
+      }
+    });
   }
 
-  private saveToLocalStorage(items: CartItem[]) {
-    localStorage.setItem('cartItems', JSON.stringify(items));
+  private saveCartToBackend(items: CartItem[]) {
+    const userId = this.authService.currentUser?.id;
+    if (!userId) return;
+    this.http.put(`${this.apiUrl}/carritos/${userId}`, { items }).subscribe();
+  }
+
+  private loadCartFromBackend() {
+    const userId = this.authService.currentUser?.id;
+    if (!userId) {
+      this.itemsSubject.next([]);
+      return;
+    }
+    this.http.get<any>(`${this.apiUrl}/carritos/${userId}`).subscribe(
+      res => {
+        if (res && res.items && Array.isArray(res.items)) {
+          this.itemsSubject.next(res.items);
+        } else {
+          this.itemsSubject.next([]);
+        }
+      },
+      err => {
+        this.itemsSubject.next([]);
+      }
+    );
   }
 
   addToCart(item: CartItem) {
     const currentItems = this.itemsSubject.value;
     const existingItem = currentItems.find(i => i.id === item.id);
-
+    let updatedItems;
     if (existingItem) {
-      const updatedItems = currentItems.map(i =>
+      updatedItems = currentItems.map(i =>
         i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
       );
-      this.itemsSubject.next(updatedItems);
     } else {
-      this.itemsSubject.next([...currentItems, { ...item, quantity: 1 }]);
+      updatedItems = [...currentItems, { ...item, quantity: 1 }];
     }
-
-    this.saveToLocalStorage(this.itemsSubject.value);
+    this.itemsSubject.next(updatedItems);
+    this.saveCartToBackend(updatedItems);
   }
 
   updateQuantity(itemId: number, quantity: number) {
@@ -50,19 +77,27 @@ export class CartService {
       item.id === itemId ? { ...item, quantity } : item
     );
     this.itemsSubject.next(updatedItems);
-    this.saveToLocalStorage(updatedItems);
+    this.saveCartToBackend(updatedItems);
   }
 
   removeFromCart(itemId: number) {
     const currentItems = this.itemsSubject.value;
     const updatedItems = currentItems.filter(item => item.id !== itemId);
     this.itemsSubject.next(updatedItems);
-    this.saveToLocalStorage(updatedItems);
+    this.saveCartToBackend(updatedItems);
   }
 
   clearCart() {
-    this.itemsSubject.next([]);
-    localStorage.removeItem('cartItems');
+    this.itemsSubject.next([]); // Solo limpia el observable local
+    // No borra el carrito en la base de datos
+  }
+
+  emptyCartInBackend() {
+    const userId = this.authService.currentUser?.id;
+    if (!userId) return;
+    this.http.put(`${this.apiUrl}/carritos/${userId}`, { items: [] }).subscribe(() => {
+      this.itemsSubject.next([]);
+    });
   }
 
   getItems(): CartItem[] {
@@ -79,7 +114,7 @@ export class CartService {
       item.id === id ? { ...item, quantity: item.quantity + 1 } : item
     );
     this.itemsSubject.next(updatedItems);
-    this.saveToLocalStorage(updatedItems);
+    this.saveCartToBackend(updatedItems);
   }
 
   decrementQuantity(id: number) {
@@ -88,6 +123,6 @@ export class CartService {
       item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
     );
     this.itemsSubject.next(updatedItems);
-    this.saveToLocalStorage(updatedItems);
+    this.saveCartToBackend(updatedItems);
   }
-} 
+}

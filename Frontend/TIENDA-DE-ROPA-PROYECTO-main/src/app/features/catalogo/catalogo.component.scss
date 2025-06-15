@@ -82,27 +82,52 @@
 
 .search-container {
   flex: 1;
-  max-width: 400px;
+  max-width: 600px; /* Increased max-width */
   margin: 0 1rem;
-}
 
+
+
+}
+// Estilos de la barra de búsqueda
 .search-bar {
   width: 100%;
-  padding: 0.8rem 1rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #2fc5a9; /* Use primary color for border */
   border-radius: 8px;
-  background: #f8f8f8;
-  transition: all 0.2s ease;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(47, 197, 169, 0.3); /* Use primary color for shadow */
+  transition: border-color 0.3s ease; /* Added transition */
 
+
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 0.7rem;
+  font-size: 1.1rem; /* Slightly larger font size */
+  &::placeholder {
+    color: #999; /* Placeholder text color */
+  }
   &:focus {
     outline: none;
-    border-color: #4b2fbb;
-    box-shadow: 0 0 0 2px rgba(75, 47, 187, 0.1);
-    background: white;
+    box-shadow: 0 0 5px rgba(47, 197, 169, 0.5); /* Add focus outline */
   }
 }
 
+.search-bar:focus-within { /* Added focus-within for the entire bar */
+  border-color: #4b2fbb; /* Change border color on focus */
+  }
+
+
+.search-icon {
+  margin-right: 0.5rem;
+  color: #999;
+}
+
+// Estilo del enlace "View All"
 .view-all {
   color: #4b2fbb;
   text-decoration: none;

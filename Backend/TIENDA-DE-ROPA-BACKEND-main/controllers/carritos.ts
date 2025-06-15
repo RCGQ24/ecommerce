@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import Carrito from '../models/carrito';
+import DetalleCarrito from '../models/detalle_carrito';
+import Producto from '../models/producto';
 
 class CarritosController {
   async getCarritos(req: Request, res: Response) {
@@ -13,11 +15,32 @@ class CarritosController {
 
   async getCarrito(req: Request, res: Response) {
     const { id } = req.params;
-    const carrito = await Carrito.findByPk(id);
-    if (carrito) {
-      res.json(carrito);
-    } else {
-      res.status(404).json({ msg: `No existe un carrito con el id ${id}` });
+    try {
+      let carrito = await Carrito.findOne({ where: { id_usuario: id } });
+      if (!carrito) {
+        carrito = await Carrito.create({ id_usuario: id });
+        return res.json({ id: carrito.id, id_usuario: id, items: [] });
+      }
+      // Buscar detalles del carrito
+      const detalles = await DetalleCarrito.findAll({ where: { id_carrito: carrito.id } });
+      // Obtener todos los productos relacionados
+      const productosIds = detalles.map(det => det.id_producto);
+      const productos = await Producto.findAll({ where: { id: productosIds } });
+      // Combinar detalles con info de producto
+      const items = detalles.map(det => {
+        const prod = productos.find(p => String(p.id) === String(det.id_producto));
+        return {
+          id: det.id_producto,
+          name: prod ? prod.nombre_producto : '',
+          price: prod ? prod.precio : 0,
+          image: prod ? prod.url_imagen : '',
+          quantity: det.cantidad
+        };
+      });
+      res.json({ id: carrito.id, id_usuario: id, items });
+    } catch (error) {
+      console.log('Error en getCarrito:', error);
+      res.status(500).json({ msg: 'Error interno en getCarrito', error });
     }
   }
 
@@ -33,14 +56,48 @@ class CarritosController {
 
   async putCarrito(req: Request, res: Response) {
     const { id } = req.params;
-    const { body } = req;
+    const { items, ...carritoData } = req.body;
     try {
-      const carrito = await Carrito.findByPk(id);
+      // Buscar el carrito por id_usuario
+      let carrito = await Carrito.findOne({ where: { id_usuario: id } });
       if (!carrito) {
-        return res.status(404).json({ msg: `No existe un carrito con el id ${id}` });
+        carrito = await Carrito.create({ id_usuario: id });
       }
-      await carrito.update(body);
-      res.json(carrito);
+      await carrito.update(carritoData);
+      const carritoId = carrito.id;
+
+      // Sincronizar detalles del carrito
+      if (Array.isArray(items)) {
+        // Obtener detalles actuales
+        const detallesActuales = await DetalleCarrito.findAll({ where: { id_carrito: carritoId } });
+        const productosActuales = detallesActuales.map(d => d.id_producto);
+        const productosNuevos = items.map(i => i.id);
+
+        // Eliminar productos que ya no están
+        for (const detalle of detallesActuales) {
+          if (!productosNuevos.includes(detalle.id_producto)) {
+            await detalle.destroy();
+          }
+        }
+
+        // Agregar o actualizar productos
+        for (const item of items) {
+          const detalleExistente = detallesActuales.find(d => d.id_producto === item.id);
+          if (detalleExistente) {
+            // Actualizar cantidad
+            await detalleExistente.update({ cantidad: item.quantity });
+          } else {
+            // Crear nuevo detalle
+            await DetalleCarrito.create({
+              id_carrito: carritoId,
+              id_producto: item.id,
+              cantidad: item.quantity
+            });
+          }
+        }
+      }
+
+      res.json({ msg: 'Carrito y detalles actualizados' });
     } catch (error) {
       res.status(500).json({ msg: 'Hable con el administrador' });
     }

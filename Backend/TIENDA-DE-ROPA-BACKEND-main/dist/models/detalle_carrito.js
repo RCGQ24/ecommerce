@@ -22,6 +22,7 @@ DetalleCarrito.init({
 }, {
     sequelize: connection_1.db,
     modelName: 'DetalleCarrito',
+    tableName: 'detalle_carritos',
     timestamps: false
 });
 exports.default = DetalleCarrito;

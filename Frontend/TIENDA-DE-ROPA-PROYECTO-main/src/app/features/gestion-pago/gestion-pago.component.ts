@@ -228,7 +228,7 @@ export class GestionPagoComponent {
     };
     localStorage.setItem('facturaDemo', JSON.stringify(factura));
 
-    this.cartService.clearCart();
+    this.cartService.emptyCartInBackend();
 
     setTimeout(() => {
       this.router.navigate(['/factura', 'demo']);

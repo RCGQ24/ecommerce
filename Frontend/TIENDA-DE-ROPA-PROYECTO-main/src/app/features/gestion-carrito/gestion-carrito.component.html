@@ -21,20 +21,27 @@
       </div>
     </div>
     
-    <div class="cart-summary">
-      <h3>Resumen del Pedido</h3>
+    <div class="cart-summary amazon-style">
+      <div class="summary-header">
+        <i class="fas fa-receipt"></i>
+        <h3>Resumen del Pedido</h3>
+      </div>
       <div class="summary-items">
         <div class="summary-item" *ngFor="let item of cartItems">
-          <span>{{item.name}} (x{{item.quantity}})</span>
-          <span>${{item.price * item.quantity}}</span>
+          <span class="summary-product">{{item.name}} <span class="summary-qty">x{{item.quantity}}</span></span>
+          <span class="summary-price">${{item.price * item.quantity}}</span>
         </div>
       </div>
-      <div class="total">
-        <strong>Total:</strong>
-        <strong>${{getTotal()}}</strong>
+      <div class="summary-divider"></div>
+      <div class="summary-total-row">
+        <span class="summary-total-label">Total:</span>
+        <span class="summary-total-value">${{getTotal()}}</span>
       </div>
-      <button class="checkout-btn" (click)="proceedToCheckout()">
-        Proceder al Pago
+      <button class="checkout-btn amazon-btn" (click)="proceedToCheckout()">
+        <i class="fas fa-lock"></i> Proceder al Pago Seguro
+      </button>
+      <button class="continue-shopping-btn" routerLink="/catalogo">
+        <i class="fas fa-arrow-left"></i> Seguir comprando
       </button>
     </div>
   </div>

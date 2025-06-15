@@ -27,6 +27,7 @@ DetalleCarrito.init(
   {
     sequelize: db,
     modelName: 'DetalleCarrito',
+    tableName: 'detalle_carritos',
     timestamps: false
   }
 );

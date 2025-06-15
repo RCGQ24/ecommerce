@@ -16,12 +16,18 @@ const producto_1 = __importDefault(require("../models/producto"));
 class ProductosController {
     getProductos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const productos = yield producto_1.default.findAll();
-            if (productos) {
-                res.json(productos);
+            try {
+                const productos = yield producto_1.default.findAll();
+                if (productos) {
+                    res.json(productos);
+                }
+                else {
+                    res.status(404).json({ msg: 'Base de datos vacía' });
+                }
             }
-            else {
-                res.status(404).json({ msg: 'Base de datos vacía' });
+            catch (error) {
+                console.log(error);
+                res.status(500).json({ msg: 'Error al consultar productos. Hable con el administrador.' });
             }
         });
     }

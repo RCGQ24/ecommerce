@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { CartService } from '../features/gestion-carrito/cart.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +10,7 @@ export class AuthService {
   private userSubject = new BehaviorSubject<any>(null);
 
   constructor(
-    private router: Router,
-    private cartService: CartService
+    private router: Router
   ) {
     // Check if user is logged in on service initialization
     this.checkAuthState();
@@ -52,8 +50,6 @@ export class AuthService {
     localStorage.removeItem('usuario');
     this.isAuthenticatedSubject.next(false);
     this.userSubject.next(null);
-    // Clear cart items when logging out
-    this.cartService.clearCart();
     // Redirect to main page (catalogo) instead of login
     this.router.navigate(['/catalogo']);
   }
