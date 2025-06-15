@@ -1,3 +1,16 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  
+  .loading-spinner {
+    text-align: center;
+    color: #4b2fbb;
+    font-size: 1.2rem;
+  }
+}
+
 .factura-container {
   max-width: 600px;
   margin: 40px auto;
@@ -8,11 +21,8 @@
   padding: 2rem;
   font-family: 'Inter', Arial, sans-serif;
   color: #232323;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 300px;
 }
+
 .factura-header {
   display: flex;
   justify-content: space-between;
@@ -21,52 +31,63 @@
   padding-bottom: 16px;
   margin-bottom: 24px;
 }
+
 .factura-info h2 {
   margin: 0 0 8px 0;
   font-size: 2rem;
   letter-spacing: 2px;
 }
+
 .factura-meta {
   font-size: 1rem;
   color: #444;
 }
+
 .factura-logo .logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: #222;
   margin-bottom: 4px;
 }
+
 .factura-logo .contacto {
   font-size: 0.95rem;
   color: #666;
 }
+
 .factura-cliente {
   margin: 24px 0 16px 0;
   font-size: 1.1rem;
 }
+
 .factura-tabla {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 24px;
 }
+
 .factura-tabla th, .factura-tabla td {
   border-bottom: 1px solid #eee;
   padding: 8px 0;
   text-align: left;
 }
+
 .factura-tabla th {
   font-weight: 600;
   background: #f7f7f7;
 }
+
 .factura-totales {
   text-align: right;
   margin-bottom: 16px;
 }
+
 .factura-total {
   font-size: 1.2rem;
   font-weight: bold;
   margin-top: 8px;
 }
+
 .descargar-btn {
   background: #222;
   color: #fff;
@@ -78,9 +99,11 @@
   margin-bottom: 16px;
   transition: background 0.2s;
 }
+
 .descargar-btn:hover {
   background: #444;
 }
+
 .factura-gracias {
   text-align: center;
   margin-top: 24px;
@@ -107,7 +130,7 @@
 
 .detalles-factura {
   background: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 2rem;
   
@@ -119,6 +142,48 @@
     &.total {
       font-weight: 600;
       font-size: 1.2rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.items-factura {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+
+  h3 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .nombre {
+      flex: 1;
+    }
+
+    .cantidad {
+      margin: 0 1rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .precio {
+      font-weight: 500;
     }
   }
 }

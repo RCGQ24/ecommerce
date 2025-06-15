@@ -22,12 +22,18 @@ class FacturasController {
   }
 
   async postFactura(req: Request, res: Response) {
-    const { body } = req;
+    const { id_pago, numero_factura, fecha_factura, monto_total, email } = req.body;
     try {
-      const factura = await Factura.create(body);
+      const factura = await Factura.create({
+        id_pago,
+        numero_factura,
+        fecha_factura,
+        monto_total,
+        email
+      });
       res.json(factura);
     } catch (error) {
-      res.status(500).json({ msg: 'Hable con el administrador' });
+      res.status(500).json({ msg: 'Hable con el administrador', error });
     }
   }
 

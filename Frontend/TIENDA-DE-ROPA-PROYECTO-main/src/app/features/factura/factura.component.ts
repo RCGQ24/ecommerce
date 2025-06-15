@@ -2,51 +2,47 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import * as html2pdf from 'html2pdf.js';
-
-interface Factura {
-  id: number;
-  fecha: string;
-  cliente: {
-    nombre: string;
-    email: string;
-    direccion: string;
-  };
-  productos: any[];
-  subtotal: number;
-  impuestos: number;
-  total: number;
-}
+import { FacturaService, Factura } from '../../services/factura.service';
 
 @Component({
   selector: 'app-factura',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HttpClientModule],
   templateUrl: './factura.component.html',
   styleUrl: './factura.component.scss'
 })
 export class FacturaComponent implements OnInit {
   factura: Factura | null = null;
   error: string | null = null;
+  loading: boolean = true;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router,
+    private facturaService: FacturaService
+  ) {}
 
   ngOnInit(): void {
-    try {
-      const id = this.route.snapshot.paramMap.get('id');
-      if (id === 'demo') {
-        const data = localStorage.getItem('facturaDemo');
-        if (data) {
-          this.factura = JSON.parse(data);
-        } else {
-          throw new Error('No se encontró la factura');
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loading = true;
+      this.facturaService.getFactura(Number(id)).subscribe({
+        next: (data) => {
+          this.factura = data;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error al cargar la factura:', error);
+          this.error = 'Error al cargar la factura';
+          this.loading = false;
+          setTimeout(() => this.router.navigate(['/catalogo']), 3000);
         }
-      } else {
-        throw new Error('ID de factura inválido');
-      }
-    } catch (error) {
-      this.error = error instanceof Error ? error.message : 'Error al cargar la factura';
-      // Redirigir después de 3 segundos si hay error
+      });
+    } else {
+      this.error = 'ID de factura inválido';
+      this.loading = false;
       setTimeout(() => this.router.navigate(['/catalogo']), 3000);
     }
   }
@@ -55,19 +51,17 @@ export class FacturaComponent implements OnInit {
     const element = document.getElementById('factura-pdf');
     if (element) {
       const options = {
-        margin: 1,
-        filename: `factura-${this.factura?.id || 'demo'}.pdf`,
+        margin: 0.5,
+        filename: `factura-${this.factura?.numero_factura || 'demo'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
       };
-      
       html2pdf().set(options).from(element).save();
     }
   }
 
   aceptar() {
-    localStorage.removeItem('facturaDemo');
     this.router.navigate(['/catalogo']);
   }
 }

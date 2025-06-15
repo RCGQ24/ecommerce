@@ -39,13 +39,19 @@ class FacturasController {
     }
     postFactura(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { body } = req;
+            const { id_pago, numero_factura, fecha_factura, monto_total, email } = req.body;
             try {
-                const factura = yield factura_1.default.create(body);
+                const factura = yield factura_1.default.create({
+                    id_pago,
+                    numero_factura,
+                    fecha_factura,
+                    monto_total,
+                    email
+                });
                 res.json(factura);
             }
             catch (error) {
-                res.status(500).json({ msg: 'Hable con el administrador' });
+                res.status(500).json({ msg: 'Hable con el administrador', error });
             }
         });
     }
