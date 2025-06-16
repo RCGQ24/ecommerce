@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Product } from '../product.model';
 import { CartService } from '../../gestion-carrito/cart.service';
 import { CatalogService } from '../catalog.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-vista-detallada-producto',
@@ -16,12 +17,14 @@ export class VistaDetalladaProductoComponent {
   product: Product | undefined;
   cartCount = 0;
   added = false;
+  showLoginModal = false;
 
   constructor(
     private route: ActivatedRoute,
     private cartService: CartService,
     private router: Router,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private authService: AuthService
   ) {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.catalogService.findProduct(id).subscribe((product: Product) => {
@@ -41,6 +44,11 @@ export class VistaDetalladaProductoComponent {
   }
 
   addToCart() {
+    if (!this.authService.isAuthenticated) {
+      this.showLoginModal = true;
+      return;
+    }
+
     if (this.product) {
       this.cartService.addToCart({
         id: this.product.id,
@@ -52,5 +60,14 @@ export class VistaDetalladaProductoComponent {
       this.added = true;
       setTimeout(() => this.added = false, 1200);
     }
+  }
+
+  closeLoginModal() {
+    this.showLoginModal = false;
+  }
+
+  goToLogin() {
+    this.showLoginModal = false;
+    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
   }
 }

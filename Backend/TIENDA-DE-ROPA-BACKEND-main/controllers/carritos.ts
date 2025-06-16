@@ -58,42 +58,59 @@ class CarritosController {
     const { id } = req.params;
     const { items, ...carritoData } = req.body;
     try {
+      console.log('Actualizando carrito para usuario:', id);
+      console.log('Datos recibidos:', { items, carritoData });
+
       // Buscar el carrito por id_usuario
       let carrito = await Carrito.findOne({ where: { id_usuario: id } });
       if (!carrito) {
+        console.log('Creando nuevo carrito para usuario:', id);
         carrito = await Carrito.create({ id_usuario: id });
       }
+      
       await carrito.update(carritoData);
       const carritoId = carrito.id;
+      console.log('ID del carrito:', carritoId);
 
       // Sincronizar detalles del carrito
       if (Array.isArray(items)) {
+        console.log('Procesando items del carrito:', items);
+        
         // Obtener detalles actuales
         const detallesActuales = await DetalleCarrito.findAll({ where: { id_carrito: carritoId } });
+        console.log('Detalles actuales:', detallesActuales);
+        
         const productosActuales = detallesActuales.map(d => d.id_producto);
         const productosNuevos = items.map(i => i.id);
 
         // Eliminar productos que ya no están
         for (const detalle of detallesActuales) {
           if (!productosNuevos.includes(detalle.id_producto)) {
+            console.log('Eliminando detalle:', detalle.id);
             await detalle.destroy();
           }
         }
 
         // Agregar o actualizar productos
         for (const item of items) {
+          console.log('Procesando item:', item);
           const detalleExistente = detallesActuales.find(d => d.id_producto === item.id);
+          
           if (detalleExistente) {
-            // Actualizar cantidad
+            console.log('Actualizando cantidad para producto:', item.id);
             await detalleExistente.update({ cantidad: item.quantity });
           } else {
-            // Crear nuevo detalle
+            console.log('Creando nuevo detalle para producto:', item.id);
             const producto = await Producto.findByPk(item.id);
+            if (!producto) {
+              console.error('Producto no encontrado:', item.id);
+              continue;
+            }
             await DetalleCarrito.create({
               id_carrito: carritoId,
               id_producto: item.id,
               cantidad: item.quantity,
-              precio: producto ? producto.precio : 0 // precio unitario actual
+              precio: producto.precio
             });
           }
         }
@@ -101,7 +118,11 @@ class CarritosController {
 
       res.json({ msg: 'Carrito y detalles actualizados' });
     } catch (error) {
-      res.status(500).json({ msg: 'Hable con el administrador' });
+      console.error('Error en putCarrito:', error);
+      res.status(500).json({ 
+        msg: 'Error al actualizar el carrito',
+        error: error instanceof Error ? error.message : 'Error desconocido'
+      });
     }
   }
 

@@ -20,3 +20,19 @@
   <h2>Producto no encontrado</h2>
   <a routerLink="/catalogo">Volver al catálogo</a>
 </section>
+
+<!-- Login Required Modal -->
+<div class="modal-overlay" *ngIf="showLoginModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Iniciar Sesión Requerido</h3>
+    </div>
+    <div class="modal-body">
+      <p>Para agregar productos al carrito, necesitas iniciar sesión primero.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeLoginModal()">Cancelar</button>
+      <button class="btn-primary" (click)="goToLogin()">Iniciar Sesión</button>
+    </div>
+  </div>
+</div>
