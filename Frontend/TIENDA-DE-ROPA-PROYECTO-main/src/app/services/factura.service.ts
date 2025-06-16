@@ -14,6 +14,8 @@ export interface Factura {
   items?: {
     id: number;
     nombre: string;
+    descripcion: string;
+    talla: string;
     precio: number;
     cantidad: number;
   }[];
@@ -37,9 +39,16 @@ export class FacturaService {
   }
 
   createFactura(factura: Partial<Factura>): Observable<Factura> {
+    console.log('Enviando datos de factura al backend:', factura);
     return this.http.post<Factura>(this.apiUrl, factura).pipe(
       catchError(error => {
         console.error('Error al crear la factura:', error);
+        console.error('Detalles del error:', {
+          status: error.status,
+          statusText: error.statusText,
+          error: error.error,
+          message: error.message
+        });
         return throwError(() => error);
       })
     );
@@ -73,6 +82,7 @@ export class FacturaService {
       email: email
     };
 
+    console.log('Generando factura con datos:', factura);
     return this.createFactura(factura);
   }
 }

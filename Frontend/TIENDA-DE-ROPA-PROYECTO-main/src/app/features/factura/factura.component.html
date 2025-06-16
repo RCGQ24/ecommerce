@@ -5,26 +5,62 @@
 </div>
 
 <div class="factura-container" id="factura-pdf" *ngIf="factura && !loading">
-  <div class="mensaje-exito">
-    <h2>Factura generada, gracias por su compra</h2>
-    <div class="detalles-factura">
-      <p class="numero">Número de Factura: {{factura.numero_factura}}</p>
-      <p class="email">Email: {{factura.email}}</p>
+  <div class="factura-header">
+    <div class="logo">
+      <h1>TIENDA DE ROPA</h1>
+    </div>
+    <div class="factura-info">
+      <h2>FACTURA</h2>
+      <p class="numero">Número: {{factura.numero_factura}}</p>
       <p class="fecha">Fecha: {{factura.fecha_factura | date:'dd/MM/yyyy HH:mm'}}</p>
-      <p class="total">Total: ${{factura.monto_total | number:'1.2-2'}}</p>
     </div>
-    <div class="items-factura" *ngIf="factura.items && factura.items.length > 0">
-      <h3>Productos</h3>
-      <div class="item" *ngFor="let item of factura.items">
-        <span class="nombre">{{item.nombre}}</span>
-        <span class="cantidad">x{{item.cantidad}}</span>
-        <span class="precio">${{item.precio * item.cantidad | number:'1.2-2'}}</span>
-      </div>
-    </div>
-    <div class="botones">
-      <button class="descargar-btn" (click)="descargarPDF()">Descargar PDF</button>
-      <button class="aceptar-btn" (click)="aceptar()">Aceptar</button>
-    </div>
+  </div>
+
+  <div class="cliente-info">
+    <h3>Información del Cliente</h3>
+    <p>Email: {{factura.email}}</p>
+  </div>
+
+  <div class="items-factura">
+    <h3>Detalle de la Compra</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Descripción</th>
+          <th>Talla</th>
+          <th>Cantidad</th>
+          <th>Precio Unit.</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of factura.items">
+          <td>{{item.nombre}}</td>
+          <td>{{item.descripcion}}</td>
+          <td>{{item.talla}}</td>
+          <td>{{item.cantidad}}</td>
+          <td>${{item.precio | number:'1.2-2'}}</td>
+          <td>${{(item.precio * item.cantidad) | number:'1.2-2'}}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5" class="total-label">Total</td>
+          <td class="total-amount">${{factura.monto_total | number:'1.2-2'}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="factura-footer">
+    <p>¡Gracias por su compra!</p>
+    <p>Para cualquier consulta, contáctenos al: +58 123-456-7890</p>
+  </div>
+
+  <div class="botones">
+    <button class="descargar-btn" (click)="descargarPDF()">Descargar PDF</button>
+    <button class="aceptar-btn" (click)="aceptar()">Volver al Catálogo</button>
   </div>
 </div>
 

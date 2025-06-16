@@ -53,8 +53,10 @@
         <!-- Formulario de tarjeta -->
         <form *ngSwitchCase="'credit'" (ngSubmit)="processPay()">
           <div class="form-group">
-            <label>Nombre del Titular</label>
+            <label for="cardHolder">Nombre del Titular</label>
             <input 
+              id="cardHolder"
+              name="cardHolder"
               type="text" 
               [(ngModel)]="paymentInfo.cardHolder" 
               (input)="onCardHolderInput($event)"
@@ -65,8 +67,10 @@
             </span>
           </div>
           <div class="form-group">
-            <label>Número de Tarjeta</label>
+            <label for="cardNumber">Número de Tarjeta</label>
             <input 
+              id="cardNumber"
+              name="cardNumber"
               type="text" 
               [(ngModel)]="paymentInfo.cardNumber" 
               (input)="onCardNumberInput($event)"
@@ -79,8 +83,10 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Fecha de Expiración</label>
+              <label for="expiryDate">Fecha de Expiración</label>
               <input 
+                id="expiryDate"
+                name="expiryDate"
                 type="text" 
                 [(ngModel)]="paymentInfo.expiryDate" 
                 (input)="onExpiryDateInput($event)"
@@ -92,8 +98,10 @@
               </span>
             </div>
             <div class="form-group">
-              <label>CVV</label>
+              <label for="cvv">CVV</label>
               <input 
+                id="cvv"
+                name="cvv"
                 type="text" 
                 [(ngModel)]="paymentInfo.cvv" 
                 (input)="onCVVInput($event)"
@@ -112,8 +120,10 @@
         </form>
         <form *ngSwitchCase="'debit'" (ngSubmit)="processPay()">
           <div class="form-group">
-            <label>Nombre del Titular</label>
+            <label for="debitCardHolder">Nombre del Titular</label>
             <input 
+              id="debitCardHolder"
+              name="debitCardHolder"
               type="text" 
               [(ngModel)]="paymentInfo.cardHolder" 
               (input)="onCardHolderInput($event)"
@@ -124,8 +134,10 @@
             </span>
           </div>
           <div class="form-group">
-            <label>Número de Tarjeta</label>
+            <label for="debitCardNumber">Número de Tarjeta</label>
             <input 
+              id="debitCardNumber"
+              name="debitCardNumber"
               type="text" 
               [(ngModel)]="paymentInfo.cardNumber" 
               (input)="onCardNumberInput($event)"
@@ -138,8 +150,10 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Fecha de Expiración</label>
+              <label for="debitExpiryDate">Fecha de Expiración</label>
               <input 
+                id="debitExpiryDate"
+                name="debitExpiryDate"
                 type="text" 
                 [(ngModel)]="paymentInfo.expiryDate" 
                 (input)="onExpiryDateInput($event)"
@@ -151,8 +165,10 @@
               </span>
             </div>
             <div class="form-group">
-              <label>CVV</label>
+              <label for="debitCvv">CVV</label>
               <input 
+                id="debitCvv"
+                name="debitCvv"
                 type="text" 
                 [(ngModel)]="paymentInfo.cvv" 
                 (input)="onCVVInput($event)"
@@ -176,8 +192,10 @@
             <p class="instruction-text">Por favor, realiza el pago móvil y luego ingresa el ID de transacción para verificar.</p>
           </div>
           <div class="form-group" *ngIf="!pagoMovilInfo.isApproved">
-            <label>ID de Transacción</label>
+            <label for="transactionId">ID de Transacción</label>
             <input 
+              id="transactionId"
+              name="transactionId"
               type="text" 
               [(ngModel)]="pagoMovilInfo.transactionId" 
               placeholder="Ingresa el ID de transacción"

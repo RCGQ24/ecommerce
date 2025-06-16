@@ -8,6 +8,7 @@ export class Factura extends Model {
   public fecha_factura!: Date;
   public monto_total!: number;
   public email!: string;
+  public items_detalle?: string;
 }
 
 Factura.init(
@@ -18,19 +19,30 @@ Factura.init(
       primaryKey: true
     },
     id_pago: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     numero_factura: {
-      type: DataTypes.STRING(50)
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      unique: true
     },
     fecha_factura: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     },
     monto_total: {
-      type: DataTypes.DECIMAL(7, 2)
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
     },
     email: {
-      type: DataTypes.STRING(100)
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    items_detalle: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   },
   {
@@ -40,5 +52,15 @@ Factura.init(
     timestamps: false
   }
 );
+
+// Sincronizar el modelo con la base de datos
+(async () => {
+  try {
+    await Factura.sync({ alter: true });
+    console.log('Tabla de facturas sincronizada correctamente');
+  } catch (error) {
+    console.error('Error al sincronizar la tabla de facturas:', error);
+  }
+})();
 
 export default Factura;

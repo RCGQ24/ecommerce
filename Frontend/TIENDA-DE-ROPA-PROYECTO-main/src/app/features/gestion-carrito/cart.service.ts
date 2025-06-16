@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { catchError, tap, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { ProductosService } from '../../services/productos.service';
 
 export interface CartItem {
   id: number;
@@ -11,6 +12,9 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  descripcion?: string;
+  talla?: string;
+  categoria?: string;
 }
 
 @Injectable({
@@ -21,7 +25,11 @@ export class CartService {
   items$ = this.itemsSubject.asObservable();
   private apiUrl = `${environment.apiUrl}/carritos`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(
+    private http: HttpClient, 
+    private authService: AuthService,
+    private productosService: ProductosService
+  ) {
     this.authService.currentUser$.subscribe(user => {
       if (user && user.id) {
         this.loadCartFromBackend();
@@ -71,29 +79,46 @@ export class CartService {
       return;
     }
 
-    const currentItems = this.itemsSubject.value;
-    const existingItem = currentItems.find(i => i.id === item.id);
-    let updatedItems;
-    
-    if (existingItem) {
-      updatedItems = currentItems.map(i =>
-        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-      );
-    } else {
-      updatedItems = [...currentItems, { ...item, quantity: 1 }];
-    }
-    
-    this.saveCartToBackend(updatedItems).subscribe({
-      next: () => {
-        this.itemsSubject.next(updatedItems);
-        console.log('Producto agregado al carrito exitosamente');
+    // Obtener información completa del producto
+    this.productosService.obtenerProductos().subscribe(
+      productos => {
+        const productoCompleto = productos.find(p => p.id === item.id);
+        if (productoCompleto) {
+          const itemCompleto: CartItem = {
+            ...item,
+            descripcion: productoCompleto.descripcion || item.name,
+            talla: productoCompleto.talla || 'Única',
+            categoria: productoCompleto.categoria || 'General'
+          };
+
+          const currentItems = this.itemsSubject.value;
+          const existingItem = currentItems.find(i => i.id === item.id);
+          let updatedItems;
+          
+          if (existingItem) {
+            updatedItems = currentItems.map(i =>
+              i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+            );
+          } else {
+            updatedItems = [...currentItems, { ...itemCompleto, quantity: 1 }];
+          }
+          
+          this.saveCartToBackend(updatedItems).subscribe({
+            next: () => {
+              this.itemsSubject.next(updatedItems);
+              console.log('Producto agregado al carrito exitosamente:', itemCompleto);
+            },
+            error: (error) => {
+              console.error('Error al agregar al carrito:', error);
+              this.itemsSubject.next(currentItems);
+            }
+          });
+        }
       },
-      error: (error) => {
-        console.error('Error al agregar al carrito:', error);
-        // Revertir cambios en caso de error
-        this.itemsSubject.next(currentItems);
+      error => {
+        console.error('Error al obtener información del producto:', error);
       }
-    });
+    );
   }
 
   updateQuantity(itemId: number, quantity: number): void {

@@ -220,24 +220,61 @@ export class GestionPagoComponent {
     const user = this.authService.currentUser;
     const email = user && user.email ? user.email : '';
 
+    if (!email) {
+      this.paymentStatus.error = 'Error: No se pudo obtener el email del usuario. Por favor, inicia sesión nuevamente.';
+      return;
+    }
+
+    const total = this.getTotal();
+    if (total <= 0) {
+      this.paymentStatus.error = 'Error: El monto total debe ser mayor a 0.';
+      return;
+    }
+
+    if (this.cartItems.length === 0) {
+      this.paymentStatus.error = 'Error: No hay items en el carrito.';
+      return;
+    }
+
+    // Generar un ID de pago único basado en timestamp
+    const idPago = Date.now();
+
+    // Transformar los items del carrito al formato esperado por la factura
+    const itemsFactura = this.cartItems.map(item => ({
+      id: item.id,
+      nombre: item.name,
+      descripcion: item.descripcion || item.name,
+      talla: item.talla || 'Única',
+      precio: item.price,
+      cantidad: item.quantity
+    }));
+
+    console.log('Intentando generar factura con datos:', {
+      idPago,
+      total,
+      items: itemsFactura,
+      email
+    });
+
     // Generar y guardar factura en backend
     this.facturaService.generarFacturaDesdePago(
-      1, // id_pago (puedes cambiarlo por el real si lo tienes)
-      this.getTotal(),
-      this.cartItems.map(item => ({
-        id: item.id,
-        nombre: item.name,
-        precio: item.price,
-        cantidad: item.quantity
-      })),
+      idPago,
+      total,
+      itemsFactura,
       email
-    ).subscribe(factura => {
-      this.cartService.clearCart();
-      setTimeout(() => {
+    ).subscribe({
+      next: (factura) => {
+        console.log('Factura generada exitosamente:', factura);
+        // Limpiar el carrito después de generar la factura
+        this.cartService.clearCart();
+        // Redirigir a la página de la factura
         this.router.navigate(['/factura', factura.id]);
-      }, 1000);
-    }, error => {
-      this.paymentStatus.error = 'Error al generar la factura.';
+      },
+      error: (error) => {
+        console.error('Error al generar la factura:', error);
+        this.paymentStatus.error = 'Error al generar la factura. Por favor, intente nuevamente.';
+        this.paymentStatus.isProcessing = false;
+      }
     });
   }
 
