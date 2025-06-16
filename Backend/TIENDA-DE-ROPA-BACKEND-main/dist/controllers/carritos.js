@@ -129,11 +129,20 @@ class CarritosController {
                                 console.error('Producto no encontrado:', item.id);
                                 continue;
                             }
+                            // Obtener el email del usuario (puede venir en el body, o buscarlo en el modelo Carrito si lo tienes ahí)
+                            let email = null;
+                            if (carrito && carrito.email) {
+                                email = carrito.email;
+                            }
+                            else if (req.body.email) {
+                                email = req.body.email;
+                            }
                             yield detalle_carrito_1.default.create({
                                 id_carrito: carritoId,
                                 id_producto: item.id,
                                 cantidad: item.quantity,
-                                precio: producto.precio
+                                precio: producto.precio,
+                                email: email
                             });
                         }
                     }

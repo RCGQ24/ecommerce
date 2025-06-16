@@ -46,6 +46,10 @@ DetalleCarrito.init({
         validate: {
             min: 0
         }
+    },
+    email: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     }
 }, {
     sequelize: connection_1.db,

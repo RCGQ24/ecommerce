@@ -9,6 +9,7 @@ export class DetalleCarrito extends Model {
   public id_producto!: number;
   public cantidad!: number;
   public precio!: number;
+  public email?: string;
 }
 
 DetalleCarrito.init(
@@ -47,6 +48,10 @@ DetalleCarrito.init(
       validate: {
         min: 0
       }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
     }
   },
   {

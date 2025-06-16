@@ -41,10 +41,11 @@ export class CartService {
 
   private saveCartToBackend(items: CartItem[]): Observable<any> {
     const userId = this.authService.currentUser?.id;
+    const email = this.authService.currentUser?.email;
     if (!userId) {
       return throwError(() => new Error('Usuario no autenticado'));
     }
-    return this.http.put(`${this.apiUrl}/${userId}`, { items }).pipe(
+    return this.http.put(`${this.apiUrl}/${userId}`, { items, email }).pipe(
       catchError(error => {
         console.error('Error al guardar el carrito:', error);
         return throwError(() => error);
