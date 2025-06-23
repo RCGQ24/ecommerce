@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 -- --------------------------------------------------------
 -- Host:                         localhost
 -- Server version:               10.4.32-MariaDB - mariadb.org binary distribution
@@ -39,3 +40,13 @@
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+=======
+detalle_carritosCREATE TABLE IF NOT EXISTS `detalle_carritos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_carrito` int(11) DEFAULT NULL,
+  `id_producto` int(11) DEFAULT NULL,
+  `cantidad` int(11) DEFAULT NULL,
+  `precio` decimal(5,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+>>>>>>> Stashed changes
