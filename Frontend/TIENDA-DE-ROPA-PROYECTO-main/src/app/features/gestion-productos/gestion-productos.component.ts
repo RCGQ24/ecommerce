@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductosService } from '../../services/productos.service';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 
 export class Producto {
@@ -47,7 +48,15 @@ export class GestionProductosComponent {
     uniforme: 4
   };
 
-  constructor(private productosService: ProductosService, public router: Router) {}
+  isAdmin = false;
+
+  constructor(
+    private productosService: ProductosService,
+    public router: Router,
+    private authService: AuthService
+  ) {
+    this.isAdmin = this.authService.hasRole(['Administrador', 'admin']);
+  }
 
   validarProducto(event: Event) {
     event.preventDefault();

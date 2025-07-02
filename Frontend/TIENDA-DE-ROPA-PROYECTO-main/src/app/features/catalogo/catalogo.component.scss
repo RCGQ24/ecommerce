@@ -5,11 +5,11 @@
   align-items: center;
   padding: 1.2rem 2.5rem;
   background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
-
   font-family: 'Inter', Arial, sans-serif;
   position: sticky;
   top: 0;
   z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-list {
@@ -50,17 +50,38 @@
   a {
     color: white;
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     
     &:hover {
       opacity: 0.9;
     }
+
+    i {
+      font-size: 1.1rem;
+    }
   }
 }
 
-// Sección de catálogo
+.search-bar {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: 0.2s;
+
+  &:focus {
+    border-color: #4b2fbb;
+    box-shadow: 0 0 8px rgba(75, 47, 187, 0.2);
+  }
+}
+
+// Estilos del catálogo
 .catalog-section {
-  max-width: 1400px;
-  margin: 2.5rem auto;
+  max-width: 1200px;
+  margin: 2rem auto;
   padding: 0 2rem;
 }
 
@@ -68,98 +89,42 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+  margin-bottom: 2rem;
 
-.section-header h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #232323;
-  margin: 0;
-}
-
-.search-container {
-  flex: 1;
-  max-width: 600px; /* Increased max-width */
-  margin: 0 1rem;
-
-
-
-}
-// Estilos de la barra de búsqueda
-.search-bar {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border: 1px solid #2fc5a9; /* Use primary color for border */
-  border-radius: 8px;
-  padding: 0.5rem;
-  box-shadow: 0 2px 4px rgba(47, 197, 169, 0.3); /* Use primary color for shadow */
-  transition: border-color 0.3s ease; /* Added transition */
-
-
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  padding: 0.7rem;
-  font-size: 1.1rem; /* Slightly larger font size */
-  &::placeholder {
-    color: #999; /* Placeholder text color */
-  }
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(47, 197, 169, 0.5); /* Add focus outline */
-  }
-}
-
-.search-bar:focus-within { /* Added focus-within for the entire bar */
-  border-color: #4b2fbb; /* Change border color on focus */
+  h2 {
+    font-size: 2rem;
+    color: #232323;
+    margin: 0;
   }
 
-
-.search-icon {
-  margin-right: 0.5rem;
-  color: #999;
-}
-
-// Estilo del enlace "View All"
-.view-all {
-  color: #4b2fbb;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.8;
+  .view-all {
+    color: #4b2fbb;
+    text-decoration: none;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 2.5rem 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
 }
 
 .product-card {
-  background: #faf9f6;
-  border-radius: 1.2rem;
-  box-shadow: 0 2px 12px 0 rgba(75, 47, 187, 0.04);
-  padding: 1.5rem 1.2rem 1.2rem 1.2rem;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: box-shadow 0.2s;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
 
   &:hover {
-    box-shadow: 0 4px 24px 0 rgba(75, 47, 187, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   }
 }
 
@@ -209,6 +174,7 @@
   font-size: 1rem;
   color: #3a2d29;
   font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
 .product-colors {
@@ -225,14 +191,16 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
-@media (max-width: 768px) {
-  .section-header {
+@media (max-width: 900px) {
+  .navbar {
     flex-direction: column;
-    align-items: stretch;
+    gap: 1rem;
+    padding: 1rem;
   }
-
-  .search-container {
-    max-width: none;
-    margin: 1rem 0;
+  .catalog-section {
+    padding: 0 0.5rem;
+  }
+  .product-grid {
+    gap: 1.2rem;
   }
 }
