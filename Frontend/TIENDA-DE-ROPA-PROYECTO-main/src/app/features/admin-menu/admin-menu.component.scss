@@ -119,13 +119,130 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+// Modal de eliminación específico
+.delete-modal {
+  width: 580px;
+  max-width: 90vw;
+  max-height: 85vh;
+  background: linear-gradient(135deg, #fff5f5 0%, #fef7ff 100%);
+  color: #3a2d29;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(220, 38, 38, 0.15);
+  padding: 2rem;
+  overflow-y: auto;
+  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid #fecaca;
+}
+
+.delete-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.warning-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+.delete-content h3 {
+  color: #dc2626;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+
+.product-info {
+  display: flex;
+  gap: 1.5rem;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+.product-image {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #f3f4f6;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.product-details {
+  flex: 1;
+  text-align: left;
+  
+  h4 {
+    color: #1f2937;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    margin: 0.3rem 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+    
+    strong {
+      color: #374151;
+    }
+  }
+}
+
+.warning-message {
+  background: linear-gradient(135deg, #fef2f2 0%, #fdf2f8 100%);
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 480px;
+  
+  p {
+    color: #dc2626;
+    font-weight: 600;
+    margin: 0 0 0.8rem 0;
+    font-size: 1rem;
+  }
+  
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    text-align: left;
+    
+    li {
+      color: #7f1d1d;
+      margin: 0.4rem 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+  }
+}
+
 .modal-header {
   margin-bottom: 1rem;
+  text-align: center;
 
   h2 {
     margin: 0;
-    color: #333;
-    font-size: 1.5rem;
+    color: #dc2626;
+    font-size: 1.6rem;
+    font-weight: 700;
   }
 }
 
@@ -141,35 +258,219 @@
 
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
 
   button {
-    padding: 0.7rem 1.5rem;
-    border-radius: 6px;
+    padding: 0.8rem 1.8rem;
+    border-radius: 12px;
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    border: none;
+    min-width: 140px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-    &.btn-secondary {
-      background: #f5f5f5;
-      color: #333;
-      border: 1px solid #ddd;
+    &.btn-cancel {
+      background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+      color: white;
 
       &:hover {
-        background: #eee;
+        background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
       }
     }
 
-    &.btn-danger {
-      background: #ff4d4d;
+    &.btn-delete {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
       color: white;
-      border: none;
 
       &:hover {
-        background: #ff3333;
+        background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
       }
     }
   }
+}
+
+// Animaciones
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// Scroll personalizado para el modal
+.delete-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.delete-modal::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.delete-modal::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  border-radius: 4px;
+}
+
+.delete-modal::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+}
+
+// Modal de selección de producto (editar/eliminar)
+.select-modal {
+  width: 520px;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: linear-gradient(120deg, #e3f6f3 0%, #e6e3fa 100%);
+  color: #3a2d29;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(75,47,187,0.13);
+  padding: 2.5rem 2.2rem 2rem 2.2rem;
+  overflow-y: auto;
+  animation: modalFadeIn 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.select-title {
+  color: #dc2626;
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.product-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.product-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 8px rgba(75,47,187,0.10);
+  padding: 0.7rem 1.2rem;
+  font-size: 1.08rem;
+  transition: box-shadow 0.2s, background 0.2s;
+  gap: 1.2rem;
+}
+
+.product-name {
+  font-weight: 500;
+  color: #3a2d29;
+}
+.product-price {
+  color: #4b2fbb;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.btn-edit, .btn-delete {
+  min-width: 90px;
+  padding: 0.5rem 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 1px 8px rgba(75,47,187,0.10);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.btn-edit {
+  background: linear-gradient(120deg, #4b2fbb 0%, #2fc5a9 100%);
+  color: #fff;
+}
+.btn-edit:hover {
+  background: linear-gradient(120deg, #6c4edb 0%, #44c7ba 100%);
+  box-shadow: 0 0 16px 2px #385fc3, 0 8px 32px rgba(75,47,187,0.18);
+  transform: translateY(-2px) scale(1.06);
+}
+
+.btn-delete {
+  background: linear-gradient(120deg, #dc2626 0%, #ef4444 100%);
+  color: #fff;
+}
+.btn-delete:hover {
+  background: linear-gradient(120deg, #b91c1c 0%, #dc2626 100%);
+  box-shadow: 0 0 16px 2px #dc2626, 0 8px 32px rgba(220,38,38,0.18);
+  transform: translateY(-2px) scale(1.06);
+}
+
+.btn-cancel {
+  background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 24px;
+  padding: 0.7rem 2.5rem;
+  margin-top: 1.2rem;
+  box-shadow: 5px 10px 18px rgba(29, 28, 34, 0.18);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.btn-cancel:hover {
+  background: linear-gradient(120deg, #4b2fbb 0%, #2fc5a9 100%);
+  box-shadow: 0 0 20px 4px #44c7ba, 0 8px 32px rgba(47,197,169,0.38);
+  transform: translateY(-2px) scale(1.06);
+}
+
+@keyframes modalFadeIn {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+// Título de modal con color sólido y prioridad máxima
+.main-title {
+  color: #23293a !important;
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+// Ícono de papelera minimalista
+.icon-trash {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 0.7rem;
+  transition: transform 0.18s, box-shadow 0.18s;
+  border-radius: 50%;
+  padding: 0.18rem;
+}
+.icon-trash:hover {
+  background: #fff5f5;
+  box-shadow: 0 0 8px 1px #dc2626;
+  transform: scale(1.13);
+}
+.icon-trash svg {
+  display: block;
+  stroke: #dc2626;
 }
