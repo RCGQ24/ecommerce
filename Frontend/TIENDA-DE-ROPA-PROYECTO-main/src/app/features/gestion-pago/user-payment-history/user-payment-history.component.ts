@@ -5,22 +5,13 @@ import { PaymentHistoryService } from '../../../services/payment-history.service
 import { AuthService } from '../../../services/auth.service';
 
 interface PaymentHistory {
-  id: string;
-  date: Date;
-  amount: number;
-  paymentMethod: string;
-  status: 'completed' | 'pending' | 'failed';
-  userId: string;
-  userEmail: string;
-  transactionDetails: {
-    items: {
-      productName: string;
-      quantity: number;
-      price: number;
-      url_imagen?: string;
-    }[];
-  };
-  productos?: any[];
+  id: number;
+  fecha_pago: string;
+  monto_pago: number;
+  id_metodo_pago: number;
+  estado_pago: string;
+  email_usuario: string;
+  productos: any[];
 }
 
 interface PaymentHistoryFilter {
@@ -163,31 +154,35 @@ interface PaymentHistoryFilter {
             </div>
             <div class="detail-group">
               <label>Fecha</label>
-              <p>{{selectedPayment.date | date:'dd/MM/yyyy HH:mm'}}</p>
+              <p>{{selectedPayment.fecha_pago | date:'dd/MM/yyyy HH:mm'}}</p>
             </div>
             <div class="detail-group">
               <label>Monto Total</label>
-              <p class="amount">{{selectedPayment.amount | currency}}</p>
+              <p class="amount">{{selectedPayment.monto_pago | currency}}</p>
             </div>
             <div class="detail-group">
               <label>Método de Pago</label>
-              <p>{{selectedPayment.paymentMethod}}</p>
+              <p>{{getPaymentMethodName(selectedPayment.id_metodo_pago)}}</p>
             </div>
             <div class="detail-group">
               <label>Estado</label>
-              <span class="status-badge" [class]="selectedPayment.status">
-                {{selectedPayment.status}}
+              <span class="status-badge" [class]="selectedPayment.estado_pago">
+                {{selectedPayment.estado_pago | titlecase}}
               </span>
+            </div>
+            <div class="detail-group">
+              <label>Email usuario</label>
+              <p>{{selectedPayment.email_usuario}}</p>
             </div>
             <div class="items-section">
               <h4>Productos</h4>
               <div class="items-list">
-                <div class="item" *ngFor="let item of (selectedPayment.productos || selectedPayment.transactionDetails?.items || [])">
+                <div class="item" *ngFor="let item of selectedPayment.productos">
                   <img *ngIf="item.url_imagen || item.image" [src]="item.url_imagen || item.image" alt="{{item.nombre || item.productName}}" width="80" height="80" style="margin-right: 12px; border-radius: 8px; object-fit: cover;" />
                   <div class="item-details">
                     <p class="item-name">{{item.nombre || item.productName}}</p>
                     <p class="item-quantity">Cantidad: {{item.cantidad || item.quantity}}</p>
-                    <p class="item-price">{{item.precio || item.price | currency}}</p>
+                    <p class="item-price">{{item.precio || item.price | currency}} <span style="font-size:0.95em;color:#888;">c/u</span></p>
                   </div>
                 </div>
               </div>
@@ -198,8 +193,7 @@ interface PaymentHistoryFilter {
     </div>
   `,
   styleUrls: ['./user-payment-history.component.scss']
-})
-export class UserPaymentHistoryComponent implements OnInit {
+})export class UserPaymentHistoryComponent implements OnInit {
   payments: any[] = [];
   filteredPayments: any[] = [];
   selectedPayment: PaymentHistory | null = null;
@@ -212,15 +206,26 @@ export class UserPaymentHistoryComponent implements OnInit {
 
   ngOnInit() {
     const email = this.authService.currentUser?.email;
+    // Restaurar filtros desde localStorage si existen
+    const savedFilters = localStorage.getItem('userPaymentHistoryFilters');
+    if (savedFilters) {
+      this.filter = JSON.parse(savedFilters);
+    }
     if (email) {
       this.paymentHistoryService.getUserPaymentHistoryByEmail(email).subscribe(pagos => {
         this.payments = pagos;
         this.filteredPayments = pagos;
+        // Aplicar filtros restaurados si existen
+        if (savedFilters) {
+          this.applyFilters();
+        }
       });
     }
   }
 
   applyFilters() {
+    // Guardar filtros en localStorage
+    localStorage.setItem('userPaymentHistoryFilters', JSON.stringify(this.filter));
     console.log('Fecha seleccionada en filtro:', this.filter.date);
     this.filteredPayments = this.payments.filter(payment => {
       let matchesStatus = true;
@@ -237,19 +242,11 @@ export class UserPaymentHistoryComponent implements OnInit {
         matchesPaymentMethod = payment.id_metodo_pago.toString() === this.filter.paymentMethod;
       }
 
-      // Filtrar por fecha (comparando en zona local para evitar desfases de zona horaria)
+      // Filtrar por fecha (comparando solo la parte YYYY-MM-DD como string)
       if (this.filter.date && this.filter.date !== '') {
-        const selectedDate = new Date(this.filter.date);
-        const paymentDate = new Date(payment.fecha_pago);
-        matchesDate =
-          selectedDate.getFullYear() === paymentDate.getFullYear() &&
-          selectedDate.getMonth() === paymentDate.getMonth() &&
-          selectedDate.getDate() === paymentDate.getDate();
-        console.log('Comparando:', {
-          selectedDate: selectedDate,
-          paymentDate: paymentDate,
-          matchesDate
-        });
+        const selectedDateStr = this.filter.date;
+        const paymentDateStr = new Date(payment.fecha_pago).toISOString().slice(0, 10);
+        matchesDate = selectedDateStr === paymentDateStr;
       }
 
       return matchesStatus && matchesPaymentMethod && matchesDate;
@@ -260,6 +257,8 @@ export class UserPaymentHistoryComponent implements OnInit {
   clearFilters() {
     this.filter = {};
     this.filteredPayments = this.payments;
+    // Eliminar filtros guardados
+    localStorage.removeItem('userPaymentHistoryFilters');
   }
 
   viewDetails(payment: PaymentHistory) {

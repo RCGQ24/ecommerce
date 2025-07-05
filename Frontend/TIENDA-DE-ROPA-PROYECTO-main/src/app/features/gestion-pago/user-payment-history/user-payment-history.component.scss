@@ -9,12 +9,12 @@
 
     h2 {
       font-size: 2rem;
-      color: #333;
+      color: #3a2d29;
       margin-bottom: 0.5rem;
     }
 
     .subtitle {
-      color: #666;
+      color: #4b2fbb;
       font-size: 1.1rem;
     }
   }
@@ -26,10 +26,10 @@
     margin-bottom: 2rem;
 
     .summary-card {
-      background: white;
+      background: #f7f8fa;
       border-radius: 10px;
       padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(47,197,169,0.07);
       display: flex;
       align-items: center;
       gap: 1rem;
@@ -38,19 +38,21 @@
         font-size: 2rem;
         padding: 1rem;
         border-radius: 50%;
+        background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
+        color: #fff;
       }
 
       .card-content {
         h3 {
           font-size: 1rem;
-          color: #666;
+          color: #4b2fbb;
           margin-bottom: 0.5rem;
         }
 
         p {
           font-size: 1.5rem;
           font-weight: bold;
-          color: #333;
+          color: #3a2d29;
           margin: 0;
         }
       }
@@ -73,7 +75,7 @@
   }
 
   .filters {
-    background: white;
+    background: #f7f8fa;
     border-radius: 10px;
     padding: 1.5rem;
     margin-bottom: 2rem;
@@ -81,7 +83,7 @@
     flex-wrap: wrap;
     gap: 1rem;
     align-items: flex-end;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(75,47,187,0.07);
 
     .filter-group {
       flex: 1;
@@ -90,42 +92,46 @@
       label {
         display: block;
         margin-bottom: 0.5rem;
-        color: #666;
-        font-size: 0.9rem;
+        color: #4b2fbb;
+        font-size: 0.95rem;
 
         i {
           margin-right: 0.5rem;
-          color: #999;
+          color: #2fc5a9;
         }
       }
 
       input, select {
         width: 100%;
         padding: 0.5rem;
-        border: 1px solid #ddd;
+        border: 1px solid #d1d5db;
         border-radius: 5px;
         font-size: 1rem;
+        background: #fff;
+        color: #3a2d29;
 
         &:focus {
           outline: none;
-          border-color: #2196F3;
+          border-color: #4b2fbb;
         }
       }
     }
 
     .clear-filters {
       padding: 0.5rem 1rem;
-      background: #f5f5f5;
-      border: 1px solid #ddd;
+      background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
+      border: none;
       border-radius: 5px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: #666;
+      color: #fff;
+      font-weight: 500;
+      transition: background 0.2s, opacity 0.2s;
 
       &:hover {
-        background: #eee;
+        opacity: 0.9;
       }
 
       i {
@@ -135,10 +141,10 @@
   }
 
   .table-container {
-    background: white;
+    background: #f7f8fa;
     border-radius: 10px;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(47,197,169,0.07);
     overflow-x: auto;
 
     table {
@@ -148,23 +154,23 @@
       th, td {
         padding: 1rem;
         text-align: left;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #e5e7eb;
       }
 
       th {
         font-weight: 600;
-        color: #666;
-        background: #f9f9f9;
+        color: #4b2fbb;
+        background: #f0f1f7;
       }
 
       .transaction-id {
         font-family: monospace;
-        color: #666;
+        color: #4b2fbb;
       }
 
       .amount {
         font-weight: 600;
-        color: #2196F3;
+        color: #2fc5a9;
       }
 
       .payment-method {
@@ -173,7 +179,7 @@
         gap: 0.5rem;
 
         i {
-          color: #666;
+          color: #4b2fbb;
         }
       }
 
@@ -184,14 +190,15 @@
         padding: 0.25rem 0.75rem;
         border-radius: 15px;
         font-size: 0.9rem;
+        font-weight: 600;
 
         i {
           font-size: 0.8rem;
         }
 
         &.completed {
-          background: rgba(76, 175, 80, 0.1);
-          color: #4CAF50;
+          background: rgba(47,197,169,0.12);
+          color: #2fc5a9;
         }
 
         &.pending {
@@ -199,9 +206,9 @@
           color: #FFC107;
         }
 
-        &.failed {
-          background: rgba(244, 67, 54, 0.1);
-          color: #F44336;
+        &.fallido {
+          background: rgba(220,38,38,0.10);
+          color: #dc2626;
         }
       }
 
@@ -257,34 +264,39 @@
     z-index: 1000;
 
     .modal-content {
-      background: white;
-      border-radius: 10px;
+      background: #f7f8fa;
+      border-radius: 16px;
       width: 90%;
       max-width: 600px;
       max-height: 80vh;
       overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(47,197,169,0.13);
+      animation: modalFadeIn 0.5s cubic-bezier(0.4,0,0.2,1);
+      border: 2px solid #e6e3fa;
 
       .modal-header {
         padding: 1.5rem;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #e6e3fa;
         display: flex;
         justify-content: space-between;
         align-items: center;
 
         h3 {
           margin: 0;
-          color: #333;
+          color: #4b2fbb;
+          font-size: 1.5rem;
+          font-weight: 700;
         }
 
         .close-modal {
           background: none;
           border: none;
           font-size: 1.5rem;
-          color: #666;
+          color: #2fc5a9;
           cursor: pointer;
-
+          transition: color 0.2s;
           &:hover {
-            color: #333;
+            color: #4b2fbb;
           }
         }
       }
@@ -297,18 +309,18 @@
 
           label {
             display: block;
-            color: #666;
-            font-size: 0.9rem;
+            color: #4b2fbb;
+            font-size: 0.95rem;
             margin-bottom: 0.25rem;
           }
 
           p {
             margin: 0;
-            color: #333;
-            font-size: 1rem;
+            color: #3a2d29;
+            font-size: 1.08rem;
 
             &.amount {
-              color: #2196F3;
+              color: #2fc5a9;
               font-weight: 600;
             }
           }
@@ -318,38 +330,50 @@
           margin-top: 2rem;
 
           h4 {
-            color: #333;
+            color: #4b2fbb;
             margin-bottom: 1rem;
           }
 
           .items-list {
             .item {
               padding: 1rem;
-              border: 1px solid #eee;
-              border-radius: 5px;
-              margin-bottom: 0.5rem;
+              border: 1px solid #e6e3fa;
+              border-radius: 8px;
+              margin-bottom: 0.7rem;
+              background: #fff;
+              box-shadow: 0 2px 8px rgba(75,47,187,0.07);
+              display: flex;
+              align-items: center;
+              gap: 1.2rem;
+
+              img {
+                border-radius: 8px;
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border: 2px solid #e6e3fa;
+              }
 
               .item-details {
-                display: grid;
-                grid-template-columns: 2fr 1fr 1fr;
-                gap: 1rem;
-                align-items: center;
+                display: flex;
+                flex-direction: column;
+                gap: 0.2rem;
 
                 p {
                   margin: 0;
 
                   &.item-name {
-                    font-weight: 500;
+                    font-weight: 600;
+                    color: #3a2d29;
                   }
 
                   &.item-quantity {
-                    color: #666;
+                    color: #4b2fbb;
                   }
 
                   &.item-price {
-                    color: #2196F3;
+                    color: #2fc5a9;
                     font-weight: 500;
-                    text-align: right;
                   }
                 }
               }
@@ -358,5 +382,16 @@
         }
       }
     }
+  }
+}
+
+@keyframes modalFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 } 
