@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../gestion-carrito/cart.service';
 import { FacturaService } from '../../services/factura.service';
 import { AuthService } from '../../services/auth.service';
+import { PagosService, Pago } from '../../services/pagos.service';
 
 @Component({
   selector: 'app-gestion-pago',
@@ -52,7 +53,8 @@ export class GestionPagoComponent {
     private cartService: CartService,
     private router: Router,
     private facturaService: FacturaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pagosService: PagosService
   ) {
     this.cartService.items$.subscribe(items => {
       this.cartItems = items;
@@ -239,24 +241,52 @@ export class GestionPagoComponent {
     // Generar un ID de pago único basado en timestamp
     const idPago = Date.now();
 
-    // Transformar los items del carrito al formato esperado por la factura
+    // Determinar el id_metodo_pago según el método seleccionado
+    let id_metodo_pago = 1; // Por defecto
+    if (this.selectedPaymentMethod === 'credit') id_metodo_pago = 1;
+    else if (this.selectedPaymentMethod === 'debit') id_metodo_pago = 2;
+    else if (this.selectedPaymentMethod === 'pagoMovil') id_metodo_pago = 3;
+
+    // Registrar el pago en la base de datos
+    const productos = this.cartItems.map(item => ({
+      id: item.id,
+      nombre: item.name,
+      descripcion: item.descripcion || item.name,
+      talla: item.talla || 'Única',
+      precio: item.price,
+      cantidad: item.quantity,
+      url_imagen: item.url_imagen || item.image || ''
+    }));
+    const pago: Pago = {
+      id_metodo_pago: id_metodo_pago,
+      monto_pago: total,
+      estado_pago: 'completado',
+      email_usuario: email,
+      productos
+    } as any;
+    this.pagosService.registrarPago(pago).subscribe({
+      next: (res) => {
+        // Después de registrar el pago, generar la factura
+        this.generarFacturaDespuesDePago(idPago, total, email);
+      },
+      error: (error) => {
+        this.paymentStatus.error = 'Error al registrar el pago. Por favor, intente nuevamente.';
+        this.paymentStatus.isProcessing = false;
+      }
+    });
+  }
+
+  private generarFacturaDespuesDePago(idPago: number, total: number, email: string): void {
     const itemsFactura = this.cartItems.map(item => ({
       id: item.id,
       nombre: item.name,
       descripcion: item.descripcion || item.name,
       talla: item.talla || 'Única',
       precio: item.price,
-      cantidad: item.quantity
+      cantidad: item.quantity,
+      url_imagen: item.url_imagen || item.image || ''
     }));
 
-    console.log('Intentando generar factura con datos:', {
-      idPago,
-      total,
-      items: itemsFactura,
-      email
-    });
-
-    // Generar y guardar factura en backend
     this.facturaService.generarFacturaDesdePago(
       idPago,
       total,
@@ -264,14 +294,10 @@ export class GestionPagoComponent {
       email
     ).subscribe({
       next: (factura) => {
-        console.log('Factura generada exitosamente:', factura);
-        // Limpiar el carrito después de generar la factura
         this.cartService.clearCart();
-        // Redirigir a la página de la factura
         this.router.navigate(['/factura', factura.id]);
       },
       error: (error) => {
-        console.error('Error al generar la factura:', error);
         this.paymentStatus.error = 'Error al generar la factura. Por favor, intente nuevamente.';
         this.paymentStatus.isProcessing = false;
       }

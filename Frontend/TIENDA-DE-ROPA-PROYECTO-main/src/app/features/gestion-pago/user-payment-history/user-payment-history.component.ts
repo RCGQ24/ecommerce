@@ -17,13 +17,14 @@ interface PaymentHistory {
       productName: string;
       quantity: number;
       price: number;
+      url_imagen?: string;
     }[];
   };
+  productos?: any[];
 }
 
 interface PaymentHistoryFilter {
-  startDate?: Date;
-  endDate?: Date;
+  date?: string;
   status?: string;
   paymentMethod?: string;
 }
@@ -55,13 +56,6 @@ interface PaymentHistoryFilter {
             <p>{{ getCompletedCount() }}</p>
           </div>
         </div>
-        <div class="summary-card pending">
-          <i class="fas fa-clock"></i>
-          <div class="card-content">
-            <h3>Pagos Pendientes</h3>
-            <p>{{ getPendingCount() }}</p>
-          </div>
-        </div>
       </div>
 
       <!-- Filters -->
@@ -69,23 +63,11 @@ interface PaymentHistoryFilter {
         <div class="filter-group">
           <label>
             <i class="fas fa-calendar"></i>
-            Fecha Inicio
+            Fecha
           </label>
           <input 
             type="date" 
-            [(ngModel)]="filter.startDate" 
-            (change)="applyFilters()"
-            class="date-input"
-          >
-        </div>
-        <div class="filter-group">
-          <label>
-            <i class="fas fa-calendar"></i>
-            Fecha Fin
-          </label>
-          <input 
-            type="date" 
-            [(ngModel)]="filter.endDate" 
+            [(ngModel)]="filter.date" 
             (change)="applyFilters()"
             class="date-input"
           >
@@ -97,9 +79,9 @@ interface PaymentHistoryFilter {
           </label>
           <select [(ngModel)]="filter.status" (change)="applyFilters()">
             <option value="">Todos</option>
-            <option value="completed">Completado</option>
-            <option value="pending">Pendiente</option>
-            <option value="failed">Fallido</option>
+            <option value="completado">Completado</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="fallido">Fallido</option>
           </select>
         </div>
         <div class="filter-group">
@@ -109,9 +91,9 @@ interface PaymentHistoryFilter {
           </label>
           <select [(ngModel)]="filter.paymentMethod" (change)="applyFilters()">
             <option value="">Todos</option>
-            <option value="credit">Tarjeta de Crédito</option>
-            <option value="debit">Tarjeta de Débito</option>
-            <option value="pagoMovil">Pago Móvil</option>
+            <option value="1">Tarjeta de Crédito</option>
+            <option value="2">Tarjeta de Débito</option>
+            <option value="3">Pago Móvil</option>
           </select>
         </div>
         <button class="clear-filters" (click)="clearFilters()">
@@ -134,32 +116,19 @@ interface PaymentHistoryFilter {
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let payment of payments">
-              <td>{{payment.date | date:'dd/MM/yyyy HH:mm'}}</td>
+            <tr *ngFor="let payment of filteredPayments">
+              <td>{{payment.fecha_pago | date:'dd/MM/yyyy'}}</td>
               <td>
                 <span class="transaction-id">{{payment.id}}</span>
               </td>
               <td>
-                <span class="amount">{{payment.amount | currency}}</span>
+                <span class="amount">{{payment.monto_pago | currency}}</span>
               </td>
               <td>
-                <span class="payment-method">
-                  <i class="fas" [ngClass]="{
-                    'fa-credit-card': payment.paymentMethod === 'credit' || payment.paymentMethod === 'debit',
-                    'fa-mobile-alt': payment.paymentMethod === 'pagoMovil'
-                  }"></i>
-                  {{payment.paymentMethod}}
-                </span>
+                <span class="payment-method">{{getPaymentMethodName(payment.id_metodo_pago)}}</span>
               </td>
               <td>
-                <span class="status-badge" [class]="payment.status">
-                  <i class="fas" [ngClass]="{
-                    'fa-check-circle': payment.status === 'completed',
-                    'fa-clock': payment.status === 'pending',
-                    'fa-times-circle': payment.status === 'failed'
-                  }"></i>
-                  {{payment.status}}
-                </span>
+                <span class="status-badge">{{payment.estado_pago}}</span>
               </td>
               <td>
                 <button class="view-details" (click)="viewDetails(payment)">
@@ -168,7 +137,7 @@ interface PaymentHistoryFilter {
                 </button>
               </td>
             </tr>
-            <tr *ngIf="payments.length === 0">
+            <tr *ngIf="filteredPayments.length === 0">
               <td colspan="6" class="no-records">
                 <i class="fas fa-shopping-bag"></i>
                 <p>No hay compras registradas</p>
@@ -213,11 +182,12 @@ interface PaymentHistoryFilter {
             <div class="items-section">
               <h4>Productos</h4>
               <div class="items-list">
-                <div class="item" *ngFor="let item of selectedPayment.transactionDetails.items">
+                <div class="item" *ngFor="let item of (selectedPayment.productos || selectedPayment.transactionDetails?.items || [])">
+                  <img *ngIf="item.url_imagen || item.image" [src]="item.url_imagen || item.image" alt="{{item.nombre || item.productName}}" width="80" height="80" style="margin-right: 12px; border-radius: 8px; object-fit: cover;" />
                   <div class="item-details">
-                    <p class="item-name">{{item.productName}}</p>
-                    <p class="item-quantity">Cantidad: {{item.quantity}}</p>
-                    <p class="item-price">{{item.price | currency}}</p>
+                    <p class="item-name">{{item.nombre || item.productName}}</p>
+                    <p class="item-quantity">Cantidad: {{item.cantidad || item.quantity}}</p>
+                    <p class="item-price">{{item.precio || item.price | currency}}</p>
                   </div>
                 </div>
               </div>
@@ -230,7 +200,8 @@ interface PaymentHistoryFilter {
   styleUrls: ['./user-payment-history.component.scss']
 })
 export class UserPaymentHistoryComponent implements OnInit {
-  payments: PaymentHistory[] = [];
+  payments: any[] = [];
+  filteredPayments: any[] = [];
   selectedPayment: PaymentHistory | null = null;
   filter: PaymentHistoryFilter = {};
 
@@ -240,27 +211,60 @@ export class UserPaymentHistoryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadPaymentHistory();
-  }
-
-  loadPaymentHistory() {
-    const userId = this.authService.currentUser?.id;
-    if (userId) {
-      this.paymentHistoryService.getUserPaymentHistory(userId, this.filter)
-        .subscribe(payments => this.payments = payments);
+    const email = this.authService.currentUser?.email;
+    if (email) {
+      this.paymentHistoryService.getUserPaymentHistoryByEmail(email).subscribe(pagos => {
+        this.payments = pagos;
+        this.filteredPayments = pagos;
+      });
     }
   }
 
   applyFilters() {
-    this.loadPaymentHistory();
+    console.log('Fecha seleccionada en filtro:', this.filter.date);
+    this.filteredPayments = this.payments.filter(payment => {
+      let matchesStatus = true;
+      let matchesPaymentMethod = true;
+      let matchesDate = true;
+
+      // Filtrar por estado
+      if (this.filter.status && this.filter.status !== '') {
+        matchesStatus = payment.estado_pago === this.filter.status;
+      }
+
+      // Filtrar por método de pago
+      if (this.filter.paymentMethod && this.filter.paymentMethod !== '') {
+        matchesPaymentMethod = payment.id_metodo_pago.toString() === this.filter.paymentMethod;
+      }
+
+      // Filtrar por fecha (comparando en zona local para evitar desfases de zona horaria)
+      if (this.filter.date && this.filter.date !== '') {
+        const selectedDate = new Date(this.filter.date);
+        const paymentDate = new Date(payment.fecha_pago);
+        matchesDate =
+          selectedDate.getFullYear() === paymentDate.getFullYear() &&
+          selectedDate.getMonth() === paymentDate.getMonth() &&
+          selectedDate.getDate() === paymentDate.getDate();
+        console.log('Comparando:', {
+          selectedDate: selectedDate,
+          paymentDate: paymentDate,
+          matchesDate
+        });
+      }
+
+      return matchesStatus && matchesPaymentMethod && matchesDate;
+    });
+    this.payments.forEach(p => console.log('Pago:', p.fecha_pago));
   }
 
   clearFilters() {
     this.filter = {};
-    this.loadPaymentHistory();
+    this.filteredPayments = this.payments;
   }
 
   viewDetails(payment: PaymentHistory) {
+    console.log('Pago seleccionado:', payment);
+    console.log('Productos del pago:', payment.productos);
     this.selectedPayment = payment;
   }
 
@@ -270,14 +274,23 @@ export class UserPaymentHistoryComponent implements OnInit {
 
   getTotalSpent(): number {
     return this.payments.reduce((total, payment) => 
-      payment.status === 'completed' ? total + payment.amount : total, 0);
+      payment.estado_pago === 'completado' ? total + payment.monto_pago : total, 0);
   }
 
   getCompletedCount(): number {
-    return this.payments.filter(payment => payment.status === 'completed').length;
+    return this.payments.filter(payment => payment.estado_pago === 'completado').length;
   }
 
-  getPendingCount(): number {
-    return this.payments.filter(payment => payment.status === 'pending').length;
+  getPaymentMethodName(id: number): string {
+    switch (id) {
+      case 1:
+        return 'Tarjeta de Crédito';
+      case 2:
+        return 'Tarjeta de Débito';
+      case 3:
+        return 'Pago Móvil';
+      default:
+        return 'Método Desconocido';
+    }
   }
 } 

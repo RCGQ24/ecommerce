@@ -6,6 +6,9 @@ export class Pago extends Model {
   public id_metodo_pago!: number;
   public monto_pago!: number;
   public estado_pago!: string;
+  public email_usuario!: string;
+  public fecha_pago!: Date;
+  public productos!: string;
 }
 
 Pago.init(
@@ -18,6 +21,16 @@ Pago.init(
     },
     estado_pago: {
       type: DataTypes.STRING
+    },
+    email_usuario: {
+      type: DataTypes.STRING
+    },
+    fecha_pago: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    },
+    productos: {
+      type: DataTypes.TEXT
     }
   },
   {

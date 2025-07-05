@@ -15,6 +15,16 @@ Pago.init({
     },
     estado_pago: {
         type: sequelize_1.DataTypes.STRING
+    },
+    email_usuario: {
+        type: sequelize_1.DataTypes.STRING
+    },
+    fecha_pago: {
+        type: sequelize_1.DataTypes.DATE,
+        defaultValue: sequelize_1.DataTypes.NOW
+    },
+    productos: {
+        type: sequelize_1.DataTypes.TEXT
     }
 }, {
     sequelize: connection_1.db,

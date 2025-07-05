@@ -58,4 +58,9 @@ export class PaymentHistoryService {
     const url = `${this.apiUrl}/user/${userId}${params.toString() ? '?' + params.toString() : ''}`;
     return this.http.get<PaymentHistory[]>(url);
   }
+
+  getUserPaymentHistoryByEmail(email: string): Observable<any[]> {
+    const url = `${environment.apiUrl}/pagos?email_usuario=${encodeURIComponent(email)}`;
+    return this.http.get<any[]>(url);
+  }
 } 

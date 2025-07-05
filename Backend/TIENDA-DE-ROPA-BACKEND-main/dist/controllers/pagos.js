@@ -16,8 +16,20 @@ const pago_1 = __importDefault(require("../models/pago"));
 class PagosController {
     getPagos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const pagos = yield pago_1.default.findAll();
+            const { email_usuario } = req.query;
+            let pagos;
+            if (email_usuario) {
+                pagos = yield pago_1.default.findAll({ where: { email_usuario } });
+            }
+            else {
+                pagos = yield pago_1.default.findAll();
+            }
             if (pagos) {
+                pagos = pagos.map(p => {
+                    const plain = p.toJSON();
+                    plain.productos = plain.productos ? JSON.parse(plain.productos) : [];
+                    return plain;
+                });
                 res.json(pagos);
             }
             else {
@@ -30,7 +42,9 @@ class PagosController {
             const { id } = req.params;
             const pago = yield pago_1.default.findByPk(id);
             if (pago) {
-                res.json(pago);
+                const plain = pago.toJSON();
+                plain.productos = plain.productos ? JSON.parse(plain.productos) : [];
+                res.json(plain);
             }
             else {
                 res.status(404).json({ msg: `No existe un pago con el id ${id}` });
@@ -41,7 +55,8 @@ class PagosController {
         return __awaiter(this, void 0, void 0, function* () {
             const { body } = req;
             try {
-                const pago = yield pago_1.default.create(body);
+                const productos = body.productos ? JSON.stringify(body.productos) : '[]';
+                const pago = yield pago_1.default.create(Object.assign(Object.assign({}, body), { productos }));
                 res.json(pago);
             }
             catch (error) {
