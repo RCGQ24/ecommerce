@@ -31,7 +31,7 @@ export const routes: Routes = [
   },
   {
     path: 'payment-history',
-    loadComponent: () => import('./features/gestion-pago-admin/admin-payment-management.component').then(m => m.AdminPaymentManagementComponent),
+    loadComponent: () => import('./features/admin-menu/gestion-pago-admin/admin-payment-management.component').then(m => m.AdminPaymentManagementComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] }
   },
@@ -42,7 +42,7 @@ export const routes: Routes = [
   },
   {
     path: 'gestionar-pagos',
-    loadComponent: () => import('./features/gestion-pago-admin/admin-payment-management.component').then(m => m.AdminPaymentManagementComponent),
+    loadComponent: () => import('./features/admin-menu/gestion-pago-admin/admin-payment-management.component').then(m => m.AdminPaymentManagementComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] }
   },

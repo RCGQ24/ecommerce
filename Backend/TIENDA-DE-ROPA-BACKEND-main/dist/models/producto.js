@@ -11,7 +11,7 @@ Producto.init({
         type: sequelize_1.DataTypes.STRING
     },
     id_categoria: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.INTEGER
     },
     precio: {
         type: sequelize_1.DataTypes.DECIMAL(10, 2)
@@ -20,7 +20,7 @@ Producto.init({
         type: sequelize_1.DataTypes.STRING
     },
     talla: {
-        type: sequelize_1.DataTypes.CHAR
+        type: sequelize_1.DataTypes.STRING
     },
     stock: {
         type: sequelize_1.DataTypes.INTEGER

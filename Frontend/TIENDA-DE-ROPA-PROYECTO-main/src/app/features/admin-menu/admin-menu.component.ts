@@ -15,11 +15,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class AdminMenuComponent implements OnInit {
   showConfirmModal = false;
-  showProductosModal = false;
-  showEditarModal = false;
-  productos: any[] = [];
-  accion: 'editar' | 'eliminar' | null = null;
-  productoSeleccionado: any = null;
 
   constructor(
     private router: Router,
@@ -52,47 +47,5 @@ export class AdminMenuComponent implements OnInit {
     // Add logic to delete all carts here
     this.showConfirmModal = false;
     this.router.navigate(['/admin-menu']);
-  }
-
-  abrirModalProductos(accion: 'editar' | 'eliminar') {
-    this.accion = accion;
-    this.productosService.obtenerProductos().subscribe(productos => {
-      this.productos = productos;
-      this.showProductosModal = true;
-    });
-  }
-
-  cerrarModalProductos() {
-    this.showProductosModal = false;
-    this.accion = null;
-  }
-
-  seleccionarProductoParaEditar(producto: any) {
-    this.productoSeleccionado = producto;
-    this.showEditarModal = true;
-  }
-
-  cerrarEditarModal() {
-    this.showEditarModal = false;
-    this.productoSeleccionado = null;
-  }
-
-  eliminarProducto(producto: any) {
-    // Aquí puedes agregar confirmación si quieres
-    this.productosService.eliminarProducto(producto.id).subscribe(() => {
-      this.productos = this.productos.filter(p => p.id !== producto.id);
-    });
-  }
-
-  guardarCambiosProducto() {
-    if (!this.productoSeleccionado) return;
-    this.productosService.actualizarProducto(this.productoSeleccionado.id, this.productoSeleccionado).subscribe(() => {
-      // Actualizar la lista local de productos si es necesario
-      const idx = this.productos.findIndex(p => p.id === this.productoSeleccionado.id);
-      if (idx !== -1) {
-        this.productos[idx] = { ...this.productoSeleccionado };
-      }
-      this.cerrarEditarModal();
-    });
   }
 }
