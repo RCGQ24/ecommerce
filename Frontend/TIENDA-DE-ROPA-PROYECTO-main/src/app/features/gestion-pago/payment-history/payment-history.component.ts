@@ -9,7 +9,7 @@ interface PaymentHistory {
   date: Date;
   amount: number;
   paymentMethod: string;
-  status: 'completed' | 'pending' | 'failed';
+  status: 'completed' | 'failed';
   userId: string;
   userEmail: string;
   transactionDetails: {
@@ -55,13 +55,7 @@ interface PaymentHistoryFilter {
             <p>{{ getCompletedCount() }}</p>
           </div>
         </div>
-        <div class="summary-card pending">
-          <i class="fas fa-clock"></i>
-          <div class="card-content">
-            <h3>Pagos Pendientes</h3>
-            <p>{{ getPendingCount() }}</p>
-          </div>
-        </div>
+
         <div class="summary-card failed">
           <i class="fas fa-exclamation-circle"></i>
           <div class="card-content">
@@ -105,7 +99,6 @@ interface PaymentHistoryFilter {
           <select [(ngModel)]="filter.status" (change)="applyFilters()">
             <option value="">Todos</option>
             <option value="completed">Completado</option>
-            <option value="pending">Pendiente</option>
             <option value="failed">Fallido</option>
           </select>
         </div>
@@ -169,7 +162,6 @@ interface PaymentHistoryFilter {
                 <span class="status-badge" [class]="payment.status">
                   <i class="fas" [ngClass]="{
                     'fa-check-circle': payment.status === 'completed',
-                    'fa-clock': payment.status === 'pending',
                     'fa-times-circle': payment.status === 'failed'
                   }"></i>
                   {{payment.status}}
@@ -286,9 +278,7 @@ export class PaymentHistoryComponent implements OnInit {
     return this.payments.filter(payment => payment.status === 'completed').length;
   }
 
-  getPendingCount(): number {
-    return this.payments.filter(payment => payment.status === 'pending').length;
-  }
+
 
   getFailedCount(): number {
     return this.payments.filter(payment => payment.status === 'failed').length;

@@ -8,7 +8,7 @@ interface PaymentHistory {
   date: Date;
   amount: number;
   paymentMethod: string;
-  status: 'completed' | 'pending' | 'failed';
+  status: 'completed' | 'failed';
   userId: string;
   userEmail: string;
   transactionDetails: {

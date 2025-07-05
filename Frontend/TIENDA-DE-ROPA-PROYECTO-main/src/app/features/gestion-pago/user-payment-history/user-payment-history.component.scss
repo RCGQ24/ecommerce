@@ -67,10 +67,7 @@
         background: rgba(33, 150, 243, 0.1);
       }
 
-      &.pending i {
-        color: #FFC107;
-        background: rgba(255, 193, 7, 0.1);
-      }
+
     }
   }
 
@@ -201,10 +198,7 @@
           color: #2fc5a9;
         }
 
-        &.pending {
-          background: rgba(255, 193, 7, 0.1);
-          color: #FFC107;
-        }
+
 
         &.fallido {
           background: rgba(220,38,38,0.10);

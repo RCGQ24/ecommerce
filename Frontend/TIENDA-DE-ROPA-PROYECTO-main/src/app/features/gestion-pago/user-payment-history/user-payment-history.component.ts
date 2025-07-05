@@ -71,7 +71,6 @@ interface PaymentHistoryFilter {
           <select [(ngModel)]="filter.status" (change)="applyFilters()">
             <option value="">Todos</option>
             <option value="completado">Completado</option>
-            <option value="pendiente">Pendiente</option>
             <option value="fallido">Fallido</option>
           </select>
         </div>

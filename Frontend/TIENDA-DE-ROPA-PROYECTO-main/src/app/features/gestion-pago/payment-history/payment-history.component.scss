@@ -142,13 +142,7 @@
       p { color: #48bb78; }
     }
 
-    &.pending {
-      i {
-        color: #ecc94b;
-        background: rgba(236, 201, 75, 0.1);
-      }
-      p { color: #ecc94b; }
-    }
+
 
     &.failed {
       i {
@@ -237,10 +231,7 @@
         color: #22543d;
       }
 
-      &.pending {
-        background: #fefcbf;
-        color: #744210;
-      }
+
 
       &.failed {
         background: #fed7d7;
