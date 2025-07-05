@@ -31,7 +31,7 @@ export const routes: Routes = [
   },
   {
     path: 'payment-history',
-    loadComponent: () => import('./features/gestion-pago/payment-history/payment-history.component').then(m => m.PaymentHistoryComponent),
+    loadComponent: () => import('./features/gestion-pago-admin/admin-payment-management.component').then(m => m.AdminPaymentManagementComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] }
   },
@@ -39,6 +39,18 @@ export const routes: Routes = [
     path: 'user-payment-history',
     loadComponent: () => import('./features/gestion-pago/user-payment-history/user-payment-history.component').then(m => m.UserPaymentHistoryComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'gestionar-pagos',
+    loadComponent: () => import('./features/gestion-pago-admin/admin-payment-management.component').then(m => m.AdminPaymentManagementComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'admin-payment-history',
+    loadComponent: () => import('./features/admin-menu/admin-payment-history/admin-payment-history.component').then(m => m.AdminPaymentHistoryComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] }
   },
   // otras rutas...
 ];

@@ -66,6 +66,8 @@
         color: #2196F3;
         background: rgba(33, 150, 243, 0.1);
       }
+
+
     }
   }
 
@@ -196,6 +198,8 @@
           color: #2fc5a9;
         }
 
+
+
         &.fallido {
           background: rgba(220,38,38,0.10);
           color: #dc2626;
@@ -312,30 +316,6 @@
             &.amount {
               color: #2fc5a9;
               font-weight: 600;
-            }
-          }
-
-          .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-
-            i {
-              font-size: 0.8rem;
-            }
-
-            &.completed {
-              background: rgba(47,197,169,0.12);
-              color: #2fc5a9;
-            }
-
-            &.fallido {
-              background: rgba(220,38,38,0.10);
-              color: #dc2626;
             }
           }
         }

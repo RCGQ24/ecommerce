@@ -4,20 +4,13 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 interface PaymentHistory {
-  id: string;
-  date: Date;
-  amount: number;
-  paymentMethod: string;
-  status: 'completed' | 'failed';
-  userId: string;
-  userEmail: string;
-  transactionDetails: {
-    items: {
-      productName: string;
-      quantity: number;
-      price: number;
-    }[];
-  };
+  id: number;
+  fecha_pago: string;
+  monto_pago: number;
+  id_metodo_pago: number;
+  estado_pago: string;
+  email_usuario: string;
+  productos: any[];
 }
 
 interface PaymentHistoryFilter {
@@ -31,11 +24,11 @@ interface PaymentHistoryFilter {
   providedIn: 'root'
 })
 export class PaymentHistoryService {
-  private apiUrl = `${environment.apiUrl}/payments`;
+  private apiUrl = `${environment.apiUrl}/pagos`;
 
   constructor(private http: HttpClient) {}
 
-  getAllPaymentHistory(filters?: PaymentHistoryFilter): Observable<PaymentHistory[]> {
+  getAllPaymentHistory(filters?: PaymentHistoryFilter): Observable<any[]> {
     let params = new URLSearchParams();
     if (filters) {
       if (filters.startDate) params.append('startDate', filters.startDate.toISOString());
@@ -44,7 +37,7 @@ export class PaymentHistoryService {
       if (filters.paymentMethod) params.append('paymentMethod', filters.paymentMethod);
     }
     const url = `${this.apiUrl}${params.toString() ? '?' + params.toString() : ''}`;
-    return this.http.get<PaymentHistory[]>(url);
+    return this.http.get<any[]>(url);
   }
 
   getUserPaymentHistory(userId: string, filters?: PaymentHistoryFilter): Observable<PaymentHistory[]> {

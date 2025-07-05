@@ -22,4 +22,8 @@ export class PagosService {
   registrarPago(pago: Pago): Observable<any> {
     return this.http.post(this.apiUrl, pago);
   }
+
+  getAllPayments(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
 }

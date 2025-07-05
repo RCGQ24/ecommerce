@@ -1,6 +1,6 @@
 .payment-history-container {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 
   .header {
@@ -9,12 +9,12 @@
 
     h2 {
       font-size: 2rem;
-      color: #3a2d29;
+      color: #4b2fbb;
       margin-bottom: 0.5rem;
     }
 
     .subtitle {
-      color: #4b2fbb;
+      color: #2fc5a9;
       font-size: 1.1rem;
     }
   }
@@ -65,6 +65,11 @@
       &.completed i {
         color: #2196F3;
         background: rgba(33, 150, 243, 0.1);
+      }
+
+      &.users i {
+        color: #9C27B0;
+        background: rgba(156, 39, 176, 0.1);
       }
     }
   }
@@ -163,6 +168,11 @@
         color: #4b2fbb;
       }
 
+      .user-email {
+        color: #2fc5a9;
+        font-weight: 500;
+      }
+
       .amount {
         font-weight: 600;
         color: #2fc5a9;
@@ -199,6 +209,11 @@
         &.fallido {
           background: rgba(220,38,38,0.10);
           color: #dc2626;
+        }
+
+        &.reembolsado {
+          background: rgba(75,47,187,0.12);
+          color: #4b2fbb;
         }
       }
 
@@ -336,6 +351,11 @@
             &.fallido {
               background: rgba(220,38,38,0.10);
               color: #dc2626;
+            }
+
+            &.reembolsado {
+              background: rgba(75,47,187,0.12);
+              color: #4b2fbb;
             }
           }
         }

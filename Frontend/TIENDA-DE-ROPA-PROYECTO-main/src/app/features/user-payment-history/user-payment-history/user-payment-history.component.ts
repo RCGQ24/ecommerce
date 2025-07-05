@@ -192,8 +192,7 @@ interface PaymentHistoryFilter {
     </div>
   `,
   styleUrls: ['./user-payment-history.component.scss']
-})
-export class UserPaymentHistoryComponent implements OnInit {
+})export class UserPaymentHistoryComponent implements OnInit {
   payments: any[] = [];
   filteredPayments: any[] = [];
   selectedPayment: PaymentHistory | null = null;
@@ -271,13 +270,13 @@ export class UserPaymentHistoryComponent implements OnInit {
     this.selectedPayment = null;
   }
 
-  getCompletedCount(): number {
-    return this.payments.filter(payment => payment.estado_pago === 'completado').length;
-  }
-
   getTotalSpent(): number {
     return this.payments.reduce((total, payment) => 
       payment.estado_pago === 'completado' ? total + payment.monto_pago : total, 0);
+  }
+
+  getCompletedCount(): number {
+    return this.payments.filter(payment => payment.estado_pago === 'completado').length;
   }
 
   getPaymentMethodName(id: number): string {
