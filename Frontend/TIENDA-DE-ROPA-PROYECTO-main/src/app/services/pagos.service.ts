@@ -26,4 +26,8 @@ export class PagosService {
   getAllPayments(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+  deletePago(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

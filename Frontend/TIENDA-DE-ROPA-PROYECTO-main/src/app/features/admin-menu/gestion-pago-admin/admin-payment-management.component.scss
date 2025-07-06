@@ -79,11 +79,15 @@
       gap: 0.5rem;
       color: #fff;
       font-weight: 600;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s, box-shadow 0.25s, transform 0.18s, background 0.18s;
       white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 
-      &:hover {
-        opacity: 0.9;
+      &:hover, &:focus {
+        opacity: 0.95;
+        box-shadow: 0 6px 24px 2px rgba(75,47,187,0.18), 0 2px 8px rgba(0,0,0,0.18);
+        transform: translateY(-2px) scale(1.04);
+        background: linear-gradient(120deg, #4b2fbb 0%, #2fc5a9 100%);
       }
 
       i {
@@ -221,8 +225,8 @@
 
       .btn-refund {
         padding: 0.5rem 1rem;
-        background: #ffc107;
-        color: #212529;
+        background: #4b2fbb;
+        color: #fff;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -231,14 +235,13 @@
         gap: 0.5rem;
         font-size: 0.9rem;
         font-weight: 600;
-
-        &:hover {
-          background: #e0a800;
-        }
-
-        i {
-          font-size: 0.8rem;
-        }
+        box-shadow: 0 2px 8px rgba(75, 47, 187, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+      }
+      .btn-refund:hover {
+        background: #6c4edb;
+        box-shadow: 0 0 16px 2px #b39ddb, 0 8px 32px rgba(75,47,187,0.18);
+        transform: translateY(-2px) scale(1.06);
       }
 
       .no-records {
@@ -585,6 +588,76 @@
               cursor: not-allowed;
             }
           }
+        }
+      }
+    }
+  }
+
+  .btn-delete {
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: #dc2626;
+    padding: 0.2rem 0.4rem;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: color 0.18s, background 0.18s, box-shadow 0.18s;
+  }
+  .btn-delete i {
+    color: #dc2626;
+    font-size: 1.3rem;
+    transition: color 0.18s;
+  }
+  .btn-delete:hover,
+  .btn-delete:focus {
+    color: #b91c1c;
+    background: #fff5f5;
+    box-shadow: 0 0 8px 1px #dc262633;
+  }
+  .btn-delete:hover i,
+  .btn-delete:focus i {
+    color: #b91c1c;
+  }
+
+  .delete-confirmation {
+    padding: 2rem 1rem 1.5rem 1rem;
+    text-align: center;
+    p {
+      color: #b91c1c;
+      font-weight: 500;
+      margin-bottom: 2rem;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      .btn-cancel {
+        padding: 0.8rem 1.5rem;
+        background: #6c757d;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: opacity 0.2s;
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+      .btn-confirm {
+        padding: 0.8rem 1.5rem;
+        background: linear-gradient(120deg, #dc2626 0%, #b91c1c 100%);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: opacity 0.2s;
+        &:hover {
+          opacity: 0.9;
         }
       }
     }

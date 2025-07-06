@@ -110,6 +110,10 @@
                       title="Reembolsar">
                 <i class="fas fa-undo"></i>
               </button>
+
+              <button class="btn-delete" (click)="openDeleteModal(payment)" title="Eliminar Pago">
+                <i class="fas fa-trash"></i>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -204,6 +208,25 @@
                   [disabled]="!refundAmount || !refundReason">
             Procesar Reembolso
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de eliminar pago -->
+  <div class="modal" *ngIf="showDeleteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>¿Desea eliminar este pago?</h3>
+        <button class="close-modal" (click)="cancelDeletePayment()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="delete-confirmation">
+        <p>Esta acción no se puede deshacer.</p>
+        <div class="form-actions">
+          <button class="btn-cancel" (click)="cancelDeletePayment()">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmDeletePayment()">Eliminar</button>
         </div>
       </div>
     </div>

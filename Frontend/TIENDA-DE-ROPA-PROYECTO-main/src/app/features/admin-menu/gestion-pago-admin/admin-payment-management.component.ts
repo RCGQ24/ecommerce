@@ -25,6 +25,9 @@ export class AdminPaymentManagementComponent implements OnInit {
   refundAmount = 0;
   refundReason = '';
 
+  showDeleteModal = false;
+  paymentToDelete: any = null;
+
   constructor(private pagosService: PagosService) {}
 
   ngOnInit() {
@@ -185,5 +188,30 @@ export class AdminPaymentManagementComponent implements OnInit {
   // Getter para verificar si el modal está visible
   get isModalVisible(): boolean {
     return !!this.selectedPayment;
+  }
+
+  openDeleteModal(payment: any) {
+    this.paymentToDelete = payment;
+    this.showDeleteModal = true;
+  }
+
+  cancelDeletePayment() {
+    this.showDeleteModal = false;
+    this.paymentToDelete = null;
+  }
+
+  confirmDeletePayment() {
+    if (!this.paymentToDelete) return;
+    this.pagosService.deletePago(this.paymentToDelete.id).subscribe({
+      next: () => {
+        this.payments = this.payments.filter(p => p.id !== this.paymentToDelete.id);
+        this.applyFilters();
+        this.showDeleteModal = false;
+        this.paymentToDelete = null;
+      },
+      error: (err) => {
+        alert('Error al eliminar el pago: ' + err.message);
+      }
+    });
   }
 } 
