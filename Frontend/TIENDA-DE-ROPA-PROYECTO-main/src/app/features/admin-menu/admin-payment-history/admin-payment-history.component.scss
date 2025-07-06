@@ -81,13 +81,15 @@
     margin-bottom: 2rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 2.5rem;
     align-items: flex-end;
+    justify-content: space-between;
     box-shadow: 0 2px 8px rgba(75,47,187,0.07);
 
     .filter-group {
-      flex: 1;
-      min-width: 200px;
+      flex: 1 1 0;
+      min-width: 180px;
+      max-width: 350px;
 
       label {
         display: block;
@@ -114,11 +116,21 @@
           outline: none;
           border-color: #4b2fbb;
         }
+
+        &.date-input {
+          max-width: 180px;
+          min-width: 140px;
+          flex: 0 0 auto;
+        }
       }
     }
 
     .clear-filters {
-      padding: 0.5rem 1rem;
+      flex: 0 0 auto;
+      margin-left: auto;
+      height: 40px;
+      white-space: nowrap;
+      padding: 0.8rem 1.5rem;
       background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
       border: none;
       border-radius: 5px;
@@ -127,8 +139,8 @@
       align-items: center;
       gap: 0.5rem;
       color: #fff;
-      font-weight: 500;
-      transition: background 0.2s, opacity 0.2s;
+      font-weight: 600;
+      transition: opacity 0.2s;
 
       &:hover {
         opacity: 0.9;
@@ -137,6 +149,22 @@
       i {
         font-size: 0.9rem;
       }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .filters {
+      flex-wrap: wrap;
+      gap: 1rem 0.5rem;
+    }
+    .filter-group {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+    .clear-filters {
+      width: 100%;
+      margin-top: 1rem;
+      align-self: stretch;
     }
   }
 

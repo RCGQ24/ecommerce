@@ -113,6 +113,8 @@
     }
 
     .clear-filters {
+      flex: 0 0 auto;
+      margin-left: auto;
       padding: 0.5rem 1rem;
       background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
       border: none;
@@ -124,6 +126,7 @@
       color: #fff;
       font-weight: 500;
       transition: background 0.2s, opacity 0.2s;
+      white-space: nowrap;
 
       &:hover {
         opacity: 0.9;
@@ -132,6 +135,23 @@
       i {
         font-size: 0.9rem;
       }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .filters {
+      flex-wrap: wrap;
+      gap: 1rem 0.5rem;
+    }
+    .filter-group {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+    .clear-filters {
+      width: 100%;
+      margin-top: 1rem;
+      margin-left: 0;
+      align-self: stretch;
     }
   }
 

@@ -47,7 +47,7 @@
       </div>
       <div class="filter-group">
         <label>Fecha del Pago:</label>
-        <input type="date" [(ngModel)]="selectedDate" (change)="applyFilters()">
+        <input type="date" [(ngModel)]="selectedDate" (change)="applyFilters()" class="date-input">
       </div>
       <button class="btn-clear" (click)="clearFilters()">
         <i class="fas fa-times"></i> Limpiar Filtros
