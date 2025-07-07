@@ -22,7 +22,9 @@ export class GestionPagoComponent {
     cardNumber: '',
     expiryDate: '',
     cvv: '',
-    cardHolder: ''
+    cardHolder: '',
+    cedula: '',
+    telefono: ''
   };
   cardErrors = {
     cardNumber: '',
@@ -34,7 +36,10 @@ export class GestionPagoComponent {
     transactionId: '',
     isVerifying: false,
     isApproved: false,
-    hasError: false
+    hasError: false,
+    bancoDestino: '',
+    cedulaDestino: '',
+    telefonoDestino: ''
   };
   paymentStatus = {
     isProcessing: false,
@@ -48,6 +53,31 @@ export class GestionPagoComponent {
     { id: 'debit', name: 'Tarjeta de Débito' },
     { id: 'pagoMovil', name: 'Pago Móvil' }
   ];
+
+  paymentMethod: string = '';
+  cardHolder: string = '';
+  cardNumber: string = '';
+  expiryDate: string = '';
+  cvv: string = '';
+  transactionId: string = '';
+
+  // MODAL: método de pago activo
+  activeModal: 'credit' | 'debit' | 'pagoMovil' | null = null;
+
+  openModal(method: 'credit' | 'debit' | 'pagoMovil') {
+    this.activeModal = method;
+    this.resetCardErrors();
+    this.resetPagoMovilStatus();
+    // Preselecciona el método para la lógica interna
+    this.selectedPaymentMethod = method === 'credit' ? 'credit' : method === 'debit' ? 'debit' : 'pagoMovil';
+  }
+
+  closeModal() {
+    this.activeModal = null;
+    this.selectedPaymentMethod = '';
+    this.resetCardErrors();
+    this.resetPagoMovilStatus();
+  }
 
   constructor(
     private cartService: CartService,
@@ -77,7 +107,10 @@ export class GestionPagoComponent {
       transactionId: '',
       isVerifying: false,
       isApproved: false,
-      hasError: false
+      hasError: false,
+      bancoDestino: '',
+      cedulaDestino: '',
+      telefonoDestino: ''
     };
   }
 
@@ -357,5 +390,13 @@ export class GestionPagoComponent {
   onCVVInput(event: any): void {
     this.paymentInfo.cvv = event.target.value.replace(/\D/g, '').slice(0, 4);
     this.validateCVV(this.paymentInfo.cvv);
+  }
+
+  onSubmit() {
+    if (this.paymentMethod === 'credito' || this.paymentMethod === 'debito') {
+      alert('Pago con tarjeta procesado correctamente.');
+    } else if (this.paymentMethod === 'pagoMovil') {
+      alert('Pago móvil procesado correctamente.');
+    }
   }
 } 
