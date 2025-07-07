@@ -984,6 +984,7 @@ $transition-fast: all 0.15s ease-in-out;
               color: #3a2d29;
             }
           }
+         }
         }
       }
     }
@@ -1000,4 +1001,26 @@ $transition-fast: all 0.15s ease-in-out;
   }
 }
 // --- FIN MODAL DETALLES ---
+
+select.status-select {
+  background: #f8fafc;
+  color: #222;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px 0 #0001;
+  min-width: 110px;
+  cursor: pointer;
+}
+
+select.status-select:focus {
+  border-color: #2fc5a9;
+  box-shadow: 0 0 0 2px rgba(47,197,169,0.12);
+}
+
+select.status-select option {
+  color: #222;
 }
