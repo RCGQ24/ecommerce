@@ -11,6 +11,7 @@ import { SupervisorComponent } from './features/supervisor/supervisor.component'
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { roleGuard } from './guards/role.guard';
+import { UserPaymentHistoryComponent } from './features/gestion-pago/user-payment-history/user-payment-history.component';
 
 export const routes: Routes = [
   { path: '', component: CatalogoComponent },
@@ -36,8 +37,8 @@ export const routes: Routes = [
     data: { roles: ['admin'] }
   },
   {
-    path: 'user-payment-history',
-    loadComponent: () => import('./features/user-payment-history/user-payment-history/user-payment-history.component').then(m => m.UserPaymentHistoryComponent),
+    path: 'gestion-pago',
+    loadComponent: () => import('./features/gestion-pago/user-payment-history/user-payment-history.component').then(m => m.UserPaymentHistoryComponent),
     canActivate: [authGuard]
   },
   {
@@ -48,7 +49,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin-payment-history',
-    loadComponent: () => import('./features/admin/admin-payment-history/admin-payment-history.component').then(m => m.AdminPaymentHistoryComponent),
+    loadComponent: () => import('./features/admin-menu/admin-payment-history/admin-payment-history.component').then(m => m.AdminPaymentHistoryComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] }
   },

@@ -50,7 +50,7 @@ import { FormsModule } from '@angular/forms';
             <a routerLink="/supervisor">Supervisor</a>
           </li>
           <li *ngIf="!authService.hasRole(['admin'])">
-            <a routerLink="/user-payment-history" class="nav-link">
+            <a routerLink="/gestion-pago" class="nav-link">
               <i class="fas fa-history"></i>
               Mis Compras
             </a>
