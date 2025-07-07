@@ -48,7 +48,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin-payment-history',
-    loadComponent: () => import('./features/admin-menu/admin-payment-history/admin-payment-history.component').then(m => m.AdminPaymentHistoryComponent),
+    loadComponent: () => import('./features/admin/admin-payment-history/admin-payment-history.component').then(m => m.AdminPaymentHistoryComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] }
   },
