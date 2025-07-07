@@ -187,7 +187,7 @@
   
     &:hover {
       transform: translateY(-2px);
-      background: darken(#4b2fbb, 10%);
+      background: color.adjust(#4b2fbb, $lightness: -10%);
       box-shadow: 0 8px 20px rgba(75, 47, 187, 0.2),
                   0 4px 10px rgba(0, 0, 0, 0.1);
     }
@@ -285,7 +285,7 @@
     
       &:hover {
         transform: translateY(-2px);
-        background: darken(#4b2fbb, 10%);
+        background: color.adjust(#4b2fbb, $lightness: -10%);
         box-shadow: 0 8px 20px rgba(75, 47, 187, 0.2),
                     0 4px 10px rgba(0, 0, 0, 0.1);
       }

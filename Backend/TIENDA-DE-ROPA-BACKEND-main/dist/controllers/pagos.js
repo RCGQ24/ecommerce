@@ -56,7 +56,11 @@ class PagosController {
             const { body } = req;
             try {
                 const productos = body.productos ? JSON.stringify(body.productos) : '[]';
-                const pago = yield pago_1.default.create(Object.assign(Object.assign({}, body), { productos }));
+                let fecha_pago = body.fecha_pago;
+                if (!fecha_pago) {
+                    fecha_pago = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
+                }
+                const pago = yield pago_1.default.create(Object.assign(Object.assign({}, body), { productos, fecha_pago }));
                 res.json(pago);
             }
             catch (error) {

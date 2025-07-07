@@ -54,6 +54,7 @@ export class PaymentHistoryService {
 
   getUserPaymentHistoryByEmail(email: string): Observable<any[]> {
     const url = `${environment.apiUrl}/pagos?email_usuario=${encodeURIComponent(email)}`;
+    console.log('Haciendo petición a:', url);
     return this.http.get<any[]>(url);
   }
 } 

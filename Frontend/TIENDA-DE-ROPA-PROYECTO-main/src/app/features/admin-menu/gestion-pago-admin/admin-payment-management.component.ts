@@ -1,7 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PagosService } from '../../../services/pagos.service';
+import { PaymentHistoryService } from '../../../services/payment-history.service';
+import { AuthService } from '../../../services/auth.service';
+import { PagoService } from '../../../services/pago.service';
+
+interface PaymentHistory {
+  id: number;
+  fecha_pago: string;
+  monto_pago: number;
+  id_metodo_pago: number;
+  estado_pago: string;
+  email_usuario: string;
+  productos: any[];
+}
 
 @Component({
   selector: 'app-admin-payment-management',
@@ -13,205 +25,134 @@ import { PagosService } from '../../../services/pagos.service';
 export class AdminPaymentManagementComponent implements OnInit {
   payments: any[] = [];
   filteredPayments: any[] = [];
-  selectedPayment: any = null;
-  selectedStatus = '';
-  selectedMethod = '';
-  selectedDate = '';
-  isLoading = true;
-  error = '';
-  
-  // Refund modal
-  showRefundModal = false;
-  refundAmount = 0;
-  refundReason = '';
+  selectedPayment: PaymentHistory | null = null;
+  filterDate: string = '';
+  filterStatus: string = '';
+  filterPaymentMethod: string = '';
+  loading: boolean = true;
 
-  showDeleteModal = false;
-  paymentToDelete: any = null;
-
-  constructor(private pagosService: PagosService) {}
+  constructor(
+    private paymentHistoryService: PaymentHistoryService,
+    public authService: AuthService,
+    private pagoService: PagoService
+  ) {}
 
   ngOnInit() {
-    console.log('AdminPaymentManagementComponent: ngOnInit iniciado');
-    this.loadSavedFilters(); // Cargar filtros guardados
-    this.loadPayments();
+    this.loading = true;
+    this.loadAllPayments();
   }
 
-  // Cargar filtros guardados en localStorage
-  loadSavedFilters() {
-    const savedFilters = localStorage.getItem('adminPaymentFilters');
-    if (savedFilters) {
-      const filters = JSON.parse(savedFilters);
-      this.selectedStatus = filters.selectedStatus || '';
-      this.selectedMethod = filters.selectedMethod || '';
-      this.selectedDate = filters.selectedDate || '';
-      console.log('Filtros cargados:', filters);
-    }
-  }
-
-  // Guardar filtros en localStorage
-  saveFilters() {
-    const filters = {
-      selectedStatus: this.selectedStatus,
-      selectedMethod: this.selectedMethod,
-      selectedDate: this.selectedDate
-    };
-    localStorage.setItem('adminPaymentFilters', JSON.stringify(filters));
-    console.log('Filtros guardados:', filters);
-  }
-
-  loadPayments() {
-    console.log('AdminPaymentManagementComponent: loadPayments iniciado');
-    this.isLoading = true;
-    this.error = '';
-    
-    this.pagosService.getAllPayments().subscribe({
-      next: (payments: any[]) => {
-        console.log('AdminPaymentManagementComponent: Pagos recibidos:', payments);
-        this.payments = payments || [];
-        this.applyFilters(); // Aplicar filtros existentes después de cargar
-        this.isLoading = false;
-        console.log('AdminPaymentManagementComponent: Pagos cargados:', this.payments.length);
+  loadAllPayments() {
+    this.loading = true;
+    this.paymentHistoryService.getAllPaymentHistory().subscribe({
+      next: (pagos: any[]) => {
+        this.payments = pagos ? pagos.map(p => ({
+          ...p,
+          monto_pago: isNaN(Number(p.monto_pago)) ? 0 : Number(p.monto_pago)
+        })) : [];
+        this.filteredPayments = this.payments;
+        this.loading = false;
       },
       error: (error) => {
-        console.error('AdminPaymentManagementComponent: Error al cargar pagos:', error);
-        this.error = 'Error al cargar los pagos: ' + error.message;
-        this.isLoading = false;
         this.payments = [];
         this.filteredPayments = [];
+        this.loading = false;
       }
     });
   }
 
-  applyFilters() {
+  filterPayments() {
     this.filteredPayments = this.payments.filter(payment => {
       let matchesStatus = true;
-      let matchesMethod = true;
       let matchesDate = true;
-
-      // Filtro por estado
-      if (this.selectedStatus) {
-        matchesStatus = payment.estado_pago === this.selectedStatus;
+      let matchesPaymentMethod = true;
+      
+      if (this.filterStatus && this.filterStatus !== '') {
+        matchesStatus = payment.estado_pago === this.filterStatus;
+      }
+      
+      if (this.filterDate && this.filterDate !== '') {
+        const [filterYear, filterMonth, filterDay] = this.filterDate.split('-').map(Number);
+        const paymentDateObj = new Date(payment.fecha_pago);
+        const paymentYear = paymentDateObj.getFullYear();
+        const paymentMonth = paymentDateObj.getMonth() + 1;
+        const paymentDay = paymentDateObj.getDate();
+        matchesDate = filterYear === paymentYear && filterMonth === paymentMonth && filterDay === paymentDay;
       }
 
-      // Filtro por método de pago
-      if (this.selectedMethod) {
-        matchesMethod = payment.id_metodo_pago.toString() === this.selectedMethod;
+      if (this.filterPaymentMethod && this.filterPaymentMethod !== '') {
+        matchesPaymentMethod = payment.id_metodo_pago.toString() === this.filterPaymentMethod;
       }
-
-      // Filtro por fecha específica
-      if (this.selectedDate) {
-        const paymentDate = new Date(payment.fecha_pago);
-        // selectedDate ya está en formato YYYY-MM-DD, solo formateo la fecha del pago
-        const paymentDateFormatted = this.formatDateForComparison(paymentDate);
-        
-        console.log('Comparando fechas:', {
-          paymentDate: payment.fecha_pago,
-          paymentDateFormatted,
-          selectedDate: this.selectedDate
-        });
-        
-        matchesDate = paymentDateFormatted === this.selectedDate;
-      }
-
-      return matchesStatus && matchesMethod && matchesDate;
+      
+      return matchesStatus && matchesDate && matchesPaymentMethod;
     });
-
-    // Guardar filtros después de aplicarlos
-    this.saveFilters();
-  }
-
-  // Método para formatear fecha del backend a formato YYYY-MM-DD
-  formatDateForComparison(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 
   clearFilters() {
-    this.selectedStatus = '';
-    this.selectedMethod = '';
-    this.selectedDate = '';
+    this.filterDate = '';
+    this.filterStatus = '';
+    this.filterPaymentMethod = '';
     this.filteredPayments = this.payments;
-    // Limpiar también del localStorage
-    localStorage.removeItem('adminPaymentFilters');
-    console.log('Filtros limpiados');
   }
 
-  viewPayment(payment: any) {
-    console.log('Abriendo modal para pago:', payment);
+  viewDetails(payment: PaymentHistory) {
     this.selectedPayment = payment;
   }
 
-  closeModal() {
-    console.log('Cerrando modal');
+  closeDetails() {
     this.selectedPayment = null;
   }
 
-  changePaymentStatus(payment: any, event: any) {
-    const newStatus = event.target.value;
-    if (confirm(`¿Cambiar estado del pago #${payment.id} a "${newStatus}"?`)) {
-      payment.estado_pago = newStatus;
-      console.log(`Estado cambiado a: ${newStatus}`);
-    }
+  getTotalAmount(): number {
+    return this.filteredPayments.reduce((total, payment) => 
+      payment.estado_pago === 'completado' ? total + payment.monto_pago : total, 0);
   }
 
-  processRefund(payment: any) {
-    this.selectedPayment = payment;
-    this.refundAmount = payment.monto_pago;
-    this.showRefundModal = true;
+  getCompletedCount(): number {
+    return this.payments.filter(payment => payment.estado_pago === 'completado').length;
   }
 
-  closeRefundModal() {
-    this.showRefundModal = false;
-    this.refundAmount = 0;
-    this.refundReason = '';
-  }
-
-  confirmRefund() {
-    if (this.refundAmount && this.refundReason) {
-      console.log(`Reembolso procesado: $${this.refundAmount} por ${this.refundReason}`);
-      this.selectedPayment.estado_pago = 'reembolsado';
-      this.closeRefundModal();
-    }
+  getUniqueUsersCount(): number {
+    const uniqueUsers = new Set(this.payments.map(payment => payment.email_usuario));
+    return uniqueUsers.size;
   }
 
   getPaymentMethodName(id: number): string {
     switch (id) {
-      case 1: return 'Tarjeta de Crédito';
-      case 2: return 'Tarjeta de Débito';
-      case 3: return 'Pago Móvil';
-      default: return 'Método Desconocido';
+      case 1:
+        return 'Tarjeta de Crédito';
+      case 2:
+        return 'Tarjeta de Débito';
+      case 3:
+        return 'Pago Móvil';
+      default:
+        return 'Método Desconocido';
     }
   }
 
-  // Getter para verificar si el modal está visible
-  get isModalVisible(): boolean {
-    return !!this.selectedPayment;
-  }
-
-  openDeleteModal(payment: any) {
-    this.paymentToDelete = payment;
-    this.showDeleteModal = true;
-  }
-
-  cancelDeletePayment() {
-    this.showDeleteModal = false;
-    this.paymentToDelete = null;
-  }
-
-  confirmDeletePayment() {
-    if (!this.paymentToDelete) return;
-    this.pagosService.deletePago(this.paymentToDelete.id).subscribe({
+  onEstadoPagoChange(payment: any) {
+    this.pagoService.updatePago(payment.id, { estado_pago: payment.estado_pago }).subscribe({
       next: () => {
-        this.payments = this.payments.filter(p => p.id !== this.paymentToDelete.id);
-        this.applyFilters();
-        this.showDeleteModal = false;
-        this.paymentToDelete = null;
+        // Opcional: mostrar notificación de éxito
       },
-      error: (err) => {
-        alert('Error al eliminar el pago: ' + err.message);
+      error: () => {
+        // Opcional: revertir el cambio o mostrar error
       }
     });
+  }
+
+  deletePayment(payment: any) {
+    if (confirm('¿Estás seguro de que deseas eliminar este pago? Esta acción no se puede deshacer.')) {
+      this.pagoService.deletePago(payment.id).subscribe({
+        next: () => {
+          // Eliminar de la lista local y actualizar la tabla
+          this.payments = this.payments.filter(p => p.id !== payment.id);
+          this.filteredPayments = this.filteredPayments.filter(p => p.id !== payment.id);
+        },
+        error: () => {
+          alert('Error al eliminar el pago.');
+        }
+      });
+    }
   }
 } 

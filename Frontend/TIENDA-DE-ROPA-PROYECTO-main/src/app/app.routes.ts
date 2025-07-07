@@ -37,7 +37,7 @@ export const routes: Routes = [
   },
   {
     path: 'user-payment-history',
-    loadComponent: () => import('./features/gestion-pago/user-payment-history/user-payment-history.component').then(m => m.UserPaymentHistoryComponent),
+    loadComponent: () => import('./features/user-payment-history/user-payment-history/user-payment-history.component').then(m => m.UserPaymentHistoryComponent),
     canActivate: [authGuard]
   },
   {

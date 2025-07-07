@@ -38,7 +38,11 @@ class PagosController {
     const { body } = req;
     try {
       const productos = body.productos ? JSON.stringify(body.productos) : '[]';
-      const pago = await Pago.create({ ...body, productos });
+      let fecha_pago = body.fecha_pago;
+      if (!fecha_pago) {
+        fecha_pago = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
+      }
+      const pago = await Pago.create({ ...body, productos, fecha_pago });
       res.json(pago);
     } catch (error) {
       res.status(500).json({ msg: 'Hable con el administrador' });

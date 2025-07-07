@@ -53,6 +53,47 @@
           </div>
         </div>
 
+        <!-- Campos para Tarjeta de Crédito/Débito -->
+        <div *ngIf="selectedPaymentMethod === 1 || selectedPaymentMethod === 2" class="card-fields">
+          <label for="cardHolder">Nombre del Titular
+            <input id="cardHolder" name="cardHolder" type="text" [(ngModel)]="cardHolder" placeholder="Como aparece en la tarjeta" required />
+          </label>
+          <label for="cardNumber">Número de Tarjeta
+            <input id="cardNumber" name="cardNumber" type="text" [(ngModel)]="cardNumber" maxlength="16" placeholder="1234 5678 9012 3456" required />
+          </label>
+          <label for="cardExpiry">Fecha de Vencimiento (MM/AA)
+            <input id="cardExpiry" name="cardExpiry" type="text" [(ngModel)]="cardExpiry" maxlength="5" placeholder="MM/AA" required />
+          </label>
+          <label for="cardCVV">CVV
+            <input id="cardCVV" name="cardCVV" type="text" [(ngModel)]="cardCVV" maxlength="3" placeholder="123" required />
+          </label>
+          <label for="cardID">Cédula/ID (opcional)
+            <input id="cardID" name="cardID" type="text" [(ngModel)]="cardID" placeholder="Cédula o ID" />
+          </label>
+        </div>
+
+        <!-- Campos para Pago Móvil -->
+        <div *ngIf="selectedPaymentMethod === 3" class="pm-fields">
+          <label for="pmBank">Banco Receptor
+            <input id="pmBank" name="pmBank" type="text" [(ngModel)]="pmBank" placeholder="Banco" required />
+          </label>
+          <label for="pmPhone">Número de Teléfono
+            <input id="pmPhone" name="pmPhone" type="text" [(ngModel)]="pmPhone" maxlength="11" placeholder="04141234567" required />
+          </label>
+          <label for="pmCedula">Cédula/ID Receptor
+            <input id="pmCedula" name="pmCedula" type="text" [(ngModel)]="pmCedula" placeholder="Cédula o ID" required />
+          </label>
+          <label for="pmAmount">Monto
+            <input id="pmAmount" name="pmAmount" type="number" [value]="getTotal()" [readonly]="true" disabled />
+          </label>
+          <label for="pmID">ID de Transacción
+            <input id="pmID" name="pmID" type="text" [(ngModel)]="pmID" placeholder="Referencia" required />
+          </label>
+          <label for="pmDate">Fecha de la Transacción
+            <input id="pmDate" name="pmDate" type="date" [(ngModel)]="pmDate" required />
+          </label>
+        </div>
+
         <div class="payment-actions">
           <button class="btn-cancel" (click)="closePaymentPanel()">
             Cancelar

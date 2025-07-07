@@ -14,12 +14,6 @@ interface PaymentHistory {
   productos: any[];
 }
 
-interface PaymentHistoryFilter {
-  date?: string;
-  status?: string;
-  paymentMethod?: string;
-}
-
 @Component({
   selector: 'app-admin-payment-history',
   standalone: true,
@@ -31,7 +25,10 @@ export class AdminPaymentHistoryComponent implements OnInit {
   payments: any[] = [];
   filteredPayments: any[] = [];
   selectedPayment: PaymentHistory | null = null;
-  filter: PaymentHistoryFilter = {};
+  filterDate: string = '';
+  filterStatus: string = '';
+  filterPaymentMethod: string = '';
+  loading: boolean = true;
 
   constructor(
     private paymentHistoryService: PaymentHistoryService,
@@ -39,59 +36,61 @@ export class AdminPaymentHistoryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Cargar TODOS los pagos (no solo del usuario actual)
+    this.loading = true;
     this.loadAllPayments();
-    // Restaurar filtros desde localStorage si existen
-    const savedFilters = localStorage.getItem('adminPaymentHistoryFilters');
-    if (savedFilters) {
-      this.filter = JSON.parse(savedFilters);
-    }
   }
 
   loadAllPayments() {
+    this.loading = true;
     this.paymentHistoryService.getAllPaymentHistory().subscribe({
       next: (pagos: any[]) => {
-        this.payments = pagos || [];
-        this.filteredPayments = pagos || [];
-        // Aplicar filtros restaurados si existen
-        const savedFilters = localStorage.getItem('adminPaymentHistoryFilters');
-        if (savedFilters) {
-          this.applyFilters();
-        }
+        this.payments = pagos ? pagos.map(p => ({
+          ...p,
+          monto_pago: isNaN(Number(p.monto_pago)) ? 0 : Number(p.monto_pago)
+        })) : [];
+        this.filteredPayments = this.payments;
+        this.loading = false;
       },
       error: (error) => {
         this.payments = [];
         this.filteredPayments = [];
+        this.loading = false;
       }
     });
   }
 
-  applyFilters() {
-    // Guardar filtros en localStorage
-    localStorage.setItem('adminPaymentHistoryFilters', JSON.stringify(this.filter));
+  filterPayments() {
     this.filteredPayments = this.payments.filter(payment => {
       let matchesStatus = true;
-      let matchesPaymentMethod = true;
       let matchesDate = true;
-      if (this.filter.status && this.filter.status !== '') {
-        matchesStatus = payment.estado_pago === this.filter.status;
+      let matchesPaymentMethod = true;
+      
+      if (this.filterStatus && this.filterStatus !== '') {
+        matchesStatus = payment.estado_pago === this.filterStatus;
       }
-      if (this.filter.paymentMethod && this.filter.paymentMethod !== '') {
-        matchesPaymentMethod = payment.id_metodo_pago.toString() === this.filter.paymentMethod;
+      
+      if (this.filterDate && this.filterDate !== '') {
+        const [filterYear, filterMonth, filterDay] = this.filterDate.split('-').map(Number);
+        const paymentDateObj = new Date(payment.fecha_pago);
+        const paymentYear = paymentDateObj.getFullYear();
+        const paymentMonth = paymentDateObj.getMonth() + 1;
+        const paymentDay = paymentDateObj.getDate();
+        matchesDate = filterYear === paymentYear && filterMonth === paymentMonth && filterDay === paymentDay;
       }
-      if (this.filter.date && this.filter.date !== '') {
-        const selectedDateStr = this.filter.date;
-        const paymentDateStr = new Date(payment.fecha_pago).toISOString().slice(0, 10);
-        matchesDate = selectedDateStr === paymentDateStr;
+
+      if (this.filterPaymentMethod && this.filterPaymentMethod !== '') {
+        matchesPaymentMethod = payment.id_metodo_pago.toString() === this.filterPaymentMethod;
       }
-      return matchesStatus && matchesPaymentMethod && matchesDate;
+      
+      return matchesStatus && matchesDate && matchesPaymentMethod;
     });
   }
 
   clearFilters() {
-    this.filter = {};
+    this.filterDate = '';
+    this.filterStatus = '';
+    this.filterPaymentMethod = '';
     this.filteredPayments = this.payments;
-    localStorage.removeItem('adminPaymentHistoryFilters');
   }
 
   viewDetails(payment: PaymentHistory) {
@@ -102,13 +101,13 @@ export class AdminPaymentHistoryComponent implements OnInit {
     this.selectedPayment = null;
   }
 
-  getCompletedCount(): number {
-    return this.payments.filter(payment => payment.estado_pago === 'completado').length;
+  getTotalAmount(): number {
+    return this.filteredPayments.reduce((total, payment) => 
+      payment.estado_pago === 'completado' ? total + payment.monto_pago : total, 0);
   }
 
-  getTotalSpent(): number {
-    return this.payments.reduce((total, payment) => 
-      payment.estado_pago === 'completado' ? total + payment.monto_pago : total, 0);
+  getCompletedCount(): number {
+    return this.payments.filter(payment => payment.estado_pago === 'completado').length;
   }
 
   getUniqueUsersCount(): number {

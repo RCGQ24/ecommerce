@@ -1,0 +1,265 @@
+<div class="payment-history-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="main-title">
+        <i class="fas fa-history"></i>
+        Mi Historial de Pagos
+      </h1>
+      <p class="subtitle">Gestiona y revisa todas tus transacciones</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Cargando historial de pagos...</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" *ngIf="!loading">
+    <!-- Summary Cards -->
+    <div class="summary-section">
+      <div class="summary-card total-spent">
+        <div class="card-icon">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <div class="card-content">
+          <h3>Total Gastado</h3>
+          <p class="amount">{{ totalSpent | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+      </div>
+      <div class="summary-card completed">
+        <div class="card-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="card-content">
+          <h3>Compras Completadas</h3>
+          <p class="count">{{ completedCount }}</p>
+        </div>
+      </div>
+      <div class="summary-card total-transactions">
+        <div class="card-icon">
+          <i class="fas fa-receipt"></i>
+        </div>
+        <div class="card-content">
+          <h3>Total Transacciones</h3>
+          <p class="count">{{ filteredPayments.length }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="filters-header">
+        <h3><i class="fas fa-filter"></i> Filtros</h3>
+        <button class="clear-filters-btn" (click)="clearFilters()" *ngIf="hasActiveFilters()">
+          <i class="fas fa-times"></i>
+          Limpiar Filtros
+        </button>
+      </div>
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="dateFilter">
+            <i class="fas fa-calendar"></i>
+            Fecha
+          </label>
+          <input 
+            id="dateFilter"
+            type="date" 
+            [(ngModel)]="filter.date" 
+            (change)="applyFilters()"
+            class="filter-input"
+          >
+        </div>
+        <div class="filter-group">
+          <label for="statusFilter">
+            <i class="fas fa-info-circle"></i>
+            Estado
+          </label>
+          <select 
+            id="statusFilter"
+            [(ngModel)]="filter.status" 
+            (change)="applyFilters()"
+            class="filter-input"
+          >
+            <option value="">Todos los estados</option>
+            <option value="completado">Completado</option>
+            <option value="fallido">Fallido</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="methodFilter">
+            <i class="fas fa-credit-card"></i>
+            Método de Pago
+          </label>
+          <select 
+            id="methodFilter"
+            [(ngModel)]="filter.paymentMethod" 
+            (change)="applyFilters()"
+            class="filter-input"
+          >
+            <option value="">Todos los métodos</option>
+            <option value="1">Tarjeta de Crédito</option>
+            <option value="2">Tarjeta de Débito</option>
+            <option value="3">Pago Móvil</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment History Table -->
+    <div class="table-section">
+      <div class="table-header">
+        <h3><i class="fas fa-list"></i> Historial de Transacciones</h3>
+        <div class="table-actions">
+          <span class="results-count">
+            {{ filteredPayments.length }} transacciones encontradas
+          </span>
+        </div>
+      </div>
+      <div class="table-container">
+        <table class="payment-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>ID Transacción</th>
+              <th>Monto</th>
+              <th>Método de Pago</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let payment of filteredPayments; trackBy: trackByPaymentId" class="payment-row">
+              <td class="date-cell">
+                <div class="date-info">
+                  <span class="date">{{ payment.fecha_pago | date:'dd/MM/yyyy' }}</span>
+                  <span class="time">{{ payment.fecha_pago | date:'HH:mm' }}</span>
+                </div>
+              </td>
+              <td class="id-cell">
+                <span class="transaction-id">#{{ payment.id }}</span>
+              </td>
+              <td class="amount-cell">
+                <span class="amount">{{ getSafeAmount(payment.monto_pago) | currency:'USD':'symbol':'1.2-2' }}</span>
+              </td>
+              <td class="method-cell">
+                <span class="payment-method">
+                  <i class="fas" [class]="getPaymentMethodIcon(payment.id_metodo_pago)"></i>
+                  {{ getPaymentMethodName(payment.id_metodo_pago) }}
+                </span>
+              </td>
+              <td class="status-cell">
+                <span class="status-badge" [class]="payment.estado_pago">
+                  <i class="fas" [class]="getStatusIcon(payment.estado_pago)"></i>
+                  {{ payment.estado_pago | titlecase }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button class="view-details-btn" (click)="viewDetails(payment)" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                  <span>Detalles</span>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredPayments.length === 0" class="no-records">
+              <td colspan="6">
+                <div class="empty-state">
+                  <i class="fas fa-shopping-bag"></i>
+                  <h4>No hay transacciones</h4>
+                  <p>No se encontraron pagos que coincidan con los filtros aplicados</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Payment Details Modal -->
+    <div class="modal-overlay" *ngIf="selectedPayment">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>
+            <i class="fas fa-receipt"></i>
+            Detalles del Pago
+          </h3>
+          <button class="close-modal-btn" (click)="closeDetails()" title="Cerrar">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="payment-info">
+            <div class="info-grid">
+              <div class="info-item">
+                <label>ID Transacción</label>
+                <p class="transaction-id">#{{ selectedPayment.id }}</p>
+              </div>
+              <div class="info-item">
+                <label>Fecha y Hora</label>
+                <p>{{ selectedPayment.fecha_pago | date:'dd/MM/yyyy HH:mm' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Monto Total</label>
+                <p class="amount">{{ getSafeAmount(selectedPayment.monto_pago) | currency:'USD':'symbol':'1.2-2' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Método de Pago</label>
+                <p>
+                  <i class="fas" [class]="getPaymentMethodIcon(selectedPayment.id_metodo_pago)"></i>
+                  {{ getPaymentMethodName(selectedPayment.id_metodo_pago) }}
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Estado</label>
+                <span class="status-badge" [class]="selectedPayment.estado_pago">
+                  <i class="fas" [class]="getStatusIcon(selectedPayment.estado_pago)"></i>
+                  {{ selectedPayment.estado_pago | titlecase }}
+                </span>
+              </div>
+              <div class="info-item">
+                <label>Email</label>
+                <p>{{ selectedPayment.email_usuario }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="products-section" *ngIf="selectedPayment.productos && selectedPayment.productos.length > 0">
+            <h4>
+              <i class="fas fa-shopping-cart"></i>
+              Productos Comprados
+            </h4>
+            <div class="products-list">
+              <div class="product-item" *ngFor="let product of selectedPayment.productos; trackBy: trackByProductId">
+                <div class="product-image">
+                  <img 
+                    *ngIf="product.url_imagen || product.image" 
+                    [src]="product.url_imagen || product.image" 
+                    [alt]="product.nombre || product.productName"
+                    (error)="onImageError($event)"
+                  >
+                  <div class="no-image" *ngIf="!product.url_imagen && !product.image">
+                    <i class="fas fa-image"></i>
+                  </div>
+                </div>
+                <div class="product-details">
+                  <h5 class="product-name">{{ product.nombre || product.productName }}</h5>
+                  <p class="product-quantity">
+                    <i class="fas fa-hashtag"></i>
+                    Cantidad: {{ product.cantidad || product.quantity }}
+                  </p>
+                  <p class="product-price">
+                    <i class="fas fa-tag"></i>
+                    {{ getSafeAmount(product.precio || product.price) | currency:'USD':'symbol':'1.2-2' }} c/u
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

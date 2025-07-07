@@ -1,35 +1,74 @@
-<div class="admin-payment-management">
-  <div class="header">
-    <h2>Gestión de Pagos</h2>
-    <p>Administra y gestiona todos los pagos del sistema</p>
-  </div>
+<div *ngIf="loading" class="loading-container">
+  <div class="spinner"></div>
+  <p>Cargando historial de pagos...</p>
+</div>
 
-  <!-- Estado de carga -->
-  <div *ngIf="isLoading" class="loading-state">
-    <div class="loading-spinner">
-      <i class="fas fa-spinner fa-spin"></i>
-      <p>Cargando pagos...</p>
+<div *ngIf="!loading" class="payment-history-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="main-title">
+        <i class="fas fa-chart-line"></i>
+        Historial de Pagos - Administrador
+      </h1>
+      <p class="subtitle">Visualiza, modifica y gestiona todas las transacciones del sistema</p>
+    </div>
+  </div>
+  
+  <!-- Summary Cards Section -->
+  <div class="summary-section">
+    <div class="summary-cards">
+      <div class="summary-card total-spent">
+        <div class="card-icon">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <div class="card-content">
+          <h3>Total Recaudado</h3>
+          <p class="card-value">{{ getTotalAmount() | currency }}</p>
+        </div>
+      </div>
+      <div class="summary-card completed">
+        <div class="card-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="card-content">
+          <h3>Pagos Completados</h3>
+          <p class="card-value">{{ getCompletedCount() }}</p>
+        </div>
+      </div>
+      <div class="summary-card users">
+        <div class="card-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="card-content">
+          <h3>Usuarios Activos</h3>
+          <p class="card-value">{{ getUniqueUsersCount() }}</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Estado de error -->
-  <div *ngIf="error && !isLoading" class="error-state">
-    <div class="error-message">
-      <i class="fas fa-exclamation-triangle"></i>
-      <p>{{ error }}</p>
-      <button (click)="loadPayments()" class="btn-retry">
-        <i class="fas fa-redo"></i> Reintentar
-      </button>
-    </div>
-  </div>
-
-  <!-- Contenido principal -->
-  <div *ngIf="!isLoading && !error">
-    <!-- Filtros -->
-    <div class="filters">
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-container">
       <div class="filter-group">
-        <label>Estado:</label>
-        <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
+        <label class="filter-label">
+          <i class="fas fa-calendar"></i>
+          Fecha
+        </label>
+        <input 
+          type="date" 
+          [(ngModel)]="filterDate" 
+          (change)="filterPayments()"
+          class="filter-input"
+        >
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">
+          <i class="fas fa-filter"></i>
+          Estado
+        </label>
+        <select [(ngModel)]="filterStatus" (change)="filterPayments()" class="filter-select">
           <option value="">Todos los estados</option>
           <option value="completado">Completado</option>
           <option value="fallido">Fallido</option>
@@ -37,196 +76,163 @@
         </select>
       </div>
       <div class="filter-group">
-        <label>Método de Pago:</label>
-        <select [(ngModel)]="selectedMethod" (change)="applyFilters()">
+        <label class="filter-label">
+          <i class="fas fa-credit-card"></i>
+          Método de Pago
+        </label>
+        <select [(ngModel)]="filterPaymentMethod" (change)="filterPayments()" class="filter-select">
           <option value="">Todos los métodos</option>
           <option value="1">Tarjeta de Crédito</option>
           <option value="2">Tarjeta de Débito</option>
           <option value="3">Pago Móvil</option>
         </select>
       </div>
-      <div class="filter-group">
-        <label>Fecha del Pago:</label>
-        <input type="date" [(ngModel)]="selectedDate" (change)="applyFilters()" class="date-input">
-      </div>
-      <button class="btn-clear" (click)="clearFilters()">
-        <i class="fas fa-times"></i> Limpiar Filtros
+      <button class="clear-filters-btn" (click)="clearFilters()">
+        <i class="fas fa-times"></i>
+        Limpiar Filtros
       </button>
-    </div>
-
-    <!-- Tabla de pagos -->
-    <div class="table-container">
-      <!-- Mensaje cuando no hay pagos -->
-      <div *ngIf="filteredPayments.length === 0" class="no-payments">
-        <i class="fas fa-inbox"></i>
-        <h3>No hay pagos registrados</h3>
-        <p>No se encontraron transacciones en el sistema.</p>
-        <button (click)="loadPayments()" class="btn-refresh">
-          <i class="fas fa-sync"></i> Actualizar
-        </button>
-      </div>
-
-      <!-- Tabla con pagos -->
-      <table *ngIf="filteredPayments.length > 0">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Cliente</th>
-            <th>Monto</th>
-            <th>Método</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let payment of filteredPayments">
-            <td>{{ payment.id }}</td>
-            <td>{{ payment.fecha_pago | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ payment.email_usuario }}</td>
-            <td class="amount">{{ payment.monto_pago | currency }}</td>
-            <td>{{ getPaymentMethodName(payment.id_metodo_pago) }}</td>
-            <td>
-              <span class="status-badge" [class]="payment.estado_pago">
-                {{ payment.estado_pago }}
-              </span>
-            </td>
-            <td class="actions">
-              <button class="btn-view" (click)="viewPayment(payment)" title="Ver Detalles">
-                <i class="fas fa-eye"></i>
-              </button>
-              
-              <select class="status-select" 
-                      [value]="payment.estado_pago"
-                      (change)="changePaymentStatus(payment, $event)">
-                <option value="completado">Completado</option>
-                <option value="fallido">Fallido</option>
-                <option value="reembolsado">Reembolsado</option>
-              </select>
-              
-              <button class="btn-refund" 
-                      *ngIf="payment.estado_pago === 'completado'"
-                      (click)="processRefund(payment)" 
-                      title="Reembolsar">
-                <i class="fas fa-undo"></i>
-              </button>
-
-              <button class="btn-delete" (click)="openDeleteModal(payment)" title="Eliminar Pago">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
-  <!-- Modal de detalles -->
-  <div class="modal" *ngIf="selectedPayment">
+  <!-- Table Section -->
+  <div class="table-section">
+    <div class="table-container">
+      <div class="table-header">
+        <h2>Transacciones</h2>
+        <span class="results-count">{{ filteredPayments.length }} resultados</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="payment-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>ID Transacción</th>
+              <th>Cliente</th>
+              <th>Monto</th>
+              <th>Método de Pago</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let payment of filteredPayments" class="table-row">
+              <td class="date-cell">{{payment.fecha_pago | date:'dd/MM/yyyy HH:mm'}}</td>
+              <td class="id-cell">
+                <span class="transaction-id">{{payment.id}}</span>
+              </td>
+              <td class="user-cell">
+                <span class="user-email">{{payment.email_usuario}}</span>
+              </td>
+              <td class="amount-cell">
+                <span class="amount">{{payment.monto_pago | currency}}</span>
+              </td>
+              <td class="method-cell">
+                <span class="payment-method">{{getPaymentMethodName(payment.id_metodo_pago)}}</span>
+              </td>
+              <td class="status-cell">
+                <select [(ngModel)]="payment.estado_pago" (change)="onEstadoPagoChange(payment)" class="status-select">
+                  <option value="completado">Completado</option>
+                  <option value="fallido">Fallido</option>
+                  <option value="reembolsado">Reembolsado</option>
+                </select>
+              </td>
+              <td class="actions-cell">
+                <div class="action-buttons">
+                  <button class="action-btn view-btn" (click)="viewDetails(payment)" title="Ver Detalles">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="deletePayment(payment)" title="Eliminar pago">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredPayments.length === 0" class="no-records-row">
+              <td colspan="7" class="no-records">
+                <div class="empty-state">
+                  <i class="fas fa-shopping-bag"></i>
+                  <h3>No hay pagos registrados</h3>
+                  <p>No se encontraron transacciones con los filtros aplicados</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Details Modal -->
+  <div class="modal-overlay" *ngIf="selectedPayment">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Detalles del Pago</h3>
-        <button class="close-modal" (click)="closeModal()">
+        <h3>
+          <i class="fas fa-receipt"></i>
+          Detalles del Pago
+        </h3>
+        <button class="close-modal-btn" (click)="closeDetails()" title="Cerrar">
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <div class="payment-details">
-        <div class="detail-group">
-          <label>ID Transacción</label>
-          <p>{{selectedPayment.id}}</p>
-        </div>
-        <div class="detail-group">
-          <label>Fecha</label>
-          <p>{{selectedPayment.fecha_pago | date:'dd/MM/yyyy HH:mm'}}</p>
-        </div>
-        <div class="detail-group">
-          <label>Monto Total</label>
-          <p class="amount">{{selectedPayment.monto_pago | currency}}</p>
-        </div>
-        <div class="detail-group">
-          <label>Método de Pago</label>
-          <p>{{getPaymentMethodName(selectedPayment.id_metodo_pago)}}</p>
-        </div>
-        <div class="detail-group">
-          <label>Estado</label>
-          <span class="status-badge" [class]="selectedPayment.estado_pago">
-            {{selectedPayment.estado_pago | titlecase}}
-          </span>
-        </div>
-        <div class="detail-group">
-          <label>Email usuario</label>
-          <p>{{selectedPayment.email_usuario}}</p>
-        </div>
-        <div class="items-section">
-          <h4>Productos</h4>
-          <div class="items-list">
-            <div class="item" *ngFor="let item of selectedPayment.productos">
-              <img *ngIf="item.url_imagen || item.image" [src]="item.url_imagen || item.image" alt="{{item.nombre || item.productName}}" width="80" height="80" style="margin-right: 12px; border-radius: 8px; object-fit: cover;" />
-              <div class="item-details">
-                <p class="item-name">{{item.nombre || item.productName}}</p>
-                <p class="item-quantity">Cantidad: {{item.cantidad || item.quantity}}</p>
-                <p class="item-price">{{item.precio || item.price | currency}} <span style="font-size:0.95em;color:#888;">c/u</span></p>
-              </div>
+      <div class="modal-body">
+        <div class="payment-info">
+          <div class="info-grid">
+            <div class="info-item">
+              <label>ID Transacción</label>
+              <p class="transaction-id">#{{ selectedPayment.id }}</p>
+            </div>
+            <div class="info-item">
+              <label>Fecha y Hora</label>
+              <p>{{ selectedPayment.fecha_pago | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+            <div class="info-item">
+              <label>Monto Total</label>
+              <p class="amount">{{ selectedPayment.monto_pago | currency }}</p>
+            </div>
+            <div class="info-item">
+              <label>Método de Pago</label>
+              <p>
+                {{ getPaymentMethodName(selectedPayment.id_metodo_pago) }}
+              </p>
+            </div>
+            <div class="info-item">
+              <label>Estado</label>
+              <span class="status-badge" [class]="selectedPayment.estado_pago">
+                {{ selectedPayment.estado_pago | titlecase }}
+              </span>
+            </div>
+            <div class="info-item">
+              <label>Email</label>
+              <p>{{ selectedPayment.email_usuario }}</p>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de reembolso -->
-  <div class="modal" *ngIf="showRefundModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Procesar Reembolso</h3>
-        <button class="close-modal" (click)="closeRefundModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="refund-form">
-        <div class="form-group">
-          <label>Monto a reembolsar:</label>
-          <input type="number" [(ngModel)]="refundAmount" 
-                 [max]="selectedPayment?.monto_pago" 
-                 [min]="0.01" 
-                 step="0.01">
-        </div>
-        <div class="form-group">
-          <label>Motivo:</label>
-          <select [(ngModel)]="refundReason">
-            <option value="">Seleccionar motivo</option>
-            <option value="product_defect">Producto defectuoso</option>
-            <option value="wrong_item">Producto incorrecto</option>
-            <option value="customer_request">Solicitud del cliente</option>
-            <option value="delivery_issue">Problema de entrega</option>
-            <option value="other">Otro</option>
-          </select>
-        </div>
-        <div class="form-actions">
-          <button class="btn-cancel" (click)="closeRefundModal()">Cancelar</button>
-          <button class="btn-confirm" (click)="confirmRefund()" 
-                  [disabled]="!refundAmount || !refundReason">
-            Procesar Reembolso
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de eliminar pago -->
-  <div class="modal" *ngIf="showDeleteModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>¿Desea eliminar este pago?</h3>
-        <button class="close-modal" (click)="cancelDeletePayment()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="delete-confirmation">
-        <p>Esta acción no se puede deshacer.</p>
-        <div class="form-actions">
-          <button class="btn-cancel" (click)="cancelDeletePayment()">Cancelar</button>
-          <button class="btn-confirm" (click)="confirmDeletePayment()">Eliminar</button>
+        <div class="products-section" *ngIf="selectedPayment.productos && selectedPayment.productos.length > 0">
+          <h4>
+            <i class="fas fa-shopping-cart"></i>
+            Productos Comprados
+          </h4>
+          <div class="products-list">
+            <div class="product-item" *ngFor="let product of selectedPayment.productos">
+              <div class="product-image">
+                <img *ngIf="product.url_imagen || product.image" [src]="product.url_imagen || product.image" [alt]="product.nombre || product.productName">
+                <div class="no-image" *ngIf="!product.url_imagen && !product.image">
+                  <i class="fas fa-image"></i>
+                </div>
+              </div>
+              <div class="product-details">
+                <h5 class="product-name">{{ product.nombre || product.productName }}</h5>
+                <p class="product-quantity">
+                  <i class="fas fa-hashtag"></i>
+                  Cantidad: {{ product.cantidad || product.quantity }}
+                </p>
+                <p class="product-price">
+                  <i class="fas fa-tag"></i>
+                  {{ product.precio || product.price | currency }} c/u
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

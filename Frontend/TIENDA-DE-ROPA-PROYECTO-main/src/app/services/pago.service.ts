@@ -14,7 +14,7 @@ export interface Pago {
 @Injectable({
   providedIn: 'root'
 })
-export class PagosService {
+export class PagoService {
   private apiUrl = `${environment.apiUrl}/pagos`;
 
   constructor(private http: HttpClient) { }
@@ -26,4 +26,12 @@ export class PagosService {
   getAllPayments(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
-}
+
+  deletePago(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  updatePago(id: number, data: Partial<Pago>): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}`, data);
+  }
+} 

@@ -58,4 +58,8 @@ export class AuthService {
     if (!this.currentUser) return false;
     return roles.includes(this.currentUser.rol);
   }
+
+  getUserEmail(): string {
+    return this.currentUser?.email || '';
+  }
 } 

@@ -181,20 +181,18 @@
     }
 
     &.descargar-btn {
-      background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
+      background: linear-gradient(120deg, adjust-color(#2fc5a9, $lightness: -10%) 0%, #4b2fbb 100%);
       color: white;
-
       &:hover {
-        background: linear-gradient(120deg, #27b39a 0%, #3f28a0 100%);
+        background: linear-gradient(120deg, adjust-color(#27b39a, $lightness: -10%) 0%, #3f28a0 100%);
       }
     }
 
     &.aceptar-btn {
-      background: linear-gradient(120deg, #4b2fbb 0%, #2fc5a9 100%);
+      background: linear-gradient(120deg, #4b2fbb 0%, adjust-color(#2fc5a9, $lightness: -10%) 100%);
       color: white;
-
       &:hover {
-        background: linear-gradient(120deg, #3f28a0 0%, #27b39a 100%);
+        background: linear-gradient(120deg, #3f28a0 0%, adjust-color(#27b39a, $lightness: -10%) 100%);
       }
     }
   }

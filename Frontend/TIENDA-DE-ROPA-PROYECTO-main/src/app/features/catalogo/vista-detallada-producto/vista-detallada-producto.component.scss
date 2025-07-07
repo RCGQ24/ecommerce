@@ -319,7 +319,7 @@
   outline: 2px solid #4b2fbb;
   background: #fff;
   box-shadow: 0 2px 16px rgba(75,47,187,0.18);
-}
+  }
 
 .edit-form select {
   cursor: pointer;
@@ -346,12 +346,12 @@
   padding: 1rem 2rem;
   font-size: 1.1rem;
   font-weight: 600;
-  border: none;
+    border: none;
   border-radius: 12px;
   color: #fff;
   box-shadow: 0 4px 12px rgba(29, 28, 34, 0.15);
   transition: all 0.3s ease;
-  cursor: pointer;
+    cursor: pointer;
   font-family: 'Inter', Arial, sans-serif;
 }
 
@@ -381,7 +381,7 @@
   background: linear-gradient(120deg, #4b2fbb 0%, #2fc5a9 100%);
   box-shadow: 0 6px 20px rgba(75, 47, 187, 0.4);
   transform: translateY(-2px);
-}
+      }
 
 @keyframes modalFadeIn {
   0% { opacity: 0; transform: scale(0.85); }
