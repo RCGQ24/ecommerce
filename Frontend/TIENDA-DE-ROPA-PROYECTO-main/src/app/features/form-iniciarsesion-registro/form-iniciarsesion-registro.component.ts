@@ -56,35 +56,28 @@ export class FormIniciarsesionRegistroComponent implements OnInit {
     const email = this.loginForm.value.email;
     const password = this.loginForm.value.password;
 
-    if (email === 'admin@correo.com' && password === 'admin123') {
-      const usuario = { email, rol: 'admin' };
-      this.authService.login(usuario);
-      this.router.navigateByUrl('/admin-menu');
-    } else if (email === 'super@correo.com' && password === 'super123') {
-      const usuario = { email, rol: 'supervisor' };
-      this.authService.login(usuario);
-      this.router.navigateByUrl('/supervisor');
-    } else if (email === 'emp@correo.com' && password === 'emp123') {
-      const usuario = { email, rol: 'empleado' };
-      this.authService.login(usuario);
-      this.router.navigateByUrl('/empleado');}
-    else {
-      // Buscar usuario en la base de datos
-      this.http.get<any[]>('http://localhost:8000/api/usuarios').subscribe({
-        next: usuarios => {
-          const usuario = usuarios.find(
-            (u: any) => u.email === email && u.contrasena === password
-          );
-          if (usuario) {
-            this.authService.login({ ...usuario, rol: 'user' });
-            this.router.navigate([this.returnUrl]);
-          } else {
-            alert('Credenciales incorrectas');
-          }
-        },
-        error: err => alert('Error al buscar usuario: ' + (err.error?.msg || err.message))
-      });
-    }
+    this.http.post<any>('http://localhost:8000/api/usuarios/login', { email, contrasena: password }).subscribe({
+      next: usuario => {
+        // Redirigir según el rol
+        let rol = usuario.id_rol || usuario.rol;
+        if (rol === 'admin') {
+          this.authService.login({ ...usuario, rol: 'admin' });
+          this.router.navigateByUrl('/admin-menu');
+        } else if (rol === 'supervisor') {
+          this.authService.login({ ...usuario, rol: 'supervisor' });
+          this.router.navigateByUrl('/supervisor');
+        } else if (rol === 'empleado') {
+          this.authService.login({ ...usuario, rol: 'empleado' });
+          this.router.navigateByUrl('/empleado');
+        } else {
+          this.authService.login({ ...usuario, rol: 'user' });
+          this.router.navigate([this.returnUrl]);
+        }
+      },
+      error: err => {
+        alert(err.error?.msg || 'Credenciales incorrectas');
+      }
+    });
   }
 
   onRegister() {
