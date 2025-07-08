@@ -12,6 +12,7 @@ import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { roleGuard } from './guards/role.guard';
 import { UserPaymentHistoryComponent } from './features/gestion-pago/user-payment-history/user-payment-history.component';
+import { EmpleadoComponent } from './features/empleado/empleado.component';
 
 export const routes: Routes = [
   { path: '', component: CatalogoComponent },
@@ -52,6 +53,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin-menu/admin-payment-history/admin-payment-history.component').then(m => m.AdminPaymentHistoryComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] }
+  },
+  {
+    path: 'empleado',
+    component: EmpleadoComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['empleado'] }
   },
   // otras rutas...
 ];
