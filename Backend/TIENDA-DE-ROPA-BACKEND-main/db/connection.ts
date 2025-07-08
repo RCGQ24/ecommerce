@@ -5,6 +5,15 @@ export const db = new Sequelize('ecommerce', 'root', '', {
     dialect: 'mysql',
 }); 
 
+// Sincronizar modelos con la base de datos
+(async () => {
+    try {
+        await db.sync();
+        console.log('Base de datos sincronizada correctamente');
+    } catch (error) {
+        console.error('Error al sincronizar la base de datos:', error);
+    }
+})();
 
 /*import Sequelize, { Connection, ConnectionOptions } from 'sequelize';
 

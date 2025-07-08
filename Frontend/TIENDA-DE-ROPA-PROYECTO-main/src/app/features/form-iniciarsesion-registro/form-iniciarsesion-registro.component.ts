@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-form-iniciarsesion-registro',
@@ -16,14 +17,26 @@ export class FormIniciarsesionRegistroComponent implements OnInit {
   loginForm!: FormGroup;
   registerForm!: FormGroup;
   imagePath = 'https://i.imgur.com/QIrZWGIs.jpg'; // Imagen por defecto online
+  returnUrl: string = '/';
 
   constructor(
-  private fb: FormBuilder,
-  private http: HttpClient,
-  private router: Router
-) {}
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {
+    // Get return URL from route parameters or default to '/'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  }
 
   ngOnInit() {
+    // If user is already logged in, redirect to home
+    if (this.authService.isAuthenticated) {
+      this.router.navigate(['/']);
+      return;
+    }
+
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -40,35 +53,39 @@ export class FormIniciarsesionRegistroComponent implements OnInit {
   }
 
   onLogin() {
-  const email = this.loginForm.value.email;
-  const password = this.loginForm.value.password;
+    const email = this.loginForm.value.email;
+    const password = this.loginForm.value.password;
 
-  if (email === 'admin@correo.com' && password === 'admin123') {
-    const usuario = { email, rol: 'admin' };
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-    this.router.navigateByUrl('/admin-menu');
-  } else if (email === 'super@correo.com' && password === 'super123') {
-    const usuario = { email, rol: 'supervisor' };
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-    this.router.navigateByUrl('/supervisor');
-  } else {
-    // Buscar usuario en la base de datos
-    this.http.get<any[]>('http://localhost:8000/api/usuarios').subscribe({
-      next: usuarios => {
-        const usuario = usuarios.find(
-          (u: any) => u.email === email && u.contrasena === password
-        );
-        if (usuario) {
-          localStorage.setItem('usuario', JSON.stringify(usuario));
-          this.router.navigateByUrl('/');
-        } else {
-          alert('Credenciales incorrectas');
-        }
-      },
-      error: err => alert('Error al buscar usuario: ' + (err.error?.msg || err.message))
-    });
+    if (email === 'admin@correo.com' && password === 'admin123') {
+      const usuario = { email, rol: 'admin' };
+      this.authService.login(usuario);
+      this.router.navigateByUrl('/admin-menu');
+    } else if (email === 'super@correo.com' && password === 'super123') {
+      const usuario = { email, rol: 'supervisor' };
+      this.authService.login(usuario);
+      this.router.navigateByUrl('/supervisor');
+    } else if (email === 'emp@correo.com' && password === 'emp123') {
+      const usuario = { email, rol: 'empleado' };
+      this.authService.login(usuario);
+      this.router.navigateByUrl('/empleado');}
+    else {
+      // Buscar usuario en la base de datos
+      this.http.get<any[]>('http://localhost:8000/api/usuarios').subscribe({
+        next: usuarios => {
+          const usuario = usuarios.find(
+            (u: any) => u.email === email && u.contrasena === password
+          );
+          if (usuario) {
+            this.authService.login({ ...usuario, rol: 'user' });
+            this.router.navigate([this.returnUrl]);
+          } else {
+            alert('Credenciales incorrectas');
+          }
+        },
+        error: err => alert('Error al buscar usuario: ' + (err.error?.msg || err.message))
+      });
+    }
   }
-}
 
   onRegister() {
     if (
@@ -87,7 +104,11 @@ export class FormIniciarsesionRegistroComponent implements OnInit {
           };
           // 2. Registrar el usuario en la base de datos
           this.http.post('http://localhost:8000/api/usuarios', nuevoUsuario).subscribe({
-            next: res => alert('¡Registro exitoso!'),
+            next: (res: any) => {
+              alert('¡Registro exitoso!');
+              this.authService.login({ ...res, rol: 'user' });
+              this.router.navigate([this.returnUrl]);
+            },
             error: err => alert('Error al registrarse: ' + (err.error?.msg || err.message))
           });
         },

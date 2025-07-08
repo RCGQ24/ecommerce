@@ -3,8 +3,19 @@ import Pago from '../models/pago';
 
 class PagosController {
   async getPagos(req: Request, res: Response) {
-    const pagos = await Pago.findAll();
+    const { email_usuario } = req.query;
+    let pagos;
+    if (email_usuario) {
+      pagos = await Pago.findAll({ where: { email_usuario } });
+    } else {
+      pagos = await Pago.findAll();
+    }
     if (pagos) {
+      pagos = pagos.map(p => {
+        const plain: any = p.toJSON();
+        plain.productos = plain.productos ? JSON.parse(plain.productos) : [];
+        return plain;
+      });
       res.json(pagos);
     } else {
       res.status(404).json({ msg: 'Base de datos vacía' });
@@ -15,7 +26,9 @@ class PagosController {
     const { id } = req.params;
     const pago = await Pago.findByPk(id);
     if (pago) {
-      res.json(pago);
+      const plain: any = pago.toJSON();
+      plain.productos = plain.productos ? JSON.parse(plain.productos) : [];
+      res.json(plain);
     } else {
       res.status(404).json({ msg: `No existe un pago con el id ${id}` });
     }
@@ -24,7 +37,12 @@ class PagosController {
   async postPago(req: Request, res: Response) {
     const { body } = req;
     try {
-      const pago = await Pago.create(body);
+      const productos = body.productos ? JSON.stringify(body.productos) : '[]';
+      let fecha_pago = body.fecha_pago;
+      if (!fecha_pago) {
+        fecha_pago = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
+      }
+      const pago = await Pago.create({ ...body, productos, fecha_pago });
       res.json(pago);
     } catch (error) {
       res.status(500).json({ msg: 'Hable con el administrador' });

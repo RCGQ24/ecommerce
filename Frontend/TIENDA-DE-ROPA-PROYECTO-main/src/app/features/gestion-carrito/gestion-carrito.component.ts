@@ -2,103 +2,104 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { CartService, CartItem } from './cart.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-gestion-carrito',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './gestion-carrito.component.html',
-  styleUrl: './gestion-carrito.component.scss'
+  styleUrls: ['./gestion-carrito.component.scss']
 })
 export class GestionCarritoComponent {
   cartItems: CartItem[] = [];
-  showConfirmModal = false;
-  showContinueDeleteModal = false;
-  showEmptyCartModal = false;
+  showConfirmDeleteModal = false;
+  showLoginModal = false;
   showSuccessModal = false;
-  showPaymentSuccessModal = false;
+  showEmptyCartModal = false;
+  isConfirmModalVisible = false;
   productToDelete: CartItem | null = null;
 
   constructor(
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.cartService.items$.subscribe(items => {
       this.cartItems = items;
     });
   }
 
-  getSubtotal(): number {
-    return this.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  }
-
   getTotal(): number {
-    return this.getSubtotal();
+    return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
 
-  proceedToCheckout(): void {
-    if (this.cartItems.length === 0) return;
-    this.router.navigate(['/pago']);
+  increaseQuantity(item: CartItem) {
+    this.cartService.updateQuantity(item.id, item.quantity + 1);
   }
 
-  verFactura(): void {
-    this.showPaymentSuccessModal = false;
-    this.router.navigate(['/factura', 'demo']);
-    if (this.cartItems.length > 0) {
-      this.router.navigate(['/pago']);
+  decreaseQuantity(item: CartItem) {
+    if (item.quantity > 1) {
+      this.cartService.updateQuantity(item.id, item.quantity - 1);
+    } else {
+      this.showDeleteConfirmation(item);
     }
   }
 
-  removeItem(item: CartItem): void {
-    this.showConfirmModal = true;
+  showDeleteConfirmation(item: CartItem) {
     this.productToDelete = item;
+    this.showConfirmDeleteModal = true;
   }
 
-  cancelDelete(): void {
-    this.showConfirmModal = false;
+  cancelDeleteProduct() {
+    this.showConfirmDeleteModal = false;
     this.productToDelete = null;
   }
 
-  confirmDelete(): void {
+  confirmDeleteProduct() {
     if (this.productToDelete) {
-      this.cartService.removeItem(this.productToDelete.id);
-      this.showConfirmModal = false;
+      this.cartService.removeFromCart(this.productToDelete.id);
+      this.showConfirmDeleteModal = false;
       this.productToDelete = null;
       this.showSuccessModal = true;
     }
   }
 
-  closeSuccessModal(): void {
+  finishDeleting() {
     this.showSuccessModal = false;
-    if (this.cartItems.length > 0) {
-      this.showContinueDeleteModal = true;
-    } else {
+    if (this.cartItems.length === 0) {
       this.showEmptyCartModal = true;
+    } else {
+      this.isConfirmModalVisible = true;
     }
   }
 
-  continueDeletingProducts(): void {
-    this.showContinueDeleteModal = false;
+  continueDeletingProducts() {
+    this.isConfirmModalVisible = false;
   }
 
-  finishDeleting(): void {
-    this.showContinueDeleteModal = false;
+  closeContinueDeletingModal() {
+    this.isConfirmModalVisible = false;
   }
 
-  closeEmptyCartModal(): void {
+  proceedToCheckout() {
+    if (!this.authService.isAuthenticated) {
+      this.showLoginModal = true;
+    } else {
+      this.router.navigate(['/pago']);
+    }
+  }
+
+  closeLoginModal() {
+    this.showLoginModal = false;
+  }
+
+  goToLogin() {
+    this.showLoginModal = false;
+    this.router.navigate(['/login'], { queryParams: { returnUrl: '/carrito' } });
+  }
+
+  closeEmptyCartModal() {
     this.showEmptyCartModal = false;
-  }
-
-  isProductInCart(): boolean {
-    if (!this.productToDelete) return false;
-    return this.cartItems.some(item => item.id === this.productToDelete!.id);
-  }
-
-  incrementQuantity(item: CartItem): void {
-    this.cartService.incrementQuantity(item.id);
-  }
-
-  decrementQuantity(item: CartItem): void {
-    this.cartService.decrementQuantity(item.id);
   }
 }

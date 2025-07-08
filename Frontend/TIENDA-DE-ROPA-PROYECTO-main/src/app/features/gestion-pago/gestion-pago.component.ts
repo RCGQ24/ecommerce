@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../gestion-carrito/cart.service';
+import { FacturaService } from '../../services/factura.service';
+import { AuthService } from '../../services/auth.service';
+import { PagosService, Pago } from '../../services/pagos.service';
 
 @Component({
   selector: 'app-gestion-pago',
@@ -19,7 +22,9 @@ export class GestionPagoComponent {
     cardNumber: '',
     expiryDate: '',
     cvv: '',
-    cardHolder: ''
+    cardHolder: '',
+    cedula: '',
+    telefono: ''
   };
   cardErrors = {
     cardNumber: '',
@@ -31,7 +36,10 @@ export class GestionPagoComponent {
     transactionId: '',
     isVerifying: false,
     isApproved: false,
-    hasError: false
+    hasError: false,
+    bancoDestino: '',
+    cedulaDestino: '',
+    telefonoDestino: ''
   };
   paymentStatus = {
     isProcessing: false,
@@ -46,9 +54,37 @@ export class GestionPagoComponent {
     { id: 'pagoMovil', name: 'Pago Móvil' }
   ];
 
+  paymentMethod: string = '';
+  cardHolder: string = '';
+  cardNumber: string = '';
+  expiryDate: string = '';
+  cvv: string = '';
+  transactionId: string = '';
+
+  // MODAL: método de pago activo
+  activeModal: 'credit' | 'debit' | 'pagoMovil' | null = null;
+
+  openModal(method: 'credit' | 'debit' | 'pagoMovil') {
+    this.activeModal = method;
+    this.resetCardErrors();
+    this.resetPagoMovilStatus();
+    // Preselecciona el método para la lógica interna
+    this.selectedPaymentMethod = method === 'credit' ? 'credit' : method === 'debit' ? 'debit' : 'pagoMovil';
+  }
+
+  closeModal() {
+    this.activeModal = null;
+    this.selectedPaymentMethod = '';
+    this.resetCardErrors();
+    this.resetPagoMovilStatus();
+  }
+
   constructor(
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private facturaService: FacturaService,
+    private authService: AuthService,
+    private pagosService: PagosService
   ) {
     this.cartService.items$.subscribe(items => {
       this.cartItems = items;
@@ -71,7 +107,10 @@ export class GestionPagoComponent {
       transactionId: '',
       isVerifying: false,
       isApproved: false,
-      hasError: false
+      hasError: false,
+      bancoDestino: '',
+      cedulaDestino: '',
+      telefonoDestino: ''
     };
   }
 
@@ -212,27 +251,91 @@ export class GestionPagoComponent {
     this.paymentStatus.isProcessing = false;
     this.pagoMovilInfo.isApproved = true;
 
-    // Generar y guardar factura
-    const factura = {
-      id: Date.now(),
-      fecha: new Date().toLocaleDateString(),
-      cliente: {
-        nombre: 'Cliente Demo',
-        email: 'ecommerce-app@gmail.com',
-        direccion: 'Calle Ficticia 123, Ciudad, País'
+    // Obtener email del usuario autenticado
+    const user = this.authService.currentUser;
+    const email = user && user.email ? user.email : '';
+
+    if (!email) {
+      this.paymentStatus.error = 'Error: No se pudo obtener el email del usuario. Por favor, inicia sesión nuevamente.';
+      return;
+    }
+
+    const total = this.getTotal();
+    if (total <= 0) {
+      this.paymentStatus.error = 'Error: El monto total debe ser mayor a 0.';
+      return;
+    }
+
+    if (this.cartItems.length === 0) {
+      this.paymentStatus.error = 'Error: No hay items en el carrito.';
+      return;
+    }
+
+    // Determinar el id_metodo_pago según el método seleccionado
+    let id_metodo_pago = 1; // Por defecto
+    if (this.selectedPaymentMethod === 'credit') id_metodo_pago = 1;
+    else if (this.selectedPaymentMethod === 'debit') id_metodo_pago = 2;
+    else if (this.selectedPaymentMethod === 'pagoMovil') id_metodo_pago = 3;
+
+    // Registrar el pago en la base de datos
+    const productos = this.cartItems.map(item => ({
+      id: item.id,
+      nombre: item.name,
+      descripcion: item.descripcion || item.name,
+      talla: item.talla || 'Única',
+      precio: item.price,
+      cantidad: item.quantity,
+      url_imagen: item.url_imagen || item.image || ''
+    }));
+    const pago: Pago = {
+      id_metodo_pago: id_metodo_pago,
+      monto_pago: total,
+      estado_pago: 'completado',
+      email_usuario: email,
+      productos
+    } as any;
+    this.pagosService.registrarPago(pago).subscribe({
+      next: (res) => {
+        // Después de registrar el pago, generar la factura con el id real del pago
+        this.generarFacturaDespuesDePago(res.id, total, email);
       },
-      productos: this.cartItems,
-      subtotal: this.getTotal(),
-      impuestos: +(this.getTotal() * 0.16).toFixed(2),
-      total: +(this.getTotal() * 1.16).toFixed(2)
-    };
-    localStorage.setItem('facturaDemo', JSON.stringify(factura));
+      error: (error) => {
+        this.paymentStatus.error = 'Error al registrar el pago. Por favor, intente nuevamente.';
+        this.paymentStatus.isProcessing = false;
+      }
+    });
 
-    this.cartService.clearCart();
+    // Bloquea la UI tras el pago exitoso
+    this.activeModal = null;
+    this.showPaymentForm = false;
+  }
 
-    setTimeout(() => {
-      this.router.navigate(['/factura', 'demo']);
-    }, 1000);
+  private generarFacturaDespuesDePago(idPago: number, total: number, email: string): void {
+    const itemsFactura = this.cartItems.map(item => ({
+      id: item.id,
+      nombre: item.name,
+      descripcion: item.descripcion || item.name,
+      talla: item.talla || 'Única',
+      precio: item.price,
+      cantidad: item.quantity,
+      url_imagen: item.url_imagen || item.image || ''
+    }));
+
+    this.facturaService.generarFacturaDesdePago(
+      idPago,
+      total,
+      itemsFactura,
+      email
+    ).subscribe({
+      next: (factura) => {
+        this.cartService.clearCart();
+        this.router.navigate(['/factura', factura.id]);
+      },
+      error: (error) => {
+        this.paymentStatus.error = 'Error al generar la factura. Por favor, intente nuevamente.';
+        this.paymentStatus.isProcessing = false;
+      }
+    });
   }
 
   validatePaymentInfo(): boolean {
@@ -288,5 +391,48 @@ export class GestionPagoComponent {
   onCVVInput(event: any): void {
     this.paymentInfo.cvv = event.target.value.replace(/\D/g, '').slice(0, 4);
     this.validateCVV(this.paymentInfo.cvv);
+  }
+
+  onSubmit() {
+    if (this.paymentMethod === 'credito' || this.paymentMethod === 'debito') {
+      alert('Pago con tarjeta procesado correctamente.');
+    } else if (this.paymentMethod === 'pagoMovil') {
+      alert('Pago móvil procesado correctamente.');
+    }
+  }
+
+  // Limpia todo el estado de pago y formularios
+  resetAll(): void {
+    this.paymentInfo = {
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cardHolder: '',
+      cedula: '',
+      telefono: ''
+    };
+    this.cardErrors = {
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cardHolder: ''
+    };
+    this.pagoMovilInfo = {
+      transactionId: '',
+      isVerifying: false,
+      isApproved: false,
+      hasError: false,
+      bancoDestino: '',
+      cedulaDestino: '',
+      telefonoDestino: ''
+    };
+    this.paymentStatus = {
+      isProcessing: false,
+      isConfirmed: false,
+      error: ''
+    };
+    this.selectedPaymentMethod = '';
+    this.activeModal = null;
+    this.showPaymentForm = false;
   }
 } 

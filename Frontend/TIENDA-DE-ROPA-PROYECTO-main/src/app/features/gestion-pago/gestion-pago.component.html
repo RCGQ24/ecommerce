@@ -6,7 +6,115 @@
     <h2>Resumen de Pago</h2>
   </div>
 
-  <!-- Payment Confirmation Message -->
+  <!-- Resumen del pedido -->
+  <div class="order-summary" *ngIf="!paymentStatus.isConfirmed">
+    <h3>Resumen del Pedido</h3>
+    <div class="summary-item" *ngFor="let item of cartItems">
+      <span>{{item.name}} (x{{item.quantity}})</span>
+      <span>${{item.price * item.quantity}}</span>
+    </div>
+    <div class="total">
+      <strong>Total:</strong>
+      <strong>${{getTotal()}}</strong>
+    </div>
+  </div>
+
+  <!-- Métodos de pago visuales debajo del resumen -->
+  <div class="payment-methods-modern" *ngIf="!paymentStatus.isConfirmed">
+    <button class="method-btn credit" (click)="openModal('credit')" [disabled]="paymentStatus.isConfirmed">
+      Tarjeta de Crédito
+    </button>
+    <button class="method-btn debit" (click)="openModal('debit')" [disabled]="paymentStatus.isConfirmed">
+      Tarjeta de Débito
+    </button>
+    <button class="method-btn pago-movil" (click)="openModal('pagoMovil')" [disabled]="paymentStatus.isConfirmed">
+      Pago Móvil
+    </button>
+  </div>
+
+  <!-- MODALES DE PAGO -->
+  <div class="modal" *ngIf="activeModal && !paymentStatus.isConfirmed">
+    <div class="modal-content animated-modal">
+      <div class="modal-header">
+        <h3 *ngIf="activeModal === 'credit'">Pago con Tarjeta de Crédito</h3>
+        <h3 *ngIf="activeModal === 'debit'">Pago con Tarjeta de Débito</h3>
+        <h3 *ngIf="activeModal === 'pagoMovil'">Pago Móvil</h3>
+        <button class="close-modal" (click)="closeModal()">&times;</button>
+      </div>
+      <form *ngIf="activeModal === 'credit' || activeModal === 'debit'" (ngSubmit)="processPay()" #cardForm="ngForm" class="payment-form-container">
+        <div class="form-group">
+          <input type="text" [(ngModel)]="paymentInfo.cardHolder" name="cardHolder" required placeholder=" " />
+          <label>Nombre del Titular</label>
+          <span class="error-message" *ngIf="cardErrors.cardHolder">{{cardErrors.cardHolder}}</span>
+        </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="paymentInfo.cedula" name="cedula" required placeholder=" " />
+          <label>Cédula</label>
+        </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="paymentInfo.telefono" name="telefono" required placeholder=" " />
+          <label>Número de Teléfono</label>
+        </div>
+        <div class="form-group">
+          <input type="text" maxlength="19" [(ngModel)]="paymentInfo.cardNumber" name="cardNumber" required placeholder=" " />
+          <label>Número de Tarjeta</label>
+          <span class="error-message" *ngIf="cardErrors.cardNumber">{{cardErrors.cardNumber}}</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" maxlength="5" placeholder=" " [(ngModel)]="paymentInfo.expiryDate" name="expiryDate" required (input)="onExpiryDateInput($event)" />
+            <label>Fecha de Expiración (MM/AA)</label>
+            <span class="error-message" *ngIf="cardErrors.expiryDate">{{cardErrors.expiryDate}}</span>
+          </div>
+          <div class="form-group">
+            <input type="text" maxlength="4" placeholder=" " [(ngModel)]="paymentInfo.cvv" name="cvv" required (input)="onCVVInput($event)" />
+            <label>CVV</label>
+            <span class="error-message" *ngIf="cardErrors.cvv">{{cardErrors.cvv}}</span>
+          </div>
+        </div>
+        <button type="submit" [disabled]="!validateCardInfo() || paymentStatus.isProcessing">
+          <span *ngIf="!paymentStatus.isProcessing">Pagar</span>
+          <span *ngIf="paymentStatus.isProcessing">Procesando...</span>
+        </button>
+      </form>
+      <form *ngIf="activeModal === 'pagoMovil'" (ngSubmit)="processPay()" #pagoMovilForm="ngForm" class="payment-form-container">
+        <div class="form-group">
+          <input type="text" value="Banco Mercantil" readonly placeholder=" " />
+          <label>Banco destino</label>
+        </div>
+        <div class="form-group">
+          <input type="text" value="31123309" readonly placeholder=" " />
+          <label>Cédula/RIF destino</label>
+        </div>
+        <div class="form-group">
+          <input type="text" value="04123129223" readonly placeholder=" " />
+          <label>Número de Teléfono destino</label>
+        </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="pagoMovilInfo.transactionId" name="transactionId" required placeholder=" " />
+          <label>Número de Referencia</label>
+        </div>
+        <div class="form-group">
+          <input type="text" [value]="getTotal() + ' $ a tasa BCV'" readonly placeholder=" " />
+          <label>Monto a Pagar</label>
+        </div>
+        <div class="info-pago-movil">
+          <p>Realiza el pago móvil a los datos mostrados y luego ingresa el número de referencia para verificar.</p>
+        </div>
+        <button type="submit" [disabled]="!pagoMovilInfo.transactionId || paymentStatus.isProcessing">
+          <span *ngIf="!paymentStatus.isProcessing">Verificar y Pagar</span>
+          <span *ngIf="paymentStatus.isProcessing">Verificando...</span>
+        </button>
+        <div class="verification-status">
+          <span *ngIf="pagoMovilInfo.isVerifying" class="verifying">Verificando transacción...</span>
+          <span *ngIf="pagoMovilInfo.hasError" class="error-message">Número de referencia inválido.</span>
+          <span *ngIf="pagoMovilInfo.isApproved" class="success">¡Pago móvil aprobado!</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mensaje de confirmación de pago -->
   <div class="payment-confirmation" *ngIf="paymentStatus.isConfirmed">
     <div class="confirmation-content">
       <div class="success-icon">✓</div>
@@ -16,196 +124,8 @@
     </div>
   </div>
 
-  <!-- Payment Error Message -->
+  <!-- Mensaje de error de pago -->
   <div class="payment-error" *ngIf="paymentStatus.error">
     <p class="error-message">{{paymentStatus.error}}</p>
-  </div>
-
-  <!-- Regular Payment Content -->
-  <div *ngIf="!paymentStatus.isConfirmed">
-    <div class="order-summary">
-      <h3>Resumen del Pedido</h3>
-      <div class="summary-item" *ngFor="let item of cartItems">
-        <span>{{item.name}} (x{{item.quantity}})</span>
-        <span>${{item.price * item.quantity}}</span>
-      </div>
-      <div class="total">
-        <strong>Total:</strong>
-        <strong>${{getTotal()}}</strong>
-      </div>
-    </div>
-
-    <!-- Métodos de pago -->
-    <div class="payment-methods">
-      <button 
-        *ngFor="let method of paymentMethods"
-        class="method-button"
-        [class.selected]="selectedPaymentMethod === method.id"
-        (click)="selectPaymentMethod(method.id)">
-        {{method.name}}
-      </button>
-    </div>
-
-    <!-- Panel Modal de Pago -->
-    <div class="payment-modal" *ngIf="showPaymentForm">
-      <button class="close-modal" (click)="closePaymentPanel()">×</button>
-      <ng-container [ngSwitch]="selectedPaymentMethod">
-        <!-- Formulario de tarjeta -->
-        <form *ngSwitchCase="'credit'" (ngSubmit)="processPay()">
-          <div class="form-group">
-            <label>Nombre del Titular</label>
-            <input 
-              type="text" 
-              [(ngModel)]="paymentInfo.cardHolder" 
-              (input)="onCardHolderInput($event)"
-              placeholder="Nombre como aparece en la tarjeta"
-              [class.error]="cardErrors.cardHolder">
-            <span class="error-message" *ngIf="cardErrors.cardHolder">
-              {{cardErrors.cardHolder}}
-            </span>
-          </div>
-          <div class="form-group">
-            <label>Número de Tarjeta</label>
-            <input 
-              type="text" 
-              [(ngModel)]="paymentInfo.cardNumber" 
-              (input)="onCardNumberInput($event)"
-              placeholder="1234 5678 9012 3456"
-              [class.error]="cardErrors.cardNumber"
-              maxlength="19">
-            <span class="error-message" *ngIf="cardErrors.cardNumber">
-              {{cardErrors.cardNumber}}
-            </span>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Fecha de Expiración</label>
-              <input 
-                type="text" 
-                [(ngModel)]="paymentInfo.expiryDate" 
-                (input)="onExpiryDateInput($event)"
-                placeholder="MM/YY"
-                [class.error]="cardErrors.expiryDate"
-                maxlength="5">
-              <span class="error-message" *ngIf="cardErrors.expiryDate">
-                {{cardErrors.expiryDate}}
-              </span>
-            </div>
-            <div class="form-group">
-              <label>CVV</label>
-              <input 
-                type="text" 
-                [(ngModel)]="paymentInfo.cvv" 
-                (input)="onCVVInput($event)"
-                placeholder="123"
-                [class.error]="cardErrors.cvv"
-                maxlength="4">
-              <span class="error-message" *ngIf="cardErrors.cvv">
-                {{cardErrors.cvv}}
-              </span>
-            </div>
-          </div>
-          <button type="submit" [disabled]="!validateCardInfo() || paymentStatus.isProcessing">
-            <span *ngIf="!paymentStatus.isProcessing">Proceder al Pago</span>
-            <span *ngIf="paymentStatus.isProcessing">Procesando pago...</span>
-          </button>
-        </form>
-        <form *ngSwitchCase="'debit'" (ngSubmit)="processPay()">
-          <div class="form-group">
-            <label>Nombre del Titular</label>
-            <input 
-              type="text" 
-              [(ngModel)]="paymentInfo.cardHolder" 
-              (input)="onCardHolderInput($event)"
-              placeholder="Nombre como aparece en la tarjeta"
-              [class.error]="cardErrors.cardHolder">
-            <span class="error-message" *ngIf="cardErrors.cardHolder">
-              {{cardErrors.cardHolder}}
-            </span>
-          </div>
-          <div class="form-group">
-            <label>Número de Tarjeta</label>
-            <input 
-              type="text" 
-              [(ngModel)]="paymentInfo.cardNumber" 
-              (input)="onCardNumberInput($event)"
-              placeholder="1234 5678 9012 3456"
-              [class.error]="cardErrors.cardNumber"
-              maxlength="19">
-            <span class="error-message" *ngIf="cardErrors.cardNumber">
-              {{cardErrors.cardNumber}}
-            </span>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Fecha de Expiración</label>
-              <input 
-                type="text" 
-                [(ngModel)]="paymentInfo.expiryDate" 
-                (input)="onExpiryDateInput($event)"
-                placeholder="MM/YY"
-                [class.error]="cardErrors.expiryDate"
-                maxlength="5">
-              <span class="error-message" *ngIf="cardErrors.expiryDate">
-                {{cardErrors.expiryDate}}
-              </span>
-            </div>
-            <div class="form-group">
-              <label>CVV</label>
-              <input 
-                type="text" 
-                [(ngModel)]="paymentInfo.cvv" 
-                (input)="onCVVInput($event)"
-                placeholder="123"
-                [class.error]="cardErrors.cvv"
-                maxlength="4">
-              <span class="error-message" *ngIf="cardErrors.cvv">
-                {{cardErrors.cvv}}
-              </span>
-            </div>
-          </div>
-          <button type="submit" [disabled]="!validateCardInfo() || paymentStatus.isProcessing">
-            <span *ngIf="!paymentStatus.isProcessing">Proceder al Pago</span>
-            <span *ngIf="paymentStatus.isProcessing">Procesando pago...</span>
-          </button>
-        </form>
-        <!-- Pago Móvil -->
-        <div *ngSwitchCase="'pagoMovil'">
-          <div class="transaction-info">
-            <p class="info-text">ID de Transacción para verificar: <strong>6789</strong></p>
-            <p class="instruction-text">Por favor, realiza el pago móvil y luego ingresa el ID de transacción para verificar.</p>
-          </div>
-          <div class="form-group" *ngIf="!pagoMovilInfo.isApproved">
-            <label>ID de Transacción</label>
-            <input 
-              type="text" 
-              [(ngModel)]="pagoMovilInfo.transactionId" 
-              placeholder="Ingresa el ID de transacción"
-              [class.error]="pagoMovilInfo.hasError">
-            <span class="error-message" *ngIf="pagoMovilInfo.hasError">
-              ID de transacción incorrecto. Por favor, verifica e intenta nuevamente.
-            </span>
-          </div>
-          <div class="verification-status" *ngIf="pagoMovilInfo.isVerifying">
-            <p class="verifying">Verificando el pago...</p>
-          </div>
-          <button (click)="processPay()" [disabled]="pagoMovilInfo.isVerifying || paymentStatus.isProcessing">
-            <span *ngIf="!paymentStatus.isProcessing">Proceder al Pago</span>
-            <span *ngIf="paymentStatus.isProcessing">Procesando pago...</span>
-          </button>
-        </div>
-      </ng-container>
-    </div>
-
-    <button 
-      class="pay-button" 
-      (click)="processPay()"
-      [disabled]="!selectedPaymentMethod || 
-                 (selectedPaymentMethod !== 'pagoMovil' && !validateCardInfo()) ||
-                 pagoMovilInfo.isVerifying ||
-                 paymentStatus.isProcessing">
-      <span *ngIf="!paymentStatus.isProcessing">Proceder al Pago</span>
-      <span *ngIf="paymentStatus.isProcessing">Procesando pago...</span>
-    </button>
   </div>
 </div> 

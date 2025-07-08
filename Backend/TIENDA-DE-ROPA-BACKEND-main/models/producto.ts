@@ -17,7 +17,7 @@ Producto.init(
       type: DataTypes.STRING
     },
     id_categoria: {
-      type: DataTypes.STRING
+      type: DataTypes.INTEGER
     },
     precio: {
       type: DataTypes.DECIMAL(10, 2)
@@ -26,7 +26,7 @@ Producto.init(
       type: DataTypes.STRING
     },
     talla: {
-      type: DataTypes.CHAR
+      type: DataTypes.STRING
     },
     stock: {
       type: DataTypes.INTEGER

@@ -3,11 +3,16 @@ import Producto from '../models/producto';
 
 class ProductosController {
   async getProductos(req: Request, res: Response) {
-    const productos = await Producto.findAll();
-    if (productos) {
-      res.json(productos);
-    } else {
-      res.status(404).json({ msg: 'Base de datos vacía' });
+    try {
+      const productos = await Producto.findAll();
+      if (productos) {
+        res.json(productos);
+      } else {
+        res.status(404).json({ msg: 'Base de datos vacía' });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ msg: 'Error al consultar productos. Hable con el administrador.' });
     }
   }
 

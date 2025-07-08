@@ -1,24 +1,4 @@
-<!-- Barra de navegación con campo de búsqueda -->
-<nav class="navbar">
-  <ul class="nav-list">
-    <li>Hombre</li>
-    <li>Colecciones</li>
-    <li><a (click)="scrollToTop()">Inicio</a></li>
-  </ul>
-  <div class="logo">ecommerce-app</div>
-  <input
-    type="text"
-    [(ngModel)]="criterioConsulta"
-    (ngModelChange)="onSearchChange()"
-    placeholder="Buscar producto..."
-    class="search-bar"
-  />
-  <ul class="nav-list nav-list-right">
-    <li>VE | USD $</li>
-    <li><a routerLink="/login">Iniciar Sesión</a></li>
-    <li><a routerLink="/carrito">Carrito ({{ cartCount }})</a></li>
-  </ul>
-</nav>
+
 
 <!-- Sección de productos filtrados -->
 <section class="catalog-section">

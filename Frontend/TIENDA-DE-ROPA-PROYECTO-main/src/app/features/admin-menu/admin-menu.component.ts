@@ -1,37 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import{RouterModule} from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { ProductosService } from '../../services/productos.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-menu',
   templateUrl: './admin-menu.component.html',
   styleUrls: ['./admin-menu.component.scss'],
-  imports: [CommonModule, RouterModule]
+  standalone: true,
+  imports: [CommonModule, RouterModule, FormsModule]
 })
-export class AdminMenuComponent {
-  esAdmin = false;
+export class AdminMenuComponent implements OnInit {
+  showConfirmModal = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private productosService: ProductosService
+  ) {}
 
   ngOnInit() {
-    // Obtener datos del usuario desde localStorage
-    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-
-    // Validar si el usuario es administrador
-    this.esAdmin = usuario?.rol === 'admin';
-
-    // Depuración: Verificar el usuario en la consola
-    console.log('Usuario cargado:', usuario);
-    console.log('¿Es admin?:', this.esAdmin);
+    // Check if user is admin
+    if (!this.authService.hasRole(['admin'])) {
+      this.router.navigate(['/']);
+      return;
+    }
   }
 
   irA(ruta: string) {
-    console.log('Navegando a:', ruta); // <-- Agrega esto
+    console.log('Navegando a:', ruta);
     this.router.navigateByUrl(ruta);
   }
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelDeleteCarts() {
+    this.showConfirmModal = false;
+  }
+
+  confirmDeleteCarts() {
+    // Add logic to delete all carts here
+    this.showConfirmModal = false;
+    this.router.navigate(['/admin-menu']);
   }
 }

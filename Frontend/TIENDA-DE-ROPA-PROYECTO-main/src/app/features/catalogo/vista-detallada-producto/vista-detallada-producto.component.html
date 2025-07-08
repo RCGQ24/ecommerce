@@ -1,23 +1,3 @@
-<!-- Barra de navegación -->
-<nav class="navbar">
-  <ul class="nav-list">
-    <li>Hombre</li>
-    <li>Colecciones</li>
-    <li><a (click)="goToCatalogo()">Inicio</a></li>
-  </ul>
-  <div class="logo">ecommerce-app</div>
-  <ul class="nav-list nav-list-right">
-    <li>VE | USD $</li>
-    <li><a routerLink="/login">Iniciar Sesión</a></li>
-    <li>
-      <a class="cart-link" (click)="goToCarrito()">
-        Carrito
-        <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-
 <section class="product-detail-section" *ngIf="product">
   <div class="product-detail-container">
     <div class="product-detail-image">
@@ -32,6 +12,18 @@
       <button class="add-to-cart-btn" (click)="addToCart()" [disabled]="added">
         {{ added ? '¡Añadido!' : 'Agregar al carrito' }}
       </button>
+      
+      <!-- Botones de administración solo para admin -->
+      <div class="admin-actions" *ngIf="isAdmin">
+        <button class="edit-product-btn" (click)="editProduct()">
+          <i class="fas fa-edit"></i>
+          Modificar Producto
+        </button>
+        <button class="delete-product-btn" (click)="deleteProduct()">
+          <i class="fas fa-trash"></i>
+          Eliminar Producto
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -40,3 +32,59 @@
   <h2>Producto no encontrado</h2>
   <a routerLink="/catalogo">Volver al catálogo</a>
 </section>
+
+<!-- Login Required Modal -->
+<div class="modal-overlay" *ngIf="showLoginModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Iniciar Sesión Requerido</h3>
+    </div>
+    <div class="modal-body">
+      <p>Para agregar productos al carrito, necesitas iniciar sesión primero.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeLoginModal()">Cancelar</button>
+      <button class="btn-primary" (click)="goToLogin()">Iniciar Sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de edición de producto para admin -->
+<div class="modal-overlay" *ngIf="showEditModal">
+  <div class="modal-content edit-modal">
+    <div class="modal-header">
+      <h2>Editar Producto</h2>
+    </div>
+    <div class="modal-body">
+      <form #editForm="ngForm" class="edit-form" *ngIf="editingProduct">
+        <label for="nombre">Nombre del Producto:</label>
+        <input [(ngModel)]="editingProduct.nombre_producto" name="nombre" id="nombre" required />
+
+        <label for="precio">Precio:</label>
+        <input type="number" [(ngModel)]="editingProduct.precio" name="precio" id="precio" required min="0" step="0.01" />
+
+        <label for="categoria">Categoría:</label>
+        <select [(ngModel)]="editingProduct.id_categoria" name="categoria" id="categoria" required class="categoria-select">
+          <option value="" disabled>Selecciona una categoría...</option>
+          <option value="1" [selected]="editingProduct.id_categoria == 1">Deportivo</option>
+          <option value="2" [selected]="editingProduct.id_categoria == 2">Casual</option>
+          <option value="3" [selected]="editingProduct.id_categoria == 3">Formal</option>
+          <option value="4" [selected]="editingProduct.id_categoria == 4">Uniforme</option>
+        </select>
+
+        <label for="imagen">URL de Imagen:</label>
+        <input [(ngModel)]="editingProduct.url_imagen" name="imagen" id="imagen" required />
+
+        <label for="talla">Talla:</label>
+        <input [(ngModel)]="editingProduct.talla" name="talla" id="talla" required />
+
+        <label for="stock">Stock:</label>
+        <input type="number" [(ngModel)]="editingProduct.stock" name="stock" id="stock" required min="0" />
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button (click)="closeEditModal()">Cancelar</button>
+      <button (click)="saveProductChanges()">Guardar Cambios</button>
+    </div>
+  </div>
+</div>

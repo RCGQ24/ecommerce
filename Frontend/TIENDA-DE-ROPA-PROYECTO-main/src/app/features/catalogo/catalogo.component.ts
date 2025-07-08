@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Product } from './product.model';
 import { CatalogService } from './catalog.service';
@@ -23,10 +23,17 @@ export class CatalogoComponent {
   constructor(
     private catalogService: CatalogService,
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.cartService.items$.subscribe((items: any[]) => {
       this.cartCount = items.reduce((acc: any, item: any) => acc + item.quantity, 0);
+    });
+
+    this.route.queryParams.subscribe(params => {
+      const busqueda = params['busqueda'] || '';
+      this.criterioConsulta = busqueda;
+      this.searchSubject.next(busqueda);
     });
 
     this.productosFiltrados$ = combineLatest([

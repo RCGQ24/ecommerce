@@ -57,38 +57,50 @@
 }
 
 // Estilos del Carrito
+$primary-color: #2fc5a9;      // Teal from navbar
+$secondary-color: #4b2fbb;    // Purple from navbar
+$logo-color: #3a2d29;         // Dark brown from logo
+$danger-color: #ff4444;       // Red for remove/errors
+
+$text-dark: #333;
+$text-medium: #666;
+$text-light: #fff;
+
+$background-light: #fff;
+$background-medium: #f5f5f5;
+$border-light: #eee;
+
 .cart-container {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
 }
 
 .cart-title {
   font-size: 2rem;
-  color: #232323;
   margin-bottom: 2rem;
-  font-weight: 600;
+  color: $logo-color; // Usar color del logo para el título principal
 }
 
 .cart-content {
   display: grid;
-  grid-template-columns: 1fr 350px;
+  grid-template-columns: 2fr 1fr;
   gap: 2rem;
 }
 
 // Estilos de los items del carrito
 .cart-items {
-  background: white;
-  border-radius: 12px;
+  background: $background-light;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(43,47,63,0.13), 0 1.5px 4px rgba(0,0,0,0.08);
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .cart-item {
   display: flex;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #eee;
+  padding: 1rem;
+  border-bottom: 1px solid $border-light;
   gap: 1.5rem;
 
   &:last-child {
@@ -97,10 +109,10 @@
 }
 
 .item-image {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .item-details {
@@ -109,173 +121,309 @@
 
 .item-name {
   font-size: 1.1rem;
-  color: #232323;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem;
+  color: $text-dark;
 }
 
 .item-price {
-  color: #666;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: $primary-color; // Mantener color primario para el precio
+  font-weight: 600;
+  margin: 0.5rem 0;
 }
 
-.item-quantity {
-  color: #666;
-  font-size: 1rem;
-  margin-bottom: 0;
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
-.item-total {
-  text-align: right;
-  
-  p {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #232323;
-    margin-bottom: 0.5rem;
+.quantity-btn {
+  background: $primary-color; // Usar color primario para botones de cantidad
+  color: $text-light;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px; // Un poco más redondeado
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:hover {
+    background: adjust-color($primary-color, $lightness: -7%);
+    transform: scale(1.05);
   }
 }
 
-.remove-button {
-  color: #ff4444;
+.quantity {
+  font-size: 1.1rem;
+  font-weight: 500;
+  min-width: 20px; // Asegurar espacio para el número
+  text-align: center;
+}
+
+.remove-item {
   background: none;
   border: none;
+  color: adjust-color($danger-color, $lightness: -10%);
   cursor: pointer;
-  font-size: 0.9rem;
+  padding: 0.5rem;
   
   &:hover {
-    text-decoration: underline;
+    color: adjust-color($danger-color, $lightness: -10%);
   }
 }
 
 // Estilos del resumen
 .cart-summary {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: $background-light;
+  border-radius: 16px;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
   height: fit-content;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 18px rgba(43,47,63,0.13), 0 1.5px 4px rgba(0,0,0,0.08);
+  border: 1.5px solid $border-light;
+  min-width: 320px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: 0;
 
-  h2 {
-    font-size: 1.3rem;
-    color: #232323;
-    margin-bottom: 1.5rem;
+  .summary-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+    i {
+      color: $secondary-color;
+      font-size: 1.5rem;
+    }
+    h3 {
+      font-size: 1.25rem;
+      color: $primary-color;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .summary-items {
+    margin-bottom: 1.2rem;
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    font-size: 1.05rem;
+    color: $text-medium;
+    border-bottom: 1px dashed $border-light;
+    &:last-child {
+      border-bottom: none;
+    }
+    .summary-product {
+      font-weight: 500;
+    }
+    .summary-qty {
+      color: $secondary-color;
+      font-size: 0.98em;
+      margin-left: 0.2em;
+    }
+    .summary-price {
+      font-weight: 600;
+      color: $primary-color;
+    }
+  }
+
+  .summary-divider {
+    border-top: 2px solid $secondary-color;
+    margin: 1.1rem 0 0.7rem 0;
+    opacity: 0.18;
+  }
+
+  .summary-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: $logo-color;
+    margin-bottom: 1.2rem;
+    .summary-total-label {
+      letter-spacing: 0.5px;
+    }
+    .summary-total-value {
+      color: $secondary-color;
+      font-size: 1.22rem;
+    }
   }
 }
 
-.summary-row {
+.amazon-btn {
+  background: linear-gradient(90deg, $primary-color 60%, $secondary-color 100%);
+  color: $text-light;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.13rem;
+  font-weight: 700;
+  padding: 1.1rem 0;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgba(43,47,63,0.10);
+  transition: background 0.2s, transform 0.1s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  letter-spacing: 0.5px;
+  i {
+    font-size: 1.1em;
+    margin-right: 0.2em;
+  }
+  &:hover {
+    background: linear-gradient(90deg, adjust-color($primary-color, $lightness: -7%) 60%, adjust-color($secondary-color, $lightness: -7%) 100%);
+    transform: scale(1.02);
+  }
+}
+
+.continue-shopping-btn {
+  width: 100%;
+  margin-top: 0.7rem;
+  padding: 0.9rem 0;
+  background: $secondary-color;
+  color: $text-light;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  letter-spacing: 0.2px;
+  transition: background 0.2s, transform 0.1s;
+  cursor: pointer;
+  i {
+    font-size: 1em;
+    margin-right: 0.2em;
+  }
+  &:hover {
+    background: adjust-color($secondary-color, $lightness: -7%);
+    transform: scale(1.01);
+  }
+}
+
+.summary-item {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
-  color: #666;
+  color: $text-medium;
   
   &.total {
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #eee;
+    border-top: 1px solid $border-light;
     font-weight: 600;
-    color: #232323;
+    color: $text-dark;
     font-size: 1.1rem;
   }
 }
 
-.checkout-button {
+.checkout-btn {
   width: 100%;
   padding: 1rem;
-  background: #4b2fbb;
-  color: white;
+  background: $primary-color; // Color primario para checkout
+  color: $text-light;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 1.5rem;
-  transition: opacity 0.3s;
+  transition: background-color 0.2s, transform 0.1s;
 
-  &:hover:not(:disabled) {
-    opacity: 0.9;
-  }
-
-  &:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-}
-
-.continue-shopping {
-  width: 100%;
-  padding: 1rem;
-  background: white;
-  color: #232323;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 1rem;
-  
   &:hover {
-    background: #f5f5f5;
+    background: adjust-color($primary-color, $lightness: -7%);
+    transform: scale(1.02);
   }
 }
 
 // Estilos para carrito vacío
 .empty-cart {
   text-align: center;
-  padding: 4rem 2rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin: 0 auto;
-  
-  img {
-    width: 180px;
-    margin-bottom: 2rem;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-    color: #232323;
+  padding: 3rem;
+  background: $background-light;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  i {
+    font-size: 4rem;
+    color: rgba($primary-color, 0.6); // Icono con color primario sutil
     margin-bottom: 1rem;
   }
-  
+
   p {
-    color: #666;
+    color: $text-medium;
     margin-bottom: 2rem;
-    font-size: 1.1rem;
   }
-  
-  button {
-    padding: 1rem 2rem;
-    background: linear-gradient(120deg, #2fc5a9 0%, #4b2fbb 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    font-weight: 500;
-    
-    &:hover {
-      opacity: 0.9;
-    }
+}
+
+.continue-shopping {
+  padding: 0.8rem 1.5rem;
+  background: $secondary-color; // Color secundario para continuar comprando
+  color: $text-light;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background: adjust-color($secondary-color, $lightness: -7%);
   }
 }
 
 // Responsive
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .cart-content {
     grid-template-columns: 1fr;
   }
-  
+
   .cart-item {
     flex-direction: column;
     text-align: center;
-    
-    .item-total {
-      text-align: center;
-    }
   }
+
+  .item-image {
+    width: 150px;
+    height: 150px;
+  }
+
+  .quantity-controls {
+    justify-content: center;
+  }
+
+  .remove-item {
+    margin-top: 1rem;
+  }
+}
+
+// Sombra para todos los botones del carrito
+.btn-shadow {
+  box-shadow: 0 4px 18px rgba(43,47,63,0.32) !important;
+}
+
+// Sombra más suave para el botón de la papelera
+.remove-item.btn-shadow {
+  box-shadow: 0 2px 6px rgba(43,47,63,0.15) !important;
+}
+
+// Quitar sombra a los botones de seguir comprando aunque tengan btn-shadow
+.continue-shopping-btn,
+.continue-shopping {
+  box-shadow: none !important;
 }
 
 // Estilos del Modal
@@ -283,120 +431,199 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
 .modal-content {
-  background: white;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 350px;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  background: $background-light;
+  border-radius: 18px;
+  width: 95%;
+  max-width: 340px;
+  min-width: 220px;
+  box-shadow: 0 2px 16px rgba(43,47,63,0.13), 0 1.5px 4px rgba(0,0,0,0.08);
+  padding: 1.1rem 1.2rem 1.2rem 1.2rem;
+  font-size: 1rem;
+  transition: box-shadow 0.2s;
 }
 
 .modal-header {
-  padding: 0.5rem;
-  display: flex;
-  justify-content: flex-end;
-  border-bottom: none;
+  padding: 1rem 0.5rem 0.7rem 0.5rem;
+  border-bottom: 1px solid $border-light;
+  h3 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 1.13rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
 }
 
 .modal-body {
-  padding: 0.5rem 1.2rem 1rem;
+  padding: 0.8rem 0.5rem 0.5rem 0.5rem;
+  color: $text-medium;
+  font-size: 1.13rem;
+  text-align: center;
+  font-weight: 500;
+}
 
-  .confirmation-text {
-    margin: 0 0 1rem 0;
-    color: #232323;
-    font-size: 1.2rem;
-    font-weight: 500;
-    text-align: center;
-    line-height: 1.4;
+.btn-primary {
+  padding: 0.8rem 1.5rem;
+  background: $primary-color; // Verde de la paleta
+  border: none;
+  border-radius: 4px;
+  color: $text-light;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  &:hover {
+    background: adjust-color($primary-color, $lightness: -7%);
   }
 }
 
-.product-preview {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.8rem;
-  background: #f8f8f8;
-  border-radius: 8px;
-
-  img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 6px;
+.btn-violeta {
+  padding: 0.8rem 1.5rem;
+  background: $secondary-color; // Violeta de la paleta
+  border: none;
+  border-radius: 4px;
+  color: $text-light;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  &:hover {
+    background: adjust-color($secondary-color, $lightness: -7%);
   }
+}
 
-  .product-info {
-    h3 {
-      margin: 0 0 0.2rem 0;
-      font-size: 0.95rem;
-      color: #232323;
-    }
-
-    p {
-      margin: 0;
-      color: #666;
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
+.btn-secondary {
+  padding: 0.8rem 1.5rem;
+  background: $background-medium;
+  border: none;
+  border-radius: 4px;
+  color: $text-dark;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  &:hover {
+    background: #e0e0e0;
   }
 }
 
 .modal-footer {
-  padding: 0.8rem 1.2rem;
-  border-top: 1px solid #eee;
+  padding: 0.7rem 0.5rem 0.5rem 0.5rem;
+  border-top: 1px solid $border-light;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
+}
 
-  button {
-    padding: 0.6rem 1.5rem;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-width: 120px;
+.modal-footer button {
+  min-width: 110px;
+  flex: 1 1 0;
+  text-align: center;
+  margin: 0 0.2rem;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid $border-light;
+
+  h3 {
+    margin: 0;
+    color: $text-dark;
   }
+}
 
-  .cancel-button {
-    background: white;
-    border: 1px solid #ddd;
-    color: #666;
+.modal-body {
+  padding: 1.5rem;
+  color: $text-medium;
+}
 
-    &:hover {
-      background: #f5f5f5;
-    }
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid $border-light;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-dark {
+  padding: 0.8rem 1.5rem;
+  background: #3a2d29; // Color oscuro de la paleta
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  &:hover {
+    background: #2c211c;
   }
+}
 
-  .confirm-button {
-    background: #4b2fbb;
-    border: none;
-    color: white;
+.btn-light {
+  padding: 0.8rem 1.5rem;
+  background: $primary-color; // Color claro de la paleta
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  &:hover {
+    background: $secondary-color;
+  }
+}
 
-    &:hover {
-      background: #3a24a0;
-    }
+.btn-secondary {
+  padding: 0.8rem 1.5rem;
+  background: $background-medium;
+  border: none;
+  border-radius: 4px;
+  color: $text-dark;
+  cursor: pointer;
+  font-size: 1rem;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+}
+
+.btn-primary {
+  padding: 0.8rem 1.5rem;
+  background: $secondary-color; // Botón primario del modal con color secundario del tema
+  border: none;
+  border-radius: 4px;
+  color: $text-light;
+  cursor: pointer;
+  font-size: 1rem;
+
+  &:hover {
+    background: adjust-color($secondary-color, $lightness: -7%);
+  }
+}
+
+.btn-danger {
+  padding: 0.8rem 1.5rem;
+  background: $danger-color;
+  border: none;
+  border-radius: 4px;
+  color: $text-light;
+  cursor: pointer;
+  font-size: 1rem;
+  &:hover {
+    background: adjust-color($danger-color, $lightness: -10%);
   }
 }
 
@@ -416,7 +643,7 @@
 .empty-cart-text {
   text-align: center;
   font-size: 1.1rem;
-  color: #232323;
+  color: $text-dark;
   margin: 0.5rem 0 1rem;
 }
 

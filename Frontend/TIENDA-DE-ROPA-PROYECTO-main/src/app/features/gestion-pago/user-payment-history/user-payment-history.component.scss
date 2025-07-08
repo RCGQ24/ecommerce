@@ -1,0 +1,855 @@
+@use "sass:color";
+
+// Variables - Paleta de colores consistente con la aplicación
+$primary-color: #2fc5a9;      // Teal principal
+$secondary-color: #4b2fbb;    // Púrpura secundario
+$success-color: #10b981;      // Verde para éxito
+$danger-color: #dc2626;       // Rojo para errores
+$warning-color: #f59e0b;      // Amarillo para advertencias
+$background-color: #f7f8fa;   // Fondo principal
+$card-background: #ffffff;    // Fondo de tarjetas
+$border-color: #e2e8f0;       // Color de bordes
+$text-primary: #3a2d29;       // Texto principal (marrón oscuro)
+$text-secondary: #666666;     // Texto secundario
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$transition: all 0.2s ease-in-out;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin card-style {
+  background: $card-background;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border-color;
+  transition: $transition;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+@mixin button-style {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Main Container
+.payment-history-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, $background-color 0%, #f0f9f8 100%);
+  padding: 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+// Header Section
+.header-section {
+  margin-bottom: 32px;
+  
+  .header-content {
+    text-align: center;
+
+          .main-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, $text-primary 0%, $primary-color 50%, $secondary-color 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        
+        i {
+          color: $primary-color;
+      font-size: 2rem;
+          animation: pulse 2s infinite;
+        }
+      }
+      
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: $text-secondary;
+      margin: 0;
+    }
+  }
+}
+
+// Loading State
+.loading-container {
+  @include flex-center;
+  min-height: 400px;
+  
+  .loading-spinner {
+    text-align: center;
+    
+    i {
+      font-size: 3rem;
+      color: $primary-color;
+      margin-bottom: 16px;
+    }
+    
+    p {
+      color: $text-secondary;
+      font-size: 1.125rem;
+      margin: 0;
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Summary Section
+.summary-section {
+    display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+
+    .summary-card {
+    @include card-style;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s;
+    }
+    
+    &:hover::before {
+      left: 100%;
+    }
+    
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      @include flex-center;
+      font-size: 1.25rem;
+      
+      &.total-spent {
+        background: linear-gradient(135deg, $primary-color, color.adjust($primary-color, $lightness: -10%));
+        color: white;
+      }
+      
+      &.completed {
+        background: linear-gradient(135deg, $success-color, color.adjust($success-color, $lightness: -10%));
+        color: white;
+      }
+      
+      &.total-transactions {
+        background: linear-gradient(135deg, $secondary-color, color.adjust($secondary-color, $lightness: -10%));
+        color: white;
+      }
+    }
+    
+    .card-content {
+      flex: 1;
+      
+      h3 {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $text-secondary;
+        margin: 0 0 4px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      
+      .amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0;
+      }
+      
+      .count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Filters Section
+.filters-section {
+  @include card-style;
+  padding: 24px;
+  margin-bottom: 32px;
+  
+  .filters-header {
+    @include flex-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid $primary-color;
+    background: linear-gradient(90deg, transparent, rgba(47, 197, 169, 0.05), transparent);
+    border-radius: 8px 8px 0 0;
+    
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      i {
+        color: $primary-color;
+      }
+    }
+    
+        .clear-filters-btn {
+      @include button-style;
+      background: linear-gradient(120deg, $secondary-color, color.adjust($secondary-color, $lightness: -10%));
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(75, 47, 187, 0.2);
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+      }
+      
+      &:hover {
+        background: linear-gradient(120deg, color.adjust($secondary-color, $lightness: -10%), color.adjust($secondary-color, $lightness: -20%));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(75, 47, 187, 0.4);
+        
+        &::before {
+          left: 100%;
+        }
+      }
+      
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(75, 47, 187, 0.3);
+      }
+      
+      i {
+        margin-right: 6px;
+        font-size: 0.875rem;
+      }
+    }
+  }
+  
+  .filters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-top: 12px;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+      label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $secondary-color;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+
+      i {
+        color: $primary-color;
+        font-size: 1.1em;
+        margin-bottom: 2px;
+      }
+    }
+
+    .filter-input, select {
+        width: 100%;
+      padding: 12px 16px;
+      border: 2px solid $border-color;
+      border-radius: 10px;
+        font-size: 1rem;
+        background: #fff;
+      color: $text-primary;
+      font-weight: 500;
+      box-shadow: 0 1px 4px rgba(44, 197, 169, 0.04);
+      transition: border 0.2s, box-shadow 0.2s;
+
+      &:focus, &:hover {
+        border-color: $primary-color;
+        box-shadow: 0 2px 8px rgba(44, 197, 169, 0.10);
+          outline: none;
+      }
+    }
+  }
+}
+
+// Table Section
+.table-section {
+  @include card-style;
+  overflow: hidden;
+  
+  .table-header {
+    @include flex-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+    background: #fafbfc;
+    
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      i {
+        color: $primary-color;
+      }
+    }
+    
+    .table-actions {
+      .results-count {
+        font-size: 0.875rem;
+        color: $text-secondary;
+      }
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+
+    .payment-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead {
+        background: #f8fafc;
+        
+        th {
+          padding: 16px 12px;
+        text-align: left;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: $text-primary;
+          border-bottom: 1px solid $border-color;
+          white-space: nowrap;
+        }
+      }
+      
+      tbody {
+        .payment-row {
+          border-bottom: 1px solid $border-color;
+          transition: $transition;
+          position: relative;
+          
+          &:hover {
+            background: linear-gradient(135deg, #f8fafc, #f0f9f8);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(47, 197, 169, 0.1);
+          }
+          
+          td {
+            padding: 16px 12px;
+            vertical-align: middle;
+            
+            .date-info {
+              .date {
+                display: block;
+                font-weight: 500;
+                color: $text-primary;
+              }
+              
+              .time {
+                display: block;
+                font-size: 0.75rem;
+                color: $text-secondary;
+                margin-top: 2px;
+              }
+      }
+
+      .transaction-id {
+              font-family: 'Monaco', 'Menlo', monospace;
+              font-size: 0.875rem;
+              color: $primary-color;
+              font-weight: 500;
+      }
+
+      .amount {
+        font-weight: 600;
+              color: $text-primary;
+      }
+
+      .payment-method {
+        display: flex;
+        align-items: center;
+              gap: 6px;
+              font-size: 0.875rem;
+
+        i {
+                color: $primary-color;
+        }
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+              gap: 4px;
+              padding: 6px 12px;
+              border-radius: 20px;
+              font-size: 0.75rem;
+        font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              border: 1px solid transparent;
+              
+              &.completado {
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+                color: $success-color;
+                border-color: rgba(16, 185, 129, 0.3);
+              }
+              
+              &.fallido {
+                background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.2));
+                color: $danger-color;
+                border-color: rgba(220, 38, 38, 0.3);
+              }
+              
+              &.pendiente {
+                background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.2));
+                color: $warning-color;
+                border-color: rgba(245, 158, 11, 0.3);
+              }
+            }
+            
+            .view-details-btn {
+              @include button-style;
+              background: linear-gradient(120deg, $primary-color, $secondary-color);
+        color: white;
+              font-size: 0.875rem;
+
+        &:hover {
+                background: linear-gradient(120deg, $secondary-color, $primary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(47, 197, 169, 0.3);
+              }
+            }
+          }
+        }
+        
+        .no-records {
+          td {
+            padding: 60px 24px;
+            text-align: center;
+            
+            .empty-state {
+              i {
+                font-size: 3rem;
+                color: $text-secondary;
+                margin-bottom: 16px;
+              }
+              
+              h4 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: $text-primary;
+                margin: 0 0 8px 0;
+              }
+              
+              p {
+                color: $text-secondary;
+          margin: 0;
+              }
+            }
+          }
+        }
+        }
+      }
+    }
+  }
+
+// Modal Styles
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+    z-index: 1000;
+  padding: 24px;
+
+    .modal-content {
+    background: white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+      max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+      overflow-y: auto;
+    animation: modalFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+      .modal-header {
+      @include flex-between;
+      padding: 24px;
+      border-bottom: 1px solid $border-color;
+      
+      h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: $text-primary;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        i {
+          color: $primary-color;
+        }
+      }
+      
+      .close-modal-btn {
+        @include button-style;
+        background: transparent;
+        color: $text-secondary;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        
+          &:hover {
+          background: linear-gradient(135deg, rgba(47, 197, 169, 0.1), rgba(75, 47, 187, 0.1));
+          color: $primary-color;
+          transform: rotate(90deg);
+        }
+      }
+    }
+    
+    .modal-body {
+      padding: 24px;
+      
+      .payment-info {
+        margin-bottom: 32px;
+        
+        .info-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+          
+          .info-item {
+          label {
+            display: block;
+              font-size: 0.875rem;
+              font-weight: 500;
+              color: $text-secondary;
+              margin-bottom: 4px;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            
+            p, span {
+              font-size: 1rem;
+              color: $text-primary;
+            margin: 0;
+              font-weight: 500;
+              
+              &.transaction-id {
+                font-family: 'Monaco', 'Menlo', monospace;
+                color: $primary-color;
+              }
+
+            &.amount {
+                font-weight: 600;
+                color: $success-color;
+              }
+            }
+            
+            .status-badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              padding: 8px 16px;
+              border-radius: 20px;
+              font-size: 0.875rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              border: 1px solid transparent;
+              
+              &.completado {
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+                color: $success-color;
+                border-color: rgba(16, 185, 129, 0.3);
+              }
+              
+              &.fallido {
+                background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.2));
+                color: $danger-color;
+                border-color: rgba(220, 38, 38, 0.3);
+              }
+              
+              &.pendiente {
+                background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.2));
+                color: $warning-color;
+                border-color: rgba(245, 158, 11, 0.3);
+              }
+            }
+          }
+        }
+      }
+      
+      .products-section {
+        h4 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: $text-primary;
+          margin: 0 0 20px 0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          
+          i {
+            color: $primary-color;
+            transition: all 0.3s ease;
+          }
+          
+          &:hover i {
+            color: $secondary-color;
+            transform: scale(1.1);
+          }
+        }
+        
+        .products-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          
+                      .product-item {
+              display: flex;
+              gap: 16px;
+              padding: 20px;
+              border: 1px solid $border-color;
+              border-radius: $border-radius;
+              background: linear-gradient(135deg, #fafbfc, #f0f9f8);
+              transition: all 0.3s ease;
+              
+              &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(47, 197, 169, 0.15);
+                border-color: $primary-color;
+              }
+            
+            .product-image {
+              width: 80px;
+              height: 80px;
+              border-radius: $border-radius;
+              overflow: hidden;
+              flex-shrink: 0;
+              
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+              
+              .no-image {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #e2e8f0, #f0f9f8);
+                @include flex-center;
+                color: $primary-color;
+                font-size: 1.5rem;
+              }
+            }
+            
+            .product-details {
+              flex: 1;
+              
+              .product-name {
+                font-size: 1rem;
+                    font-weight: 600;
+                color: $text-primary;
+                margin: 0 0 8px 0;
+              }
+              
+              .product-quantity,
+              .product-price {
+                font-size: 0.875rem;
+                color: $text-secondary;
+                margin: 4px 0;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                
+                i {
+                  color: $primary-color;
+                  transition: all 0.3s ease;
+                }
+                
+                &:hover i {
+                  color: $secondary-color;
+                  transform: scale(1.1);
+                }
+              }
+              
+              .product-price {
+                font-weight: 500;
+                color: $text-primary;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes modalFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .payment-history-container {
+    padding: 16px;
+  }
+  
+  .header-section .header-content .main-title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .summary-section {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .table-container {
+    .payment-table {
+      font-size: 0.875rem;
+      
+      thead th,
+      tbody td {
+        padding: 12px 8px;
+      }
+    }
+  }
+  
+  .modal-overlay {
+    padding: 16px;
+    
+    .modal-content {
+      .modal-body {
+        .payment-info .info-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        
+        .products-section .products-list .product-item {
+          flex-direction: column;
+          text-align: center;
+          
+          .product-image {
+            align-self: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+.filter-group input[type="date"].filter-input {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 0.95rem;
+  height: 40px;
+  box-sizing: border-box;
+} 
