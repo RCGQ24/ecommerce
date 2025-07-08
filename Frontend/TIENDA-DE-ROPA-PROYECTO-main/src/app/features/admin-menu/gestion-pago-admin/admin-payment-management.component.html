@@ -111,6 +111,7 @@
               <th>Monto</th>
               <th>Método de Pago</th>
               <th>Estado</th>
+              <th style="color:#222;font-weight:600;">N° Factura</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -136,6 +137,7 @@
                   <option value="reembolsado">Reembolsado</option>
                 </select>
               </td>
+              <td class="factura-cell"><span style="color:#4b2fbb;font-weight:600;">{{ payment.numero_factura || '-' }}</span></td>
               <td class="actions-cell">
                 <div class="action-buttons">
                   <button class="action-btn view-btn" (click)="viewDetails(payment)" title="Ver Detalles">

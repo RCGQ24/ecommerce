@@ -129,6 +129,7 @@
               <th>Monto</th>
               <th>Método de Pago</th>
               <th>Estado</th>
+              <th style="color:#222;font-weight:600;">N° Factura</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -158,6 +159,7 @@
                   {{ payment.estado_pago | titlecase }}
                 </span>
               </td>
+              <td class="factura-cell"><span style="color:#4b2fbb;font-weight:600;">{{ payment.numero_factura || '-' }}</span></td>
               <td class="actions-cell">
                 <button class="view-details-btn" (click)="viewDetails(payment)" title="Ver detalles">
                   <i class="fas fa-eye"></i>

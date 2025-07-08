@@ -271,9 +271,6 @@ export class GestionPagoComponent {
       return;
     }
 
-    // Generar un ID de pago único basado en timestamp
-    const idPago = Date.now();
-
     // Determinar el id_metodo_pago según el método seleccionado
     let id_metodo_pago = 1; // Por defecto
     if (this.selectedPaymentMethod === 'credit') id_metodo_pago = 1;
@@ -299,14 +296,18 @@ export class GestionPagoComponent {
     } as any;
     this.pagosService.registrarPago(pago).subscribe({
       next: (res) => {
-        // Después de registrar el pago, generar la factura
-        this.generarFacturaDespuesDePago(idPago, total, email);
+        // Después de registrar el pago, generar la factura con el id real del pago
+        this.generarFacturaDespuesDePago(res.id, total, email);
       },
       error: (error) => {
         this.paymentStatus.error = 'Error al registrar el pago. Por favor, intente nuevamente.';
         this.paymentStatus.isProcessing = false;
       }
     });
+
+    // Bloquea la UI tras el pago exitoso
+    this.activeModal = null;
+    this.showPaymentForm = false;
   }
 
   private generarFacturaDespuesDePago(idPago: number, total: number, email: string): void {
@@ -398,5 +399,40 @@ export class GestionPagoComponent {
     } else if (this.paymentMethod === 'pagoMovil') {
       alert('Pago móvil procesado correctamente.');
     }
+  }
+
+  // Limpia todo el estado de pago y formularios
+  resetAll(): void {
+    this.paymentInfo = {
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cardHolder: '',
+      cedula: '',
+      telefono: ''
+    };
+    this.cardErrors = {
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cardHolder: ''
+    };
+    this.pagoMovilInfo = {
+      transactionId: '',
+      isVerifying: false,
+      isApproved: false,
+      hasError: false,
+      bancoDestino: '',
+      cedulaDestino: '',
+      telefonoDestino: ''
+    };
+    this.paymentStatus = {
+      isProcessing: false,
+      isConfirmed: false,
+      error: ''
+    };
+    this.selectedPaymentMethod = '';
+    this.activeModal = null;
+    this.showPaymentForm = false;
   }
 } 

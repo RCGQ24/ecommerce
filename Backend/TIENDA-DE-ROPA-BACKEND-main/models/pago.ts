@@ -9,10 +9,16 @@ export class Pago extends Model {
   public email_usuario!: string;
   public fecha_pago!: Date;
   public productos!: string;
+  public numero_factura!: string;
 }
 
 Pago.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     id_metodo_pago: {
       type: DataTypes.INTEGER
     },
@@ -31,6 +37,9 @@ Pago.init(
     },
     productos: {
       type: DataTypes.TEXT
+    },
+    numero_factura: {
+      type: DataTypes.STRING
     }
   },
   {

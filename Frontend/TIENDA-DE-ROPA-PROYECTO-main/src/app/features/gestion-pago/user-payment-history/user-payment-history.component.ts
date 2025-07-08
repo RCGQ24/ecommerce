@@ -13,6 +13,7 @@ interface PaymentHistory {
   estado_pago: string;
   email_usuario: string;
   productos: any[];
+  numero_factura?: string;
 }
 
 interface PaymentHistoryFilter {

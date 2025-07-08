@@ -7,6 +7,11 @@ class Pago extends sequelize_1.Model {
 }
 exports.Pago = Pago;
 Pago.init({
+    id: {
+        type: sequelize_1.DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     id_metodo_pago: {
         type: sequelize_1.DataTypes.INTEGER
     },
@@ -25,6 +30,9 @@ Pago.init({
     },
     productos: {
         type: sequelize_1.DataTypes.TEXT
+    },
+    numero_factura: {
+        type: sequelize_1.DataTypes.STRING
     }
 }, {
     sequelize: connection_1.db,

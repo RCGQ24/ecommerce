@@ -84,6 +84,29 @@ class FacturasController {
                     email,
                     items_detalle // Guardar los ítems serializados
                 });
+                // ACTUALIZAR EL PAGO CON EL NÚMERO DE FACTURA
+                if (id_pago && numero_factura) {
+                    const [updatedRows] = yield connection_1.db.models.Pago.update({ numero_factura }, { where: { id: id_pago } });
+                    console.log(`Pago actualizado con numero_factura: ${numero_factura}, filas afectadas: ${updatedRows}`);
+                }
+                // RESTAR STOCK DE LOS PRODUCTOS COMPRADOS
+                if (Array.isArray(items)) {
+                    for (const item of items) {
+                        try {
+                            const producto = yield connection_1.db.models.Producto.findByPk(item.id);
+                            if (producto) {
+                                const stockActual = Number(producto.get('stock')) || 0;
+                                const cantidadComprada = Number(item.cantidad) || 1;
+                                const nuevoStock = Math.max(0, stockActual - cantidadComprada);
+                                yield producto.update({ stock: nuevoStock });
+                                console.log(`Stock actualizado para producto ${item.id}: ${stockActual} -> ${nuevoStock}`);
+                            }
+                        }
+                        catch (err) {
+                            console.error(`Error al actualizar stock para producto ${item.id}:`, err);
+                        }
+                    }
+                }
                 res.json(factura);
             }
             catch (error) {

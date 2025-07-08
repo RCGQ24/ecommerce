@@ -21,19 +21,19 @@
 
   <!-- Métodos de pago visuales debajo del resumen -->
   <div class="payment-methods-modern" *ngIf="!paymentStatus.isConfirmed">
-    <button class="method-btn credit" (click)="openModal('credit')">
+    <button class="method-btn credit" (click)="openModal('credit')" [disabled]="paymentStatus.isConfirmed">
       Tarjeta de Crédito
     </button>
-    <button class="method-btn debit" (click)="openModal('debit')">
+    <button class="method-btn debit" (click)="openModal('debit')" [disabled]="paymentStatus.isConfirmed">
       Tarjeta de Débito
     </button>
-    <button class="method-btn pago-movil" (click)="openModal('pagoMovil')">
+    <button class="method-btn pago-movil" (click)="openModal('pagoMovil')" [disabled]="paymentStatus.isConfirmed">
       Pago Móvil
     </button>
   </div>
 
   <!-- MODALES DE PAGO -->
-  <div class="modal" *ngIf="activeModal">
+  <div class="modal" *ngIf="activeModal && !paymentStatus.isConfirmed">
     <div class="modal-content animated-modal">
       <div class="modal-header">
         <h3 *ngIf="activeModal === 'credit'">Pago con Tarjeta de Crédito</h3>
