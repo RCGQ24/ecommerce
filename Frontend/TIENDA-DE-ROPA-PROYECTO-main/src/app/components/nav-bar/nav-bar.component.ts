@@ -55,14 +55,14 @@ import { FormsModule } from '@angular/forms';
               Mis Compras
             </a>
           </li>
+          <li *ngIf="authService.hasRole(['user'])">
+            <a routerLink="/carrito" class="cart-link">
+              <i class="fas fa-shopping-cart"></i>
+              Carrito
+              <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
+            </a>
+          </li>
         </ng-container>
-        <li>
-          <a routerLink="/carrito" class="cart-link">
-            <i class="fas fa-shopping-cart"></i>
-            Carrito
-            <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
-          </a>
-        </li>
       </ul>
     </nav>
   `,
@@ -240,4 +240,4 @@ export class NavBarComponent implements OnInit {
       this.router.navigate(['/catalogo'], { queryParams: { busqueda: this.searchTerm } });
     }
   }
-} 
+}
