@@ -97,25 +97,6 @@ class UsuariosController {
             res.json(usuario);
         });
     }
-    loginUsuario(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { email, contrasena } = req.body;
-            if (!email || !contrasena) {
-                return res.status(400).json({ msg: 'Email y contraseña son requeridos' });
-            }
-            try {
-                const usuario = yield usuario_1.default.findOne({ where: { email, contrasena } });
-                if (!usuario) {
-                    return res.status(401).json({ msg: 'Credenciales incorrectas' });
-                }
-                res.json(usuario);
-            }
-            catch (error) {
-                console.log(error);
-                res.status(500).json({ msg: 'Error en el servidor' });
-            }
-        });
-    }
 }
 exports.default = new UsuariosController();
 //# sourceMappingURL=usuarios.js.map

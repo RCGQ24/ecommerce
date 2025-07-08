@@ -87,23 +87,6 @@ class UsuariosController {
     await usuario.update({ estado: false });
     res.json(usuario);
   }
-
-  async loginUsuario(req: Request, res: Response) {
-    const { email, contrasena } = req.body;
-    if (!email || !contrasena) {
-      return res.status(400).json({ msg: 'Email y contraseña son requeridos' });
-    }
-    try {
-      const usuario = await Usuario.findOne({ where: { email, contrasena } });
-      if (!usuario) {
-        return res.status(401).json({ msg: 'Credenciales incorrectas' });
-      }
-      res.json(usuario);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ msg: 'Error en el servidor' });
-    }
-  }
 }
 
 export default new UsuariosController();
