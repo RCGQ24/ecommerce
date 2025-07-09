@@ -12,7 +12,7 @@ import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { roleGuard } from './guards/role.guard';
 import { UserPaymentHistoryComponent } from './features/gestion-pago/user-payment-history/user-payment-history.component';
-import { EmpleadoComponent } from './features/empleado/empleado.component';
+import { GestionOrdenComponent } from './features/gestion-orden/gestion-orden/gestion-orden.component';
 
 export const routes: Routes = [
   { path: '', component: CatalogoComponent },
@@ -56,7 +56,7 @@ export const routes: Routes = [
   },
   {
     path: 'empleado',
-    component: EmpleadoComponent,
+    component: GestionOrdenComponent,
     canActivate: [authGuard, roleGuard],
     data: { roles: ['empleado'] }
   },

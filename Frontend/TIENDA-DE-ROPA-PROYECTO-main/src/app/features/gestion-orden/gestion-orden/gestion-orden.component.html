@@ -1,1 +1,146 @@
-<p>gestion-orden works!</p>
+<div *ngIf="!selectedAction" class="empleado-panel">
+  <button class="empleado-btn" (click)="onConsultarFactura()">Consultar orden de compra</button>
+  <button class="empleado-btn" (click)="onModificarFactura()">Modificar orden de compra</button>
+  <button class="empleado-btn" (click)="onEliminarFactura()">Eliminar factura</button>
+</div>
+
+<div *ngIf="selectedAction === 'consultar'" class="facturas-panel-wrapper">
+  <div class="facturas-panel">
+    <button class="volver-btn" (click)="volverAlMenu()">&larr; Volver</button>
+    <h2>Facturas registradas</h2>
+    <div *ngIf="loadingFacturas" class="facturas-loading">Cargando facturas...</div>
+    <div *ngIf="errorFacturas" class="facturas-error">{{ errorFacturas }}</div>
+    <table *ngIf="!loadingFacturas && !errorFacturas && facturas.length > 0" class="facturas-table">
+      <thead>
+        <tr>
+          <th>N° Factura</th>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let factura of facturas">
+          <td>{{ factura.numero_factura }}</td>
+          <td>{{ factura.fecha_factura | date:'short' }}</td>
+          <td>{{ factura.monto_total | currency:'USD' }}</td>
+          <td>{{ factura.email }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!loadingFacturas && !errorFacturas && facturas.length === 0" class="facturas-empty">No hay facturas registradas.</div>
+  </div>
+</div>
+
+<div *ngIf="selectedAction === 'modificar'" class="facturas-panel-wrapper">
+  <div class="facturas-panel">
+    <button class="volver-btn" (click)="volverAlMenu()">&larr; Volver</button>
+    <h2>Modificar factura</h2>
+    <div *ngIf="loadingFacturas" class="facturas-loading">Cargando facturas...</div>
+    <div *ngIf="errorFacturas" class="facturas-error">{{ errorFacturas }}</div>
+    <table *ngIf="!loadingFacturas && !errorFacturas && facturas.length > 0 && !facturaSeleccionada" class="facturas-table">
+      <thead>
+        <tr>
+          <th>N° Factura</th>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Email</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let factura of facturas">
+          <td>{{ factura.numero_factura }}</td>
+          <td>{{ factura.fecha_factura | date:'short' }}</td>
+          <td>{{ factura.monto_total | currency:'USD' }}</td>
+          <td>{{ factura.email }}</td>
+          <td><button class="editar-btn" (click)="seleccionarFacturaParaEditar(factura)">Editar</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!loadingFacturas && !errorFacturas && facturas.length === 0 && !facturaSeleccionada" class="facturas-empty">No hay facturas registradas.</div>
+
+    <form *ngIf="facturaSeleccionada" [formGroup]="editFacturaForm" class="edit-factura-form" (ngSubmit)="guardarEdicionFactura()">
+      <h3>Editar Factura</h3>
+      <div class="form-group">
+        <label>N° Factura</label>
+        <input formControlName="numero_factura" type="text" />
+        <div class="form-error" *ngIf="editFacturaForm.get('numero_factura')?.invalid && editFacturaForm.get('numero_factura')?.touched">
+          Número inválido. Debe tener formato FAC-123456.
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input formControlName="fecha_factura" type="datetime-local" />
+        <div class="form-error" *ngIf="editFacturaForm.get('fecha_factura')?.invalid && editFacturaForm.get('fecha_factura')?.touched">
+          Fecha requerida.
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Monto</label>
+        <input formControlName="monto_total" type="number" min="0.01" step="0.01" />
+        <div class="form-error" *ngIf="editFacturaForm.get('monto_total')?.invalid && editFacturaForm.get('monto_total')?.touched">
+          Monto inválido (mayor a 0).
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input formControlName="email" type="email" />
+        <div class="form-error" *ngIf="editFacturaForm.get('email')?.invalid && editFacturaForm.get('email')?.touched">
+          Email inválido.
+        </div>
+      </div>
+      <div class="edit-factura-actions">
+        <button type="submit" [disabled]="editFacturaForm.invalid">Guardar</button>
+        <button type="button" (click)="cancelarEdicionFactura()">Cancelar</button>
+      </div>
+      <div *ngIf="editError" class="facturas-error">{{ editError }}</div>
+      <div *ngIf="editSuccess" class="facturas-success">{{ editSuccess }}</div>
+    </form>
+  </div>
+</div>
+<div *ngIf="selectedAction === 'eliminar'" class="facturas-panel-wrapper">
+  <div class="facturas-panel">
+    <button class="volver-btn" (click)="volverAlMenu()">&larr; Volver</button>
+    <h2>Eliminar factura</h2>
+    <div *ngIf="loadingFacturas" class="facturas-loading">Cargando facturas...</div>
+    <div *ngIf="errorFacturas" class="facturas-error">{{ errorFacturas }}</div>
+    <table *ngIf="!loadingFacturas && !errorFacturas && facturas.length > 0 && !facturaAEliminar" class="facturas-table">
+      <thead>
+        <tr>
+          <th>N° Factura</th>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Email</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let factura of facturas">
+          <td>{{ factura.numero_factura }}</td>
+          <td>{{ factura.fecha_factura | date:'short' }}</td>
+          <td>{{ factura.monto_total | currency:'USD' }}</td>
+          <td>{{ factura.email }}</td>
+          <td><button class="eliminar-btn" (click)="seleccionarFacturaParaEliminar(factura)">Eliminar</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!loadingFacturas && !errorFacturas && facturas.length === 0 && !facturaAEliminar" class="facturas-empty">No hay facturas registradas.</div>
+
+    <div *ngIf="facturaAEliminar" class="confirmar-eliminar-panel">
+      <h3>¿Seguro que deseas eliminar la factura?</h3>
+      <div class="factura-eliminar-info">
+        <strong>N°:</strong> {{ facturaAEliminar.numero_factura }}<br>
+        <strong>Fecha:</strong> {{ facturaAEliminar.fecha_factura | date:'short' }}<br>
+        <strong>Monto:</strong> {{ facturaAEliminar.monto_total | currency:'USD' }}<br>
+        <strong>Email:</strong> {{ facturaAEliminar.email }}
+      </div>
+      <div class="eliminar-factura-actions">
+        <button (click)="confirmarEliminarFactura()">Eliminar</button>
+        <button (click)="cancelarEliminarFactura()">Cancelar</button>
+      </div>
+      <div *ngIf="deleteError" class="facturas-error">{{ deleteError }}</div>
+      <div *ngIf="deleteSuccess" class="facturas-success">{{ deleteSuccess }}</div>
+    </div>
+  </div>
+</div>

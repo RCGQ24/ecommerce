@@ -38,6 +38,15 @@ export class FacturaService {
     );
   }
 
+  getFacturas(): Observable<Factura[]> {
+    return this.http.get<Factura[]>(this.apiUrl).pipe(
+      catchError(error => {
+        console.error('Error al obtener las facturas:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   createFactura(factura: Partial<Factura>): Observable<Factura> {
     console.log('Enviando datos de factura al backend:', factura);
     return this.http.post<Factura>(this.apiUrl, factura).pipe(
