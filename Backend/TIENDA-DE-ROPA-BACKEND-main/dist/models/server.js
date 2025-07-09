@@ -19,6 +19,7 @@ const carrito_1 = __importDefault(require("../routes/carrito")); // <-- Nuevo
 const detalle_carrito_1 = __importDefault(require("../routes/detalle_carrito")); // <-- Nuevo
 const pago_1 = __importDefault(require("../routes/pago")); // <-- Nuevo
 const factura_1 = __importDefault(require("../routes/factura")); // <-- Nuevo
+const estadisticas_1 = __importDefault(require("../routes/estadisticas")); // <-- Nueva ruta
 const cors_1 = __importDefault(require("cors"));
 const connection_1 = require("../db/connection");
 class Server {
@@ -30,7 +31,8 @@ class Server {
             detalleCarritos: '/api/detalle_carritos',
             pagos: '/api/pagos',
             facturas: '/api/facturas',
-            root: '/'
+            root: '/',
+            estadisticas: '/api/estadisticas' // <-- Nueva ruta
         };
         this.app = express_1.default();
         this.port = process.env.PORT || '8000';
@@ -69,6 +71,7 @@ class Server {
         this.app.use(this.apiPaths.detalleCarritos, detalle_carrito_1.default);
         this.app.use(this.apiPaths.pagos, pago_1.default);
         this.app.use(this.apiPaths.facturas, factura_1.default);
+        this.app.use(this.apiPaths.estadisticas, estadisticas_1.default); // <-- Registrar la nueva ruta
     }
     listen() {
         this.app.listen(this.port, () => {

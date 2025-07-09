@@ -13,15 +13,15 @@
   <div class="stats-grid">
     <div class="stat-card">
       <h3>Total de Ventas</h3>
-      <p class="amount">{{ stats.totalAmount ? '$' + stats.totalAmount.toFixed(2) : '$0.00' }}</p>
+      <p class="amount">{{ stats.totalVentas ? '$' + stats.totalVentas.toFixed(2) : '$0.00' }}</p>
     </div>
     <div class="stat-card">
       <h3>Transacciones</h3>
-      <p class="amount">{{ stats.totalTransactions || 0 }}</p>
+      <p class="amount">{{ stats.totalTransacciones || 0 }}</p>
     </div>
     <div class="stat-card">
       <h3>Promedio por Venta</h3>
-      <p class="amount">{{ stats.averageAmount ? '$' + stats.averageAmount.toFixed(2) : '$0.00' }}</p>
+      <p class="amount">{{ stats.promedioPorVenta ? '$' + stats.promedioPorVenta.toFixed(2) : '$0.00' }}</p>
     </div>
   </div>
 
@@ -32,9 +32,10 @@
         <div class="method-bar" *ngFor="let method of paymentMethods">
           <div class="method-label">{{ method.name }}</div>
           <div class="method-progress">
-            <div class="progress-bar" [style.width.%]="method.percentage"></div>
+            <div class="progress-bar" [style.width.%]="method.percentage">
+              <span class="progress-tooltip">{{ method.count }} ({{ method.percentage | number:'1.0-0' }}%)</span>
+            </div>
           </div>
-          <div class="method-value">{{ method.count }}</div>
         </div>
       </div>
     </div>
@@ -42,11 +43,11 @@
     <div class="chart-card">
       <h3>Tendencia Mensual</h3>
       <div class="monthly-trend">
-        <div class="trend-bar" *ngFor="let trend of stats.monthlyTrends">
-          <div class="bar-value" [style.height.%]="getTrendHeight(trend.amount)">
-            <span class="tooltip">${{ trend.amount.toFixed(2) }}</span>
+        <div class="trend-bar" *ngFor="let trend of stats.tendenciaMensual">
+          <div class="bar-value" [style.height.%]="getTrendHeight(trend.cantidad)">
+            <span class="trend-tooltip">{{ trend.cantidad }} vendidos</span>
           </div>
-          <div class="bar-label">{{ trend.month }}</div>
+          <div class="bar-label">{{ trend.nombre }}</div>
         </div>
       </div>
     </div>

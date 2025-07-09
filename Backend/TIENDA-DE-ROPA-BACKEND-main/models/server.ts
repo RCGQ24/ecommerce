@@ -6,6 +6,7 @@ import carritoRoutes from '../routes/carrito'; // <-- Nuevo
 import detalleCarritoRoutes from '../routes/detalle_carrito'; // <-- Nuevo
 import pagoRoutes from '../routes/pago'; // <-- Nuevo
 import facturaRoutes from '../routes/factura'; // <-- Nuevo
+import estadisticasRoutes from '../routes/estadisticas'; // <-- Nueva ruta
 import cors from 'cors'; 
  
 import { db } from '../db/connection';
@@ -22,7 +23,8 @@ class Server {
         detalleCarritos: '/api/detalle_carritos', // <-- Nuevo
         pagos: '/api/pagos', // <-- Nuevo
         facturas: '/api/facturas', // <-- Nuevo
-        root: '/'        
+        root: '/',
+        estadisticas: '/api/estadisticas' // <-- Nueva ruta
     }
 
     constructor() {
@@ -72,6 +74,7 @@ class Server {
         this.app.use(this.apiPaths.detalleCarritos, detalleCarritoRoutes);
         this.app.use(this.apiPaths.pagos, pagoRoutes);
         this.app.use(this.apiPaths.facturas, facturaRoutes);
+        this.app.use(this.apiPaths.estadisticas, estadisticasRoutes); // <-- Registrar la nueva ruta
          }
 
 
