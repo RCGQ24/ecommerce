@@ -49,13 +49,16 @@ import { FormsModule } from '@angular/forms';
           <li *ngIf="authService.hasRole(['supervisor'])">
             <a routerLink="/supervisor">Supervisor</a>
           </li>
-          <li *ngIf="!authService.hasRole(['admin'])">
+          <li *ngIf="authService.hasRole(['empleado'])">
+            <a routerLink="/empleado">Empleado</a>
+          </li>
+          <li *ngIf="!authService.hasRole(['admin']) && !authService.hasRole(['empleado'])">
             <a routerLink="/gestion-pago" class="nav-link">
               <i class="fas fa-history"></i>
               Mis Compras
             </a>
           </li>
-          <li *ngIf="authService.hasRole(['user'])">
+          <li *ngIf="authService.hasRole(['user']) && !authService.hasRole(['empleado'])">
             <a routerLink="/carrito" class="cart-link">
               <i class="fas fa-shopping-cart"></i>
               Carrito
@@ -209,6 +212,7 @@ export class NavBarComponent implements OnInit {
   cartCount = 0;
   isLoginPage = false;
   isSupervisorPage = false;
+  isEmpleadoPage = false;
   searchTerm = '';
 
   constructor(
@@ -222,6 +226,8 @@ export class NavBarComponent implements OnInit {
     ).subscribe(() => {
       this.isLoginPage = this.router.url.includes('/login');
       this.isSupervisorPage = this.router.url.includes('/supervisor');
+      // Removemos la detección de empleado para que la barra se muestre siempre
+      // this.isEmpleadoPage = this.router.url.includes('/empleado');
     });
   }
 

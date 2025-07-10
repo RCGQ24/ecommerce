@@ -3,10 +3,12 @@ import { FacturaService, Factura } from '../../../services/factura.service';
 import { DatePipe, CurrencyPipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-gestion-orden',
-  imports: [CommonModule, DatePipe, CurrencyPipe, ReactiveFormsModule],
+  imports: [CommonModule, DatePipe, CurrencyPipe, ReactiveFormsModule, RouterModule],
   templateUrl: './gestion-orden.component.html',
   styleUrl: './gestion-orden.component.scss'
 })
@@ -23,7 +25,12 @@ export class GestionOrdenComponent implements OnInit {
   deleteError: string | null = null;
   deleteSuccess: string | null = null;
 
-  constructor(private facturaService: FacturaService, private fb: FormBuilder) {}
+  constructor(
+    private facturaService: FacturaService, 
+    private fb: FormBuilder,
+    public authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {}
 
@@ -136,5 +143,10 @@ export class GestionOrdenComponent implements OnInit {
 
   volverAlMenu() {
     this.selectedAction = null;
+  }
+
+  buscar() {
+    // Función para manejar la búsqueda
+    console.log('Búsqueda realizada');
   }
 }
