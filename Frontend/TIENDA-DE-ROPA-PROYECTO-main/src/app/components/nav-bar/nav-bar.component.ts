@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
         <ul class="nav-list">
           <li>Hombre</li>
           <li>Colecciones</li>
-          <li><a routerLink="/">Inicio</a></li>
+          <li><a routerLink="/" (click)="scrollToTop()">Inicio</a></li>
         </ul>
       </div>
       <div class="search-container">
@@ -245,5 +245,9 @@ export class NavBarComponent implements OnInit {
     if (this.searchTerm && this.searchTerm.trim() !== '') {
       this.router.navigate(['/catalogo'], { queryParams: { busqueda: this.searchTerm } });
     }
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
