@@ -265,44 +265,52 @@ $transition-fast: all 0.15s ease-in-out;
   margin-top: 1rem;
 }
 
+.monthly-trend.horizontal-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 2rem;
+  padding-bottom: 1rem;
+  height: 300px;
+  max-height: 300px;
+}
+
 .trend-bar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
-  gap: 1rem;
+  justify-content: flex-end;
+  min-width: 60px;
 }
 
 .bar-value {
   width: 40px;
+  min-height: 4px;
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
   border-radius: $border-radius $border-radius 0 0;
   position: relative;
-  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 4px;
+  transition: height 1.8s cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 2px 8px rgba(47, 197, 169, 0.3);
+  display: flex;
+  align-items: flex-end;
+  height: 0;
+  animation: growBarBounce 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
 
-  .trend-tooltip {
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: $text-primary;
-    color: white;
-    padding: 0.5rem 0.8rem;
-    border-radius: $border-radius;
-    font-size: 0.875rem;
-    font-weight: 500;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-    box-shadow: $shadow-md;
-    z-index: 10;
+@keyframes growBarBounce {
+  0% {
+    height: 0;
+    filter: brightness(0.8);
   }
-  &:hover .trend-tooltip {
-    opacity: 1;
-    pointer-events: auto;
+  80% {
+    height: calc(var(--final-bar-height, 100%) + 20px);
+    filter: brightness(1.2);
+  }
+  100% {
+    height: var(--final-bar-height, 100%);
+    filter: brightness(1);
   }
 }
 
@@ -314,6 +322,14 @@ $transition-fast: all 0.15s ease-in-out;
   text-align: center;
   transform: rotate(-45deg);
   white-space: nowrap;
+}
+
+.horizontal-scroll {
+  overflow-x: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding-bottom: 1rem;
 }
 
 @media (max-width: 768px) {

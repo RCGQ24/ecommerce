@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Pago from '../models/pago';
+import Producto from '../models/producto';
 
 class PagosController {
   async getPagos(req: Request, res: Response) {
@@ -43,6 +44,17 @@ class PagosController {
         fecha_pago = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
       }
       const pago = await Pago.create({ ...body, productos, fecha_pago });
+
+      // Descontar stock de productos comprados
+      const productosComprados = body.productos || [];
+      for (const prod of productosComprados) {
+        const producto = await Producto.findByPk(prod.id);
+        if (producto) {
+          const nuevoStock = (producto as any).stock - prod.cantidad;
+          await producto.update({ stock: nuevoStock });
+        }
+      }
+
       res.json(pago);
     } catch (error) {
       res.status(500).json({ msg: 'Hable con el administrador' });

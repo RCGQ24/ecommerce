@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const factura_1 = __importDefault(require("../models/factura"));
 const pago_1 = __importDefault(require("../models/pago"));
-const detalle_carrito_1 = __importDefault(require("../models/detalle_carrito"));
 const producto_1 = __importDefault(require("../models/producto"));
 class EstadisticasController {
     getSupervisorStats(req, res) {
@@ -32,20 +31,28 @@ class EstadisticasController {
                     const metodo = p.id_metodo_pago || 'Desconocido';
                     metodosPago[metodo] = (metodosPago[metodo] || 0) + 1;
                 });
-                // Productos más vendidos (sin filtrar por mes)
-                const detalles = yield detalle_carrito_1.default.findAll();
+                // Productos más vendidos (usando los productos comprados en cada pago)
                 const productosVendidos = {};
-                for (const detalle of detalles) {
-                    const idProd = detalle.id_producto;
-                    const cantidad = detalle.cantidad;
-                    if (!productosVendidos[idProd]) {
-                        const prod = yield producto_1.default.findByPk(idProd);
-                        productosVendidos[idProd] = {
-                            nombre: prod ? prod.nombre_producto : 'Desconocido',
-                            cantidad: 0
-                        };
+                for (const pago of pagos) {
+                    let productosPago = [];
+                    try {
+                        productosPago = JSON.parse(pago.productos);
                     }
-                    productosVendidos[idProd].cantidad += cantidad;
+                    catch (e) {
+                        continue; // Si no se puede parsear, saltar
+                    }
+                    for (const prod of productosPago) {
+                        const idProd = prod.id;
+                        const cantidad = prod.cantidad;
+                        if (!productosVendidos[idProd]) {
+                            const prodInfo = yield producto_1.default.findByPk(idProd);
+                            productosVendidos[idProd] = {
+                                nombre: prodInfo ? prodInfo.nombre_producto : 'Desconocido',
+                                cantidad: 0
+                            };
+                        }
+                        productosVendidos[idProd].cantidad += cantidad;
+                    }
                 }
                 // Ordenar por cantidad descendente
                 const tendenciaMensual = Object.values(productosVendidos).sort((a, b) => b.cantidad - a.cantidad).slice(0, 5);

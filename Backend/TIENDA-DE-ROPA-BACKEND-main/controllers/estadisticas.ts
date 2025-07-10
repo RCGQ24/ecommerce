@@ -21,20 +21,27 @@ class EstadisticasController {
         metodosPago[metodo] = (metodosPago[metodo] || 0) + 1;
       });
 
-      // Productos más vendidos (sin filtrar por mes)
-      const detalles = await DetalleCarrito.findAll();
+      // Productos más vendidos (usando los productos comprados en cada pago)
       const productosVendidos: Record<string, { nombre: string, cantidad: number }> = {};
-      for (const detalle of detalles) {
-        const idProd = (detalle as any).id_producto;
-        const cantidad = (detalle as any).cantidad;
-        if (!productosVendidos[idProd]) {
-          const prod = await Producto.findByPk(idProd);
-          productosVendidos[idProd] = {
-            nombre: prod ? (prod as any).nombre_producto : 'Desconocido',
-            cantidad: 0
-          };
+      for (const pago of pagos) {
+        let productosPago: any[] = [];
+        try {
+          productosPago = JSON.parse((pago as any).productos);
+        } catch (e) {
+          continue; // Si no se puede parsear, saltar
         }
-        productosVendidos[idProd].cantidad += cantidad;
+        for (const prod of productosPago) {
+          const idProd = prod.id;
+          const cantidad = prod.cantidad;
+          if (!productosVendidos[idProd]) {
+            const prodInfo = await Producto.findByPk(idProd);
+            productosVendidos[idProd] = {
+              nombre: prodInfo ? (prodInfo as any).nombre_producto : 'Desconocido',
+              cantidad: 0
+            };
+          }
+          productosVendidos[idProd].cantidad += cantidad;
+        }
       }
       // Ordenar por cantidad descendente
       const tendenciaMensual = Object.values(productosVendidos).sort((a, b) => b.cantidad - a.cantidad).slice(0, 5);

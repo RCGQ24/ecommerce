@@ -36,18 +36,19 @@
               <span class="progress-tooltip">{{ method.count }} ({{ method.percentage | number:'1.0-0' }}%)</span>
             </div>
           </div>
+          <div class="method-count" style="margin-left: 12px; min-width: 32px; text-align: right; font-weight: 500; color: #4b2fbb;">{{ method.count }}</div>
         </div>
       </div>
     </div>
 
     <div class="chart-card">
       <h3>Tendencia Mensual</h3>
-      <div class="monthly-trend">
-        <div class="trend-bar" *ngFor="let trend of stats.tendenciaMensual">
-          <div class="bar-value" [style.height.%]="getTrendHeight(trend.cantidad)">
-            <span class="trend-tooltip">{{ trend.cantidad }} vendidos</span>
-          </div>
+      <div *ngIf="noVentas" class="no-ventas-msg" style="text-align:center; color:#888; font-size:1.1rem; padding:2rem 0;">No hay ventas registradas aún.</div>
+      <div class="monthly-trend horizontal-scroll" *ngIf="!noVentas">
+        <div class="trend-bar" *ngFor="let trend of tendenciasCompletas">
+          <div class="bar-value" [style.height.%]="getTrendHeight(trend.cantidad)"></div>
           <div class="bar-label">{{ trend.nombre }}</div>
+          <div class="trend-count" style="margin-top: 0.5rem; color: #4b2fbb; font-weight: 600;">{{ trend.cantidad }}</div>
         </div>
       </div>
     </div>

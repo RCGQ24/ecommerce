@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const pago_1 = __importDefault(require("../models/pago"));
+const producto_1 = __importDefault(require("../models/producto"));
 class PagosController {
     getPagos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -61,6 +62,15 @@ class PagosController {
                     fecha_pago = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
                 }
                 const pago = yield pago_1.default.create(Object.assign(Object.assign({}, body), { productos, fecha_pago }));
+                // Descontar stock de productos comprados
+                const productosComprados = body.productos || [];
+                for (const prod of productosComprados) {
+                    const producto = yield producto_1.default.findByPk(prod.id);
+                    if (producto) {
+                        const nuevoStock = producto.stock - prod.cantidad;
+                        yield producto.update({ stock: nuevoStock });
+                    }
+                }
                 res.json(pago);
             }
             catch (error) {
