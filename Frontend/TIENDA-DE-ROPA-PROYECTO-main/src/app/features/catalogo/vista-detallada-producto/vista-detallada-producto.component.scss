@@ -155,6 +155,22 @@
   opacity: 0.85;
 }
 
+// Mensaje para empleados
+.empleado-message {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 0.7rem;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  
+  p {
+    margin: 0;
+    color: #856404;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+}
+
 .product-not-found {
   text-align: center;
   margin-top: 4rem;

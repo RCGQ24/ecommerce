@@ -1,3 +1,220 @@
+<<<<<<< HEAD
+-- --------------------------------------------------------
+-- Host:                         localhost
+-- Versión del servidor:         10.4.32-MariaDB - mariadb.org binary distribution
+-- SO del servidor:              Win64
+-- HeidiSQL Versión:             12.10.0.7000
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+-- Volcando estructura de base de datos para ecommerce
+CREATE DATABASE IF NOT EXISTS `ecommerce` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+USE `ecommerce`;
+
+-- Volcando estructura para tabla ecommerce.carritos
+CREATE TABLE IF NOT EXISTS `carritos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` varchar(50) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT NULL,
+  `fecha_ultima_actualizacion` datetime DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los carritos';
+
+-- Volcando datos para la tabla ecommerce.carritos: ~7 rows (aproximadamente)
+REPLACE INTO `carritos` (`id`, `id_usuario`, `fecha_creacion`, `fecha_ultima_actualizacion`) VALUES
+	(1, '2', NULL, NULL),
+	(4, '6', NULL, NULL),
+	(5, '11', NULL, NULL),
+	(6, '9', NULL, NULL),
+	(7, '5', NULL, NULL),
+	(8, '8', NULL, NULL),
+	(9, '7', NULL, NULL);
+
+-- Volcando estructura para tabla ecommerce.categorias
+CREATE TABLE IF NOT EXISTS `categorias` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_categoria` varchar(50) DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de las categorias de los productos';
+
+-- Volcando datos para la tabla ecommerce.categorias: ~4 rows (aproximadamente)
+REPLACE INTO `categorias` (`id`, `nombre_categoria`) VALUES
+	(1, 'Deportivo'),
+	(2, 'Casual'),
+	(3, 'Formal'),
+	(4, 'Uniforme');
+
+-- Volcando estructura para tabla ecommerce.detalles de carritos
+CREATE TABLE IF NOT EXISTS `detalles de carritos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_carrito` int(11) DEFAULT NULL,
+  `id_producto` int(11) DEFAULT NULL,
+  `cantidad` int(11) DEFAULT NULL,
+  `precio` decimal(5,2) DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los detalles de los carritos';
+
+-- Volcando datos para la tabla ecommerce.detalles de carritos: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla ecommerce.detalle_carritos
+CREATE TABLE IF NOT EXISTS `detalle_carritos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_carrito` int(11) NOT NULL,
+  `id_producto` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_carrito` (`id_carrito`),
+  KEY `id_producto` (`id_producto`),
+  CONSTRAINT `detalle_carritos_ibfk_1` FOREIGN KEY (`id_carrito`) REFERENCES `carritos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `detalle_carritos_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla ecommerce.detalle_carritos: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla ecommerce.facturas
+CREATE TABLE IF NOT EXISTS `facturas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_pago` int(11) NOT NULL,
+  `numero_factura` varchar(50) NOT NULL,
+  `fecha_factura` datetime NOT NULL,
+  `monto_total` decimal(10,2) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `items_detalle` text DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE,
+  UNIQUE KEY `numero_factura` (`numero_factura`),
+  UNIQUE KEY `numero_factura_2` (`numero_factura`),
+  UNIQUE KEY `numero_factura_3` (`numero_factura`),
+  UNIQUE KEY `numero_factura_4` (`numero_factura`),
+  UNIQUE KEY `numero_factura_5` (`numero_factura`),
+  UNIQUE KEY `numero_factura_6` (`numero_factura`),
+  UNIQUE KEY `numero_factura_7` (`numero_factura`),
+  UNIQUE KEY `numero_factura_8` (`numero_factura`),
+  UNIQUE KEY `numero_factura_9` (`numero_factura`),
+  UNIQUE KEY `numero_factura_10` (`numero_factura`),
+  UNIQUE KEY `numero_factura_11` (`numero_factura`),
+  UNIQUE KEY `numero_factura_12` (`numero_factura`),
+  UNIQUE KEY `numero_factura_13` (`numero_factura`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de las facturas';
+
+-- Volcando datos para la tabla ecommerce.facturas: ~5 rows (aproximadamente)
+REPLACE INTO `facturas` (`id`, `id_pago`, `numero_factura`, `fecha_factura`, `monto_total`, `email`, `items_detalle`) VALUES
+	(1, 1, 'FAC-1751941297340', '2025-07-08 02:21:37', 20.00, 'vavelasco.24@est.ucab.edu.ve', '[{"id":2,"nombre":"sueter de Zelda","descripcion":"sueter de Zelda","talla":"8","precio":"20.00","cantidad":1,"url_imagen":"https://www.veinerd.com/uploads/products/large/zelda-1-mangalonga.jpg"}]'),
+	(2, 2, 'FAC-1751942436546', '2025-07-08 02:40:36', 160.00, 'andres@gmail.com', '[{"id":3,"nombre":"Camisa de Metroid","descripcion":"Camisa de Metroid","talla":"30","precio":"40.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/914PnU42B+L._AC_UY1000_.jpg"},{"id":6,"nombre":"Zapato nike","descripcion":"Zapato nike","talla":"40","precio":"120.00","cantidad":1,"url_imagen":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd2Kt-jN-YG4p2R1D-Wj4fCGqnvJqei-FZGw&s"}]'),
+	(3, 3, 'FAC-1751942484753', '2025-07-08 02:41:24', 185.00, 'valeria2105@gmail.com', '[{"id":5,"nombre":"Camisa Beige","descripcion":"Camisa Beige","talla":"Única","precio":"55.00","cantidad":2,"url_imagen":"https://http2.mlstatic.com/D_NQ_NP_790402-MLV51582198703_092022-O.webp"},{"id":3,"nombre":"Camisa de Metroid","descripcion":"Camisa de Metroid","talla":"30","precio":"40.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/914PnU42B+L._AC_UY1000_.jpg"},{"id":8,"nombre":"Lentes de sol","descripcion":"Lentes de sol","talla":"10","precio":"35.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg"}]'),
+	(4, 4, 'FAC-1751942532228', '2025-07-08 02:42:12', 85.00, 'movalles@usb.ve', '[{"id":8,"nombre":"Lentes de sol","descripcion":"Lentes de sol","talla":"10","precio":"35.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg"},{"id":11,"nombre":"zapatos formales","descripcion":"zapatos formales","talla":"40","precio":"50.00","cantidad":1,"url_imagen":"https://www.venus.com.ec/media/catalog/product/m/a/maurizio1_1_.jpg?width=650&height=650&store=ec&image-type=image"}]'),
+	(5, 5, 'FAC-1751942958215', '2025-07-08 02:49:18', 145.00, 'gilbertogmoncadad@gmail.com', '[{"id":8,"nombre":"Lentes de sol","descripcion":"Lentes de sol","talla":"10","precio":"35.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg"},{"id":11,"nombre":"zapatos formales","descripcion":"zapatos formales","talla":"40","precio":"50.00","cantidad":1,"url_imagen":"https://www.venus.com.ec/media/catalog/product/m/a/maurizio1_1_.jpg?width=650&height=650&store=ec&image-type=image"},{"id":14,"nombre":"Saco formal ","descripcion":"Saco formal ","talla":"30","precio":"60.00","cantidad":1,"url_imagen":"https://ss261.liverpool.com.mx/xl/1064456084.jpg"}]');
+
+-- Volcando estructura para tabla ecommerce.metodos de pago
+CREATE TABLE IF NOT EXISTS `metodos de pago` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_metodo` varchar(50) DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los metodos de pago';
+
+-- Volcando datos para la tabla ecommerce.metodos de pago: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla ecommerce.pagos
+CREATE TABLE IF NOT EXISTS `pagos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_metodo_pago` int(11) DEFAULT NULL,
+  `monto_pago` decimal(7,2) DEFAULT NULL,
+  `email_usuario` varchar(50) DEFAULT NULL,
+  `estado_pago` varchar(50) DEFAULT NULL,
+  `fecha_pago` datetime DEFAULT NULL,
+  `productos` text DEFAULT NULL,
+  `numero_factura` varchar(50) DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los pagos';
+
+-- Volcando datos para la tabla ecommerce.pagos: ~5 rows (aproximadamente)
+REPLACE INTO `pagos` (`id`, `id_metodo_pago`, `monto_pago`, `email_usuario`, `estado_pago`, `fecha_pago`, `productos`, `numero_factura`) VALUES
+	(1, 3, 20.00, 'vavelasco.24@est.ucab.edu.ve', 'completado', '2025-07-08 02:21:37', '[{"id":2,"nombre":"sueter de Zelda","descripcion":"sueter de Zelda","talla":"8","precio":"20.00","cantidad":1,"url_imagen":"https://www.veinerd.com/uploads/products/large/zelda-1-mangalonga.jpg"}]', 'FAC-1751941297340'),
+	(2, 3, 160.00, 'andres@gmail.com', 'completado', '2025-07-08 02:40:36', '[{"id":3,"nombre":"Camisa de Metroid","descripcion":"Camisa de Metroid","talla":"30","precio":"40.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/914PnU42B+L._AC_UY1000_.jpg"},{"id":6,"nombre":"Zapato nike","descripcion":"Zapato nike","talla":"40","precio":"120.00","cantidad":1,"url_imagen":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd2Kt-jN-YG4p2R1D-Wj4fCGqnvJqei-FZGw&s"}]', 'FAC-1751942436546'),
+	(3, 3, 185.00, 'valeria2105@gmail.com', 'completado', '2025-07-08 02:41:24', '[{"id":5,"nombre":"Camisa Beige","descripcion":"Camisa Beige","talla":"Única","precio":"55.00","cantidad":2,"url_imagen":"https://http2.mlstatic.com/D_NQ_NP_790402-MLV51582198703_092022-O.webp"},{"id":3,"nombre":"Camisa de Metroid","descripcion":"Camisa de Metroid","talla":"30","precio":"40.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/914PnU42B+L._AC_UY1000_.jpg"},{"id":8,"nombre":"Lentes de sol","descripcion":"Lentes de sol","talla":"10","precio":"35.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg"}]', 'FAC-1751942484753'),
+	(4, 3, 85.00, 'movalles@usb.ve', 'completado', '2025-07-08 02:42:12', '[{"id":8,"nombre":"Lentes de sol","descripcion":"Lentes de sol","talla":"10","precio":"35.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg"},{"id":11,"nombre":"zapatos formales","descripcion":"zapatos formales","talla":"40","precio":"50.00","cantidad":1,"url_imagen":"https://www.venus.com.ec/media/catalog/product/m/a/maurizio1_1_.jpg?width=650&height=650&store=ec&image-type=image"}]', 'FAC-1751942532228'),
+	(5, 3, 145.00, 'gilbertogmoncadad@gmail.com', 'completado', '2025-07-08 02:49:18', '[{"id":8,"nombre":"Lentes de sol","descripcion":"Lentes de sol","talla":"10","precio":"35.00","cantidad":1,"url_imagen":"https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg"},{"id":11,"nombre":"zapatos formales","descripcion":"zapatos formales","talla":"40","precio":"50.00","cantidad":1,"url_imagen":"https://www.venus.com.ec/media/catalog/product/m/a/maurizio1_1_.jpg?width=650&height=650&store=ec&image-type=image"},{"id":14,"nombre":"Saco formal ","descripcion":"Saco formal ","talla":"30","precio":"60.00","cantidad":1,"url_imagen":"https://ss261.liverpool.com.mx/xl/1064456084.jpg"}]', 'FAC-1751942958215');
+
+-- Volcando estructura para tabla ecommerce.productos
+CREATE TABLE IF NOT EXISTS `productos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_producto` varchar(20) DEFAULT NULL,
+  `id_categoria` varchar(50) NOT NULL DEFAULT '',
+  `precio` decimal(5,2) DEFAULT NULL,
+  `url_imagen` varchar(1000) DEFAULT NULL,
+  `talla` char(2) DEFAULT NULL,
+  `stock` int(11) DEFAULT NULL,
+  `fecha_registro` datetime NOT NULL,
+  UNIQUE KEY `Producto` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los productos en venta en Ecommerce';
+
+-- Volcando datos para la tabla ecommerce.productos: ~12 rows (aproximadamente)
+REPLACE INTO `productos` (`id`, `nombre_producto`, `id_categoria`, `precio`, `url_imagen`, `talla`, `stock`, `fecha_registro`) VALUES
+	(1, 'Camisa de Mario', 'casual', 20.00, 'https://m.media-amazon.com/images/I/7173IO6yZFL._AC_UY1000_.jpg', '10', 30, '0000-00-00 00:00:00'),
+	(2, 'Sueter de Zelda', 'casual', 20.00, 'https://www.veinerd.com/uploads/products/large/zelda-1-mangalonga.jpg', '8', 20, '0000-00-00 00:00:00'),
+	(3, 'Camisa de Metroid', 'casual', 40.00, 'https://m.media-amazon.com/images/I/914PnU42B+L._AC_UY1000_.jpg', '30', 24, '0000-00-00 00:00:00'),
+	(4, 'Pantalón formal', 'formal', 20.00, 'https://vittorioforti.com.mx/cdn/shop/products/VPN03078NE_1_310aacf1-8ef2-4ec9-8bcc-c12658630831.jpg?v=1744070921', '30', 15, '0000-00-00 00:00:00'),
+	(5, 'Camisa Beige', 'casual', 55.00, 'https://http2.mlstatic.com/D_NQ_NP_790402-MLV51582198703_092022-O.webp', '15', 10, '0000-00-00 00:00:00'),
+	(6, 'Zapatos Nike', 'deportivo', 120.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd2Kt-jN-YG4p2R1D-Wj4fCGqnvJqei-FZGw&s', '40', 10, '0000-00-00 00:00:00'),
+	(7, 'Camisa Nike roja', 'casual', 30.00, 'https://i.ebayimg.com/thumbs/images/g/CfUAAOSwvS5k3ld3/s-l1200.jpg', '30', 5, '0000-00-00 00:00:00'),
+	(8, 'Lentes de sol', 'casual', 35.00, 'https://m.media-amazon.com/images/I/71JWaxI-XvL.jpg', '10', 20, '0000-00-00 00:00:00'),
+	(9, 'Camisa negra Adidas', 'deportivo', 50.00, 'https://i.ebayimg.com/images/g/g4AAAOSw~jZcriiC/s-l640.jpg', '18', 10, '0000-00-00 00:00:00'),
+	(10, 'Zapatos de Kirby', 'deportivo', 70.00, 'https://i.etsystatic.com/9457243/r/il/0db382/5661058680/il_fullxfull.5661058680_cvjg.jpg', '14', 7, '0000-00-00 00:00:00'),
+	(11, 'zapatos formales', 'formal', 50.00, 'https://www.venus.com.ec/media/catalog/product/m/a/maurizio1_1_.jpg?width=650&height=650&store=ec&image-type=image', '40', 19, '0000-00-00 00:00:00'),
+	(14, 'Saco formal ', 'formal', 60.00, 'https://ss261.liverpool.com.mx/xl/1064456084.jpg', '30', 24, '0000-00-00 00:00:00');
+
+-- Volcando estructura para tabla ecommerce.roles
+CREATE TABLE IF NOT EXISTS `roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_rol` varchar(50) DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los roles';
+
+-- Volcando datos para la tabla ecommerce.roles: ~4 rows (aproximadamente)
+REPLACE INTO `roles` (`id`, `nombre_rol`) VALUES
+	(1, 'Administrador'),
+	(2, 'Usuario'),
+	(3, 'Supervisor'),
+	(4, 'Empleado');
+
+-- Volcando estructura para tabla ecommerce.usuarios
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_usuario` varchar(50) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `contrasena` varchar(50) DEFAULT NULL,
+  `id_rol` varchar(50) DEFAULT NULL,
+  `fecha_registro` datetime DEFAULT NULL,
+  UNIQUE KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Datos de los usuarios';
+
+-- Volcando datos para la tabla ecommerce.usuarios: ~9 rows (aproximadamente)
+REPLACE INTO `usuarios` (`id`, `nombre_usuario`, `email`, `contrasena`, `id_rol`, `fecha_registro`) VALUES
+	(1, 'Administrador', 'admin@correo.com', 'admin123', 'Administrador', NULL),
+	(2, 'Usuario', 'usuario@correo.com', 'usuario123', 'Usuario', NULL),
+	(3, 'Usuario2', 'usuario2@correo.com', 'usuario456', 'Usuarios', NULL),
+	(5, 'Usuario3', 'andres@gmail.com', 'andresito', 'Usuarios', NULL),
+	(6, 'Usuario4', 'valeria2105@gmail.com', 'V21a10v05c', 'Usuarios', NULL),
+	(7, 'Usuario5', 'gilbertogmoncadad@gmail.com', '12345', 'Usuarios', NULL),
+	(8, 'Usuario6', 'movalles@usb.ve', '222', 'Usuarios', NULL),
+	(9, 'Supervisor', 'super@correo.com', 'super123', 'Supervisor', NULL),
+	(10, 'Empleado', 'emp@correo.com', 'emp123', 'Empleado', NULL);
+
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+=======
 -- --------------------------------------------------------
 -- Host:                         localhost
 -- Versión del servidor:         10.4.32-MariaDB - mariadb.org binary distribution
@@ -247,3 +464,4 @@ INSERT INTO `usuarios` (`id`, `nombre_usuario`, `email`, `contrasena`, `id_rol`)
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+>>>>>>> d8f05cf903f709b7ae0cca233d94954fc2dc26f6

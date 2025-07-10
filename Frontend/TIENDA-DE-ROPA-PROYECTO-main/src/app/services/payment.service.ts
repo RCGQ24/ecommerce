@@ -19,6 +19,14 @@ export interface PaymentStats {
   monthlyTrends: { month: string; amount: number }[];
 }
 
+export interface SupervisorStats {
+  totalVentas: number;
+  totalTransacciones: number;
+  promedioPorVenta: number;
+  metodosPago: { [key: string]: number };
+  tendenciaMensual: { nombre: string; cantidad: number }[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,6 +41,10 @@ export class PaymentService {
 
   getPaymentStats(): Observable<PaymentStats> {
     return this.http.get<PaymentStats>(`${this.apiUrl}/stats`);
+  }
+
+  getSupervisorStats(): Observable<SupervisorStats> {
+    return this.http.get<SupervisorStats>(`${environment.apiUrl}/estadisticas/supervisor`);
   }
 
   // This method processes raw payment data into stats if backend endpoint is not available

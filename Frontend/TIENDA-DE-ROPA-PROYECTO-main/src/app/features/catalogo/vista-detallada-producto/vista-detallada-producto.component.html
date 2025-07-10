@@ -9,9 +9,21 @@
       <div class="product-detail-colors">
         <span *ngFor="let color of product.colors" [style.background]="color" class="color-dot"></span>
       </div>
-      <button class="add-to-cart-btn" (click)="addToCart()" [disabled]="added">
+      
+      <!-- Botón de añadir al carrito solo si NO es empleado -->
+      <button 
+        class="add-to-cart-btn" 
+        (click)="addToCart()" 
+        [disabled]="added"
+        *ngIf="showAddToCartButton"
+      >
         {{ added ? '¡Añadido!' : 'Agregar al carrito' }}
       </button>
+      
+      <!-- Mensaje para empleados -->
+      <div class="empleado-message" *ngIf="isEmpleado">
+        <p>Los empleados no pueden añadir productos al carrito</p>
+      </div>
       
       <!-- Botones de administración solo para admin -->
       <div class="admin-actions" *ngIf="isAdmin">

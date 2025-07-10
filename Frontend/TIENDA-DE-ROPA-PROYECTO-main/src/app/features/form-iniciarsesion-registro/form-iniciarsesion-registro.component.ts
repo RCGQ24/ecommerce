@@ -67,8 +67,8 @@ export class FormIniciarsesionRegistroComponent implements OnInit {
     } else if (email === 'emp@correo.com' && password === 'emp123') {
       const usuario = { email, rol: 'empleado' };
       this.authService.login(usuario);
-      this.router.navigateByUrl('/empleado');}
-    else {
+      this.router.navigateByUrl('/empleado');
+    } else {
       // Buscar usuario en la base de datos
       this.http.get<any[]>('http://localhost:8000/api/usuarios').subscribe({
         next: usuarios => {

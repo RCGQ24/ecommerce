@@ -23,6 +23,7 @@ export class VistaDetalladaProductoComponent {
   
   // Variables para admin
   isAdmin = false;
+  isEmpleado = false;
   showEditModal = false;
   showDeleteModal = false;
   editingProduct: any = null;
@@ -63,8 +64,14 @@ export class VistaDetalladaProductoComponent {
       this.cartCount = items.reduce((acc: any, item: any) => acc + item.quantity, 0);
     });
     
-    // Verificar si es admin
+    // Verificar roles
     this.isAdmin = this.authService.hasRole(['admin']);
+    this.isEmpleado = this.authService.hasRole(['empleado']);
+  }
+
+  // Función para determinar si mostrar el botón de añadir al carrito
+  get showAddToCartButton(): boolean {
+    return !this.isEmpleado; // No mostrar si es empleado
   }
 
   goToCatalogo() {
